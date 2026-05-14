@@ -1,0 +1,39 @@
+# Paper repository allowlist. Local scratch files, notebooks, datasets, and
+# checkpoints stay on disk but are not tracked for the public repo.
+/*
+!/.gitignore
+!/README.md
+!/requirements.txt
+!/LICENSE
+!/Coded_Transport_Watermark_large.py
+!/Coded_Transport_Watermark_UNet.py
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environments
+.venv/
+venv/
+env/
+
+# IDE and notebooks
+.idea/
+.vscode/
+.ipynb_checkpoints/
+
+# Data, checkpoints, and generated artifacts
+data/
+checkpoints/
+checkpointsCIFAR/
+outputs/
+experiment/
+flow_matching/examples/image/data/
+flow_matching/examples/image/output_dir/
+
+# System files
+.DS_Store
