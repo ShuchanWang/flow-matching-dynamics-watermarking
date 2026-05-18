@@ -1,5 +1,5 @@
-# Paper repository allowlist. Local scratch files, notebooks, datasets, and
-# checkpoints stay on disk but are not tracked for the public repo.
+# Paper repository allowlist. Local scratch files, downloaded data,
+# checkpoints, and generated outputs stay on disk but are not tracked.
 /*
 !/.gitignore
 !/README.md
@@ -30,15 +30,6 @@ env/
 .idea/
 .vscode/
 .ipynb_checkpoints/
-
-# Data, checkpoints, and generated artifacts
-data/
-checkpoints/
-checkpointsCIFAR/
-outputs/
-experiment/
-flow_matching/examples/image/data/
-flow_matching/examples/image/output_dir/
 
 # LaTeX build artifacts
 *.aux
