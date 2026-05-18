@@ -5,8 +5,8 @@
 !/README.md
 !/requirements.txt
 !/LICENSE
-!/Coded_Transport_Watermark_large.py
-!/Coded_Transport_Watermark_UNet.py
+!/flow_watermark_mnist_mlp.py
+!/flow_watermark_unet_lora.py
 !/paper/
 !/paper/main.tex
 !/paper/ref.bib

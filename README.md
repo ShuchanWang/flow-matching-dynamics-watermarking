@@ -14,12 +14,12 @@ demodulation.
 
 ## Files
 
-- `Coded_Transport_Watermark_large.py`  
+- `flow_watermark_mnist_mlp.py`  
   MNIST MLP experiments with clean and watermarked flow-matching models,
   detection metrics, signature statistics, FID-style sample-quality analysis,
   and visualizations.
 
-- `Coded_Transport_Watermark_UNet.py`  
+- `flow_watermark_unet_lora.py`  
   MNIST/CIFAR-10 UNet experiments with checkpoint resume support and LoRA
   watermark fine-tuning.
 
@@ -42,16 +42,16 @@ Training is GPU-oriented and may be slow on CPU.
 Run the MNIST MLP experiment:
 
 ```bash
-python Coded_Transport_Watermark_large.py
+python flow_watermark_mnist_mlp.py
 ```
 
 Run the UNet + LoRA experiment:
 
 ```bash
-python Coded_Transport_Watermark_UNet.py
+python flow_watermark_unet_lora.py
 ```
 
-In `Coded_Transport_Watermark_UNet.py`, set:
+In `flow_watermark_unet_lora.py`, set:
 
 ```python
 DATASET = "mnist"    # or "cifar10"
