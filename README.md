@@ -4,6 +4,8 @@ This repository contains the experiment code for the paper:
 
 **Dynamics-Level Watermarking of Flow Matching Models with Random Codes**
 
+Paper: [arXiv:2605.16239](https://arxiv.org/abs/2605.16239)
+
 The method embeds a keyed, multi-bit watermark directly into the learned
 velocity field of a flow-matching generative model. A secret projection matrix
 and codebook define a time-modulated perturbation during training, and the
@@ -20,6 +22,9 @@ demodulation.
 - `Coded_Transport_Watermark_UNet.py`  
   MNIST/CIFAR-10 UNet experiments with checkpoint resume support and LoRA
   watermark fine-tuning.
+
+- `paper/`  
+  LaTeX source, bibliography, and figures for the arXiv paper.
 
 ## Setup
 
@@ -72,6 +77,10 @@ If this code is useful for your work, please cite the accompanying paper:
 @article{wang2026dynamicswatermark,
   title  = {Dynamics-Level Watermarking of Flow Matching Models with Random Codes},
   author = {Wang, Shuchan},
-  year   = {2026}
+  year   = {2026},
+  eprint = {2605.16239},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.LG},
+  url    = {https://arxiv.org/abs/2605.16239}
 }
 ```

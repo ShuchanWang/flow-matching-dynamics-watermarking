@@ -7,6 +7,11 @@
 !/LICENSE
 !/Coded_Transport_Watermark_large.py
 !/Coded_Transport_Watermark_UNet.py
+!/paper/
+!/paper/main.tex
+!/paper/ref.bib
+!/paper/outputs/
+!/paper/outputs/*.png
 
 # Python
 __pycache__/
@@ -34,6 +39,19 @@ outputs/
 experiment/
 flow_matching/examples/image/data/
 flow_matching/examples/image/output_dir/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
 
 # System files
 .DS_Store
