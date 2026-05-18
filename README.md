@@ -60,14 +60,13 @@ DATASET = "mnist"    # or "cifar10"
 before running. Checkpoints are written under `checkpoints/` or
 `checkpointsCIFAR/`, and figures are written under `outputs/`.
 
-## Reproducibility Notes
+## Reproducibility
 
-Both scripts fix random seeds for Python, NumPy, and PyTorch. Exact results can
-still vary across hardware, CUDA/cuDNN versions, and stochastic training order.
+The scripts set random seeds for Python, NumPy, and PyTorch. Results may still
+vary slightly across hardware and CUDA/cuDNN versions.
 
-The repository intentionally does not track downloaded datasets, generated
-outputs, or model checkpoints. These artifacts are reproducible from the
-scripts and can be large.
+Downloaded datasets, checkpoints, and generated outputs are not committed to
+the repository; they are created when running the scripts.
 
 ## Citation
 
