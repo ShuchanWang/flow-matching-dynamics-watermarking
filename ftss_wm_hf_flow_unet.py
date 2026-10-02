@@ -186,15 +186,26 @@ def seed_everything(seed: int):
 
 
 def import_unet_model():
+    install_hint = (
+        "pip uninstall -y flow-matching && "
+        "pip install 'git+https://github.com/keishihara/flow-matching.git' "
+        "torchdiffeq einops"
+    )
     try:
         module = importlib.import_module("flow_matching.models")
         return module.UNetModel
+    except Exception:
+        pass
+
+    try:
+        module = importlib.import_module("flow_matching.models.unet")
+        return module.UNetModelWrapper
     except Exception as exc:
         raise RuntimeError(
-            "Could not import flow_matching.models.UNetModel. On the remote "
-            "machine, install the model dependency used by the checkpoint, e.g. "
-            "`pip install flow-matching torchdiffeq einops`, or install the "
-            "training code referenced by the Hugging Face model card."
+            "Could not import the UNet implementation used by the Hugging Face "
+            "checkpoint. These checkpoints follow keishihara/flow-matching, not "
+            "the unrelated PyPI `flow-matching` package. On the remote machine, "
+            f"run:\n\n  {install_hint}\n"
         ) from exc
 
 
