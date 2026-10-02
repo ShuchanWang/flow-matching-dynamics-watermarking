@@ -189,6 +189,7 @@ def parse_args():
     parser.add_argument("--base_sample_pool", default=None)
     parser.add_argument("--base_sample_batch_size", type=int, default=128)
     parser.add_argument("--n_fid_samples", type=int, default=500)
+    parser.add_argument("--fid_batch_size", type=int, default=16)
     parser.add_argument(
         "--fid_reference",
         choices=["auto", "real", "base_samples", "none"],
@@ -395,7 +396,7 @@ def build_fid_reference(base_model, cfg, args, device):
         return None
     if args.fid_reference == "base_samples" or (args.fid_reference == "auto" and cfg.real_dataset is None and args.real_data_dir is None):
         print(f"Generating {args.n_fid_samples} base-model FID reference samples...")
-        return sample(base_model, cfg, args, device, args.n_fid_samples)
+        return sample_for_fid(base_model, cfg, args, device, args.n_fid_samples)
     return None
 
 
@@ -635,6 +636,18 @@ def sample(model, cfg, args, device, n_samples, use_classes=True):
     return torch.clamp(x, -1, 1)
 
 
+@torch.no_grad()
+def sample_for_fid(model, cfg, args, device, n_samples):
+    batches = []
+    for start in range(0, n_samples, args.fid_batch_size):
+        b = min(args.fid_batch_size, n_samples - start)
+        batch = sample(model, cfg, args, device, b).cpu()
+        batches.append(batch)
+        if device.type == "cuda":
+            torch.cuda.empty_cache()
+    return torch.cat(batches, dim=0)
+
+
 def compute_fid(real, gen):
     real = real.detach().cpu().reshape(real.shape[0], -1).numpy()
     gen = gen.detach().cpu().reshape(gen.shape[0], -1).numpy()
@@ -684,8 +697,8 @@ def evaluate(model, base_model, cfg, P, codes, codebook, true_msg, args, device,
 
     if real_images is not None and args.n_fid_samples > 1:
         n = min(args.n_fid_samples, real_images.shape[0])
-        clean_samples = sample(base_model, cfg, args, device, n)
-        wm_samples = sample(model, cfg, args, device, n)
+        clean_samples = sample_for_fid(base_model, cfg, args, device, n)
+        wm_samples = sample_for_fid(model, cfg, args, device, n)
         fid_clean = compute_fid(real_images[:n], clean_samples)
         fid_wm = compute_fid(real_images[:n], wm_samples)
         metrics.update({
