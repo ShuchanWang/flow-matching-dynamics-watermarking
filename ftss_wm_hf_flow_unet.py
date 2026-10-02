@@ -189,6 +189,21 @@ def parse_args():
     parser.add_argument("--base_sample_pool", default=None)
     parser.add_argument("--base_sample_batch_size", type=int, default=128)
     parser.add_argument("--n_fid_samples", type=int, default=500)
+    parser.add_argument(
+        "--fid_reference",
+        choices=["auto", "real", "base_samples", "none"],
+        default="auto",
+        help=(
+            "`real` uses torchvision/ImageFolder real data, `base_samples` uses "
+            "held-out base-model samples as the reference, and `auto` uses real "
+            "data when available otherwise base samples."
+        ),
+    )
+    parser.add_argument(
+        "--real_data_dir",
+        default=None,
+        help="Optional ImageFolder root for real FID reference, useful for CelebA64.",
+    )
     parser.add_argument("--n_sample_steps", type=int, default=100)
     parser.add_argument("--eval_class", type=int, default=0)
     parser.add_argument("--num_workers", type=int, default=4)
@@ -322,10 +337,19 @@ def make_codebook(D: int, n_bits: int, K: int, device: torch.device):
 
 
 def load_real_data(cfg: DatasetConfig, args, device: torch.device):
-    if cfg.real_dataset is None:
+    if cfg.real_dataset is None and args.real_data_dir is None:
         return None, None
     c, h, w = cfg.dim
-    if cfg.real_dataset == "mnist":
+    if args.real_data_dir is not None:
+        transform = transforms.Compose([
+            transforms.Resize(max(h, w)),
+            transforms.CenterCrop((h, w)),
+            transforms.ToTensor(),
+            transforms.Normalize((0.5,) * c, (0.5,) * c),
+        ])
+        train = datasets.ImageFolder(args.real_data_dir, transform=transform)
+        test = train
+    elif cfg.real_dataset == "mnist":
         transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,)),
@@ -363,6 +387,16 @@ def load_real_data(cfg: DatasetConfig, args, device: torch.device):
         if real_images.shape[1:] != (c, h, w):
             raise RuntimeError(f"Real data shape {real_images.shape[1:]} != {(c, h, w)}")
     return train_loader, real_images
+
+
+@torch.no_grad()
+def build_fid_reference(base_model, cfg, args, device):
+    if args.n_fid_samples <= 1 or args.fid_reference == "none":
+        return None
+    if args.fid_reference == "base_samples" or (args.fid_reference == "auto" and cfg.real_dataset is None and args.real_data_dir is None):
+        print(f"Generating {args.n_fid_samples} base-model FID reference samples...")
+        return sample(base_model, cfg, args, device, args.n_fid_samples)
+    return None
 
 
 @torch.no_grad()
@@ -727,12 +761,17 @@ def main():
     wm_code = codebook[wm_bits]
 
     real_images = None
-    if args.data_source == "real" or (args.data_source == "auto" and cfg.real_dataset is not None):
+    if args.data_source == "real" or (
+        args.data_source == "auto" and (cfg.real_dataset is not None or args.real_data_dir is not None)
+    ):
         train_loader, real_images = load_real_data(cfg, args, device)
     elif args.data_source == "auto" or args.data_source == "base_samples":
         train_loader = build_base_sample_loader(base_model, cfg, args, device)
     else:
         raise ValueError(args.data_source)
+
+    if real_images is None:
+        real_images = build_fid_reference(base_model, cfg, args, device)
     t0 = time.time()
     history = train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, out_dir)
     elapsed_min = (time.time() - t0) / 60
