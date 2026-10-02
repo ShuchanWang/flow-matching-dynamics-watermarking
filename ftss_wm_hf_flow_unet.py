@@ -18,6 +18,8 @@ The script intentionally does not cover SD 1.4/SDXL, because those are
 diffusion denoisers rather than flow/rectified-flow velocity models.
 """
 
+from __future__ import annotations
+
 import argparse
 import csv
 import importlib
