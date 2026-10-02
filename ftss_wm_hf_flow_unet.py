@@ -135,15 +135,25 @@ def parse_args():
 
     parser.add_argument("--wm_message", default="10101")
     parser.add_argument("--wm_K", type=int, default=32)
-    parser.add_argument("--wm_eps", type=float, default=0.2)
-    parser.add_argument("--wm_lambda", type=float, default=0.01)
+    parser.add_argument("--wm_eps", type=float, default=0.5)
+    parser.add_argument("--wm_lambda", type=float, default=0.2)
+    parser.add_argument("--wm_proj_weight", type=float, default=1.0)
+    parser.add_argument("--wm_tanh_scale", type=float, default=1.0)
     parser.add_argument("--n_queries", type=int, default=4096)
     parser.add_argument("--n_detect_trials", type=int, default=20)
     parser.add_argument("--n_stat_trials", type=int, default=30)
 
     parser.add_argument("--lora_rank", type=int, default=4)
     parser.add_argument("--lora_alpha", type=float, default=1.0)
-    parser.add_argument("--lora_targets", choices=["conv", "linear", "both"], default="conv")
+    parser.add_argument("--lora_targets", choices=["conv", "linear", "both"], default="both")
+    parser.add_argument(
+        "--train_extra",
+        default="time_embed,out",
+        help=(
+            "Comma-separated name fragments for non-LoRA parameters to train. "
+            "The time embedding is useful because the watermark is time-modulated."
+        ),
+    )
     parser.add_argument("--steps", type=int, default=500)
     parser.add_argument("--batch_size", type=int, default=128)
     parser.add_argument("--grad_accum", type=int, default=1)
@@ -266,12 +276,16 @@ def add_lora(module: nn.Module, rank: int, alpha: float, targets: str, prefix: s
             add_lora(child, rank, alpha, targets, full_name)
 
 
-def freeze_non_lora(model: nn.Module):
+def freeze_non_lora(model: nn.Module, train_extra: str = ""):
+    extra_tokens = [tok for tok in train_extra.split(",") if tok]
     for name, p in model.named_parameters():
-        p.requires_grad = "lora_" in name
+        p.requires_grad = "lora_" in name or any(tok in name for tok in extra_tokens)
     params = [p for p in model.parameters() if p.requires_grad]
     if not params:
         raise RuntimeError("No LoRA parameters were added. Try --lora_targets both.")
+    n_train = sum(p.numel() for p in params)
+    n_total = sum(p.numel() for p in model.parameters())
+    print(f"Trainable parameters: {n_train:,} / {n_total:,} ({100*n_train/n_total:.3f}%)")
     return params
 
 
@@ -400,7 +414,7 @@ def get_base_velocity(base, x, t, y):
 
 def train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, out_dir):
     c, h, w = cfg.dim
-    opt_params = freeze_non_lora(model)
+    opt_params = freeze_non_lora(model, args.train_extra)
     opt = torch.optim.AdamW(opt_params, lr=args.lr, weight_decay=args.weight_decay)
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, max(args.steps, 1))
     model.train()
@@ -441,11 +455,15 @@ def train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, o
             with torch.no_grad():
                 base_pred = get_base_velocity(base_model, x_t, t, y)
             residual = pred - base_pred
-            loss_vel = F.mse_loss(residual.float(), wm.float())
-
             proj = residual.reshape(b, -1).float() @ P
-            wm_corr = (carrier * proj * wm_code.view(1, -1)).sum(dim=1).mean()
-            loss = loss_vel - args.wm_lambda * wm_corr
+            target_proj = args.wm_eps * carrier * wm_code.view(1, -1)
+
+            loss_vel = F.mse_loss(residual.float(), wm.float())
+            loss_proj = F.mse_loss(proj, target_proj.float())
+            wm_corr = (carrier * (proj * wm_code.view(1, -1)).sum(dim=1, keepdim=True)).mean()
+            wm_corr_norm = wm_corr / (0.5 * args.wm_eps + 1e-8)
+            loss_wm = -torch.tanh(wm_corr_norm * args.wm_tanh_scale)
+            loss = loss_vel + args.wm_proj_weight * loss_proj + args.wm_lambda * loss_wm
             loss = loss / args.grad_accum
             loss.backward()
             total_loss += loss.item()
@@ -460,6 +478,7 @@ def train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, o
             "loss": total_loss,
             "residual_mse": total_vel / args.grad_accum,
             "wm_corr": total_corr / args.grad_accum,
+            "wm_corr_norm": (total_corr / args.grad_accum) / (0.5 * args.wm_eps + 1e-8),
         }
         history.append(row)
         if step % 10 == 0:
@@ -471,7 +490,12 @@ def train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, o
 
 def save_adapter(model: nn.Module, path: Path):
     path.parent.mkdir(parents=True, exist_ok=True)
-    state = {k: v.cpu() for k, v in model.state_dict().items() if "lora_" in k}
+    trainable_names = {name for name, p in model.named_parameters() if p.requires_grad}
+    state = {
+        k: v.cpu()
+        for k, v in model.state_dict().items()
+        if "lora_" in k or k in trainable_names
+    }
     torch.save(state, path)
 
 
