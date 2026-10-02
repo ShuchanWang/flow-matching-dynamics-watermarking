@@ -139,6 +139,21 @@ def parse_args():
     parser.add_argument("--wm_lambda", type=float, default=0.2)
     parser.add_argument("--wm_proj_weight", type=float, default=1.0)
     parser.add_argument("--wm_tanh_scale", type=float, default=1.0)
+    parser.add_argument(
+        "--objective",
+        choices=["full", "residual"],
+        default="full",
+        help=(
+            "`full` continues flow-matching training toward u_true + watermark. "
+            "`residual` matches only model-base residual to the watermark."
+        ),
+    )
+    parser.add_argument(
+        "--detect_distribution",
+        choices=["train_interp", "noise"],
+        default="train_interp",
+        help="Query distribution for detection. `train_interp` matches training x_t.",
+    )
     parser.add_argument("--n_queries", type=int, default=4096)
     parser.add_argument("--n_detect_trials", type=int, default=20)
     parser.add_argument("--n_stat_trials", type=int, default=30)
@@ -336,15 +351,17 @@ def load_real_data(cfg: DatasetConfig, args, device: torch.device):
         pin_memory=True,
         drop_last=True,
     )
-    real_loader = DataLoader(
-        Subset(test, range(min(args.n_fid_samples, len(test)))),
-        batch_size=min(args.n_fid_samples, len(test)),
-        shuffle=False,
-        num_workers=args.num_workers,
-    )
-    real_images = next(iter(real_loader))[0].to(device)
-    if real_images.shape[1:] != (c, h, w):
-        raise RuntimeError(f"Real data shape {real_images.shape[1:]} != {(c, h, w)}")
+    real_images = None
+    if args.n_fid_samples > 1:
+        real_loader = DataLoader(
+            Subset(test, range(min(args.n_fid_samples, len(test)))),
+            batch_size=min(args.n_fid_samples, len(test)),
+            shuffle=False,
+            num_workers=args.num_workers,
+        )
+        real_images = next(iter(real_loader))[0].to(device)
+        if real_images.shape[1:] != (c, h, w):
+            raise RuntimeError(f"Real data shape {real_images.shape[1:]} != {(c, h, w)}")
     return train_loader, real_images
 
 
@@ -412,6 +429,22 @@ def get_base_velocity(base, x, t, y):
     return model_velocity(base, x, t, y)
 
 
+def next_train_batch(train_loader, data_iter, cfg, args, device):
+    c, h, w = cfg.dim
+    if train_loader is None:
+        x1 = torch.randn(args.batch_size, c, h, w, device=device)
+        y = labels_for_batch(cfg, args.batch_size, args, device)
+        return x1, y, data_iter
+    try:
+        x1, y_data = next(data_iter)
+    except StopIteration:
+        data_iter = iter(train_loader)
+        x1, y_data = next(data_iter)
+    x1 = x1.to(device)
+    y = y_data.to(device) if cfg.class_cond else None
+    return x1, y, data_iter
+
+
 def train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, out_dir):
     c, h, w = cfg.dim
     opt_params = freeze_non_lora(model, args.train_extra)
@@ -427,20 +460,11 @@ def train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, o
         opt.zero_grad(set_to_none=True)
         total_loss = 0.0
         total_vel = 0.0
+        total_data = 0.0
+        total_proj = 0.0
         total_corr = 0.0
         for _ in range(args.grad_accum):
-            if train_loader is None:
-                x1 = torch.randn(args.batch_size, c, h, w, device=device)
-                y = labels_for_batch(cfg, args.batch_size, args, device)
-            else:
-                try:
-                    x1, y_data = next(data_iter)
-                except StopIteration:
-                    data_iter = iter(train_loader)
-                    x1, y_data = next(data_iter)
-                x1 = x1.to(device)
-                y = y_data.to(device) if cfg.class_cond else None
-
+            x1, y, data_iter = next_train_batch(train_loader, data_iter, cfg, args, device)
             b = x1.shape[0]
             x0 = torch.randn_like(x1)
             t = torch.rand(b, device=device)
@@ -459,15 +483,21 @@ def train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, o
             target_proj = args.wm_eps * carrier * wm_code.view(1, -1)
 
             loss_vel = F.mse_loss(residual.float(), wm.float())
+            loss_data = F.mse_loss(pred.float(), (u_true + wm).float())
             loss_proj = F.mse_loss(proj, target_proj.float())
             wm_corr = (carrier * (proj * wm_code.view(1, -1)).sum(dim=1, keepdim=True)).mean()
             wm_corr_norm = wm_corr / (0.5 * args.wm_eps + 1e-8)
             loss_wm = -torch.tanh(wm_corr_norm * args.wm_tanh_scale)
-            loss = loss_vel + args.wm_proj_weight * loss_proj + args.wm_lambda * loss_wm
+            if args.objective == "full":
+                loss = loss_data + args.wm_proj_weight * loss_proj + args.wm_lambda * loss_wm
+            else:
+                loss = loss_vel + args.wm_proj_weight * loss_proj + args.wm_lambda * loss_wm
             loss = loss / args.grad_accum
             loss.backward()
             total_loss += loss.item()
             total_vel += loss_vel.item()
+            total_data += loss_data.item()
+            total_proj += loss_proj.item()
             total_corr += wm_corr.item()
 
         torch.nn.utils.clip_grad_norm_(opt_params, 1.0)
@@ -477,12 +507,18 @@ def train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, o
             "step": step + 1,
             "loss": total_loss,
             "residual_mse": total_vel / args.grad_accum,
+            "data_mse": total_data / args.grad_accum,
+            "proj_mse": total_proj / args.grad_accum,
             "wm_corr": total_corr / args.grad_accum,
             "wm_corr_norm": (total_corr / args.grad_accum) / (0.5 * args.wm_eps + 1e-8),
         }
         history.append(row)
         if step % 10 == 0:
-            pbar.set_postfix(mse=f"{row['residual_mse']:.5f}", corr=f"{row['wm_corr']:.4f}")
+            pbar.set_postfix(
+                data=f"{row['data_mse']:.4f}",
+                proj=f"{row['proj_mse']:.4f}",
+                corr=f"{row['wm_corr_norm']:.3f}",
+            )
         if args.save_every and (step + 1) % args.save_every == 0:
             save_adapter(model, out_dir / f"adapter_step_{step + 1}.pt")
     return history
@@ -500,17 +536,46 @@ def save_adapter(model: nn.Module, path: Path):
 
 
 @torch.no_grad()
-def detect(model, cfg, P, codes, codebook, args, device, n_queries=None):
-    n_queries = n_queries or args.n_queries
+def sample_detection_batch(model, cfg, args, device, n_queries, train_loader=None):
     c, h, w = cfg.dim
+    if args.detect_distribution == "noise" or train_loader is None:
+        x = torch.randn(n_queries, c, h, w, device=device)
+        y = labels_for_batch(cfg, n_queries, args, device)
+        t = torch.rand(n_queries, device=device)
+        return x, t, y
+
+    xs = []
+    ys = []
+    data_iter = iter(train_loader)
+    remaining = n_queries
+    while remaining > 0:
+        x1, y, data_iter = next_train_batch(train_loader, data_iter, cfg, args, device)
+        b = min(x1.shape[0], remaining)
+        x1 = x1[:b]
+        if y is not None:
+            y = y[:b]
+        x0 = torch.randn_like(x1)
+        t = torch.rand(b, device=device)
+        x_t = (1 - t.view(b, 1, 1, 1)) * x0 + t.view(b, 1, 1, 1) * x1
+        xs.append((x_t, t))
+        if y is not None:
+            ys.append(y)
+        remaining -= b
+    x = torch.cat([item[0] for item in xs], dim=0)
+    t = torch.cat([item[1] for item in xs], dim=0)
+    y = torch.cat(ys, dim=0) if ys else None
+    return x, t, y
+
+
+@torch.no_grad()
+def detect(model, cfg, P, codes, codebook, args, device, n_queries=None, train_loader=None):
+    n_queries = n_queries or args.n_queries
     signature = torch.zeros(args.wm_K, device=device)
     all_codes = codes.to(device)
     keys = list(codebook.keys())
     for start in range(0, n_queries, args.batch_size):
         b = min(args.batch_size, n_queries - start)
-        x = torch.randn(b, c, h, w, device=device)
-        t = torch.rand(b, device=device)
-        y = labels_for_batch(cfg, b, args, device)
+        x, t, y = sample_detection_batch(model, cfg, args, device, b, train_loader)
         v = model_velocity(model, x, t, y)
         carrier = torch.sin(2 * math.pi * t).view(b, 1)
         signature += (carrier * (v.reshape(b, -1).float() @ P)).sum(dim=0)
@@ -551,7 +616,7 @@ def compute_fid(real, gen):
     return float(diff @ diff + np.trace(sigma_r + sigma_g - 2 * covmean))
 
 
-def evaluate(model, base_model, cfg, P, codes, codebook, true_msg, args, device, real_images=None):
+def evaluate(model, base_model, cfg, P, codes, codebook, true_msg, args, device, real_images=None, train_loader=None):
     true_bits = tuple(int(b) for b in true_msg)
     true_idx = list(codebook.keys()).index(true_bits)
 
@@ -560,10 +625,10 @@ def evaluate(model, base_model, cfg, P, codes, codebook, true_msg, args, device,
     wm_scores = []
     clean_scores = []
     for _ in range(args.n_detect_trials):
-        decoded, scores, _ = detect(model, cfg, P, codes, codebook, args, device)
+        decoded, scores, _ = detect(model, cfg, P, codes, codebook, args, device, train_loader=train_loader)
         wm_hits += int(decoded == true_bits)
         wm_scores.append(float(scores[true_idx]))
-        decoded_clean, clean_scores_arr, _ = detect(base_model, cfg, P, codes, codebook, args, device)
+        decoded_clean, clean_scores_arr, _ = detect(base_model, cfg, P, codes, codebook, args, device, train_loader=train_loader)
         clean_hits += int(decoded_clean == true_bits)
         clean_scores.append(float(clean_scores_arr[true_idx]))
 
@@ -597,13 +662,13 @@ def evaluate(model, base_model, cfg, P, codes, codebook, true_msg, args, device,
     return metrics
 
 
-def run_query_sweep(model, base_model, cfg, P, codes, codebook, true_msg, args, device):
+def run_query_sweep(model, base_model, cfg, P, codes, codebook, true_msg, args, device, train_loader=None):
     rows = []
     saved_n = args.n_queries
     for n in [int(x) for x in args.query_values.split(",") if x]:
         args.n_queries = n
         rows.append({"sweep": "queries", "value": n, **evaluate(
-            model, base_model, cfg, P, codes, codebook, true_msg, args, device, None
+            model, base_model, cfg, P, codes, codebook, true_msg, args, device, None, train_loader
         )})
     args.n_queries = saved_n
     return rows
@@ -677,7 +742,10 @@ def main():
         out_dir / "watermark_key.pt",
     )
 
-    metrics = evaluate(model, base_model, cfg, P, codes, codebook, args.wm_message, args, device, real_images)
+    metrics = evaluate(
+        model, base_model, cfg, P, codes, codebook, args.wm_message,
+        args, device, real_images, train_loader
+    )
     metrics.update({
         "dataset": args.dataset,
         "model": "HF FlowMatching UNet",
@@ -688,12 +756,17 @@ def main():
         "bits": len(wm_bits),
         "N": args.n_queries,
         "steps": args.steps,
+        "objective": args.objective,
+        "detect_distribution": args.detect_distribution,
         "elapsed_min": elapsed_min,
     })
 
     sweep_rows = []
     if args.sweep == "queries":
-        sweep_rows = run_query_sweep(model, base_model, cfg, P, codes, codebook, args.wm_message, args, device)
+        sweep_rows = run_query_sweep(
+            model, base_model, cfg, P, codes, codebook, args.wm_message,
+            args, device, train_loader
+        )
     elif args.sweep != "none":
         print(f"[note] Sweep {args.sweep!r} needs one run per value to retrain LoRA fairly.")
         print("       Use multiple invocations with --wm_eps, --wm_message, or --steps.")
@@ -705,6 +778,8 @@ def main():
     print(f"  WM acc:     {metrics['wm_acc']:.1f}%")
     print(f"  Clean FP:   {metrics['clean_fp']:.1f}%")
     print(f"  Sep:        {metrics['sep_sigma']:.2f}")
+    print(f"  WM score:   {metrics['wm_score_mean']:.4f} ± {metrics['wm_score_std']:.4f}")
+    print(f"  Clean score:{metrics['clean_score_mean']:.4f} ± {metrics['clean_score_std']:.4f}")
     if "fid_ratio" in metrics:
         print(f"  FID ratio:  {metrics['fid_ratio']:.3f}")
     print(f"  Outputs:    {out_dir}")
