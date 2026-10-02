@@ -5,6 +5,6 @@ scipy
 matplotlib
 tqdm
 huggingface_hub
-flow-matching
+git+https://github.com/keishihara/flow-matching.git
 torchdiffeq
 einops
