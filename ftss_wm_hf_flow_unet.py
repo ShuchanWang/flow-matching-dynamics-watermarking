@@ -97,6 +97,8 @@ class LoRALinear(nn.Module):
         self.lora_B = nn.Linear(rank, layer.out_features, bias=False)
         nn.init.kaiming_uniform_(self.lora_A.weight, a=math.sqrt(5))
         nn.init.zeros_(self.lora_B.weight)
+        self.lora_A.to(device=layer.weight.device, dtype=layer.weight.dtype)
+        self.lora_B.to(device=layer.weight.device, dtype=layer.weight.dtype)
         for p in self.layer.parameters():
             p.requires_grad = False
 
@@ -113,6 +115,8 @@ class LoRAConv2d(nn.Module):
         self.lora_B = nn.Conv2d(rank, layer.out_channels, 1, bias=False)
         nn.init.kaiming_uniform_(self.lora_A.weight, a=math.sqrt(5))
         nn.init.zeros_(self.lora_B.weight)
+        self.lora_A.to(device=layer.weight.device, dtype=layer.weight.dtype)
+        self.lora_B.to(device=layer.weight.device, dtype=layer.weight.dtype)
         for p in self.layer.parameters():
             p.requires_grad = False
 
@@ -626,6 +630,7 @@ def main():
     model = build_model(cfg, device)
     load_state_dict_flexible(model, ckpt_path, device)
     add_lora(model, args.lora_rank, args.lora_alpha, args.lora_targets)
+    model.to(device)
 
     D = int(np.prod(cfg.dim))
     wm_bits = tuple(int(b) for b in args.wm_message)
