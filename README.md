@@ -23,6 +23,12 @@ demodulation.
   MNIST/CIFAR-10 UNet experiments with checkpoint resume support and LoRA
   watermark fine-tuning.
 
+- `ftss_wm_hf_flow_unet.py`  
+  Remote-run experiments that download public Hugging Face flow-matching
+  UNet checkpoints, freeze the base model, and train only lightweight LoRA
+  watermark adapters. This is intended for filling the extended evaluation
+  tables without retraining a clean base model from scratch.
+
 - `paper/`  
   LaTeX source, bibliography, and figures for the arXiv paper.
 
@@ -59,6 +65,24 @@ DATASET = "mnist"    # or "cifar10"
 
 before running. Checkpoints are written under `checkpoints/` or
 `checkpointsCIFAR/`, and figures are written under `outputs/`.
+
+Run a Hugging Face checkpoint-based flow-matching evaluation:
+
+```bash
+python ftss_wm_hf_flow_unet.py --dataset cifar10 --wm_message 10101
+```
+
+Useful table-oriented variants:
+
+```bash
+python ftss_wm_hf_flow_unet.py --dataset mnist --wm_message 10101
+python ftss_wm_hf_flow_unet.py --dataset cifar10 --wm_message 10101 --sweep queries
+python ftss_wm_hf_flow_unet.py --dataset cifar10 --wm_message 10101 --wm_eps 0.5
+python ftss_wm_hf_flow_unet.py --dataset celeba64 --data_source base_samples --base_sample_pool cache/celeba64_base_samples.pt
+```
+
+The script writes `results.json`, `results.csv`, LoRA adapters, and the
+watermark key under `hf_flow_unet_wm/`.
 
 ## Reproducibility
 

@@ -3,3 +3,8 @@ torchvision
 numpy
 scipy
 matplotlib
+tqdm
+huggingface_hub
+flow-matching
+torchdiffeq
+einops
