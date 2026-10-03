@@ -3,8 +3,8 @@
 Reads either a manifest created by run_table_experiments.py or recursively
 searches an output root. It understands:
 
-  - ftss_wm_sd35.py outputs: sweep_results.json
-  - ftss_wm_hf_flow_unet.py outputs: results.json
+  - watermark_sd35.py outputs: sweep_results.json
+  - watermark_hf_flow_unet.py outputs: results.json
 
 The main purpose is to avoid reporting a single lucky watermark message.
 Use the aggregate CSV for paper tables and keep the per-run JSON as audit

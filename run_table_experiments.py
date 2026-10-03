@@ -3,8 +3,8 @@
 This is intentionally a lightweight orchestrator. The heavy work still lives
 in the model-specific experiment scripts:
 
-  - ftss_wm_sd35.py
-  - ftss_wm_hf_flow_unet.py
+  - watermark_sd35.py
+  - watermark_hf_flow_unet.py
 
 By default this script prints commands and writes a manifest. Use --run to
 execute them directly on a GPU machine.
@@ -57,7 +57,7 @@ def quote_cmd(cmd: list[str]) -> str:
 
 def sd35_base(out_root: str, message: str = "10101", steps: str = "500") -> list[str]:
     cmd = py(
-        "ftss_wm_sd35.py",
+        "watermark_sd35.py",
         "--output_dir", f"{out_root}/sd35_msg_{message}",
         "--wm_message", message,
         "--steps", steps,
@@ -81,7 +81,7 @@ def flow_unet_base(
     subdir: str = "hf_flow_unet",
 ) -> list[str]:
     cmd = py(
-        "ftss_wm_hf_flow_unet.py",
+        "watermark_hf_flow_unet.py",
         "--output_dir", f"{out_root}/{subdir}",
         "--dataset", dataset,
         "--wm_message", message,

@@ -23,11 +23,24 @@ demodulation.
   MNIST/CIFAR-10 UNet experiments with checkpoint resume support and LoRA
   watermark fine-tuning.
 
-- `ftss_wm_hf_flow_unet.py`  
+- `watermark_hf_flow_unet.py`  
   Remote-run experiments that download public Hugging Face flow-matching
   UNet checkpoints, freeze the base model, and train only lightweight LoRA
   watermark adapters. This is intended for filling the extended evaluation
   tables without retraining a clean base model from scratch.
+
+- `watermark_sd35.py`  
+  Stable Diffusion 3.5 Medium LoRA watermark experiments for the main
+  image-generation rows and SD ablations.
+
+- `run_table_experiments.py`  
+  Generates the remote command grid for 5-bit SD3.5, cross-detection, ablations,
+  and public Hugging Face flow-UNet experiments. It writes a manifest and can
+  optionally execute the jobs on a GPU machine.
+
+- `collect_results.py`  
+  Aggregates per-message experiment outputs and reports mean/std across
+  watermark messages for table-ready summaries.
 
 - `paper/`  
   LaTeX source, bibliography, and figures for the arXiv paper.
@@ -38,6 +51,15 @@ Create an environment with Python 3.10+ and install the dependencies:
 
 ```bash
 pip install -r requirements.txt
+```
+
+For the Hugging Face checkpoint runner, make sure the model-code dependency
+comes from `keishihara/flow-matching`. If a different PyPI package named
+`flow-matching` is already installed, replace it with:
+
+```bash
+pip uninstall -y flow-matching
+pip install "git+https://github.com/keishihara/flow-matching.git" torchdiffeq einops
 ```
 
 The scripts download MNIST or CIFAR-10 through `torchvision` when needed.
@@ -69,20 +91,46 @@ before running. Checkpoints are written under `checkpoints/` or
 Run a Hugging Face checkpoint-based flow-matching evaluation:
 
 ```bash
-python ftss_wm_hf_flow_unet.py --dataset cifar10 --wm_message 10101
+python watermark_hf_flow_unet.py --dataset cifar10 --wm_message 10101
 ```
 
 Useful table-oriented variants:
 
 ```bash
-python ftss_wm_hf_flow_unet.py --dataset mnist --wm_message 10101
-python ftss_wm_hf_flow_unet.py --dataset cifar10 --wm_message 10101 --sweep queries
-python ftss_wm_hf_flow_unet.py --dataset cifar10 --wm_message 10101 --wm_eps 0.5
-python ftss_wm_hf_flow_unet.py --dataset celeba64 --data_source base_samples --base_sample_pool cache/celeba64_base_samples.pt
+python watermark_hf_flow_unet.py --dataset mnist --wm_message 10101
+python watermark_hf_flow_unet.py --dataset cifar10 --wm_message 10101 --sweep queries
+python watermark_hf_flow_unet.py --dataset cifar10 --wm_message 10101 --wm_eps 0.5
+python watermark_hf_flow_unet.py --dataset celeba64 --data_source base_samples --base_sample_pool cache/celeba64_base_samples.pt
 ```
 
 The script writes `results.json`, `results.csv`, LoRA adapters, and the
 watermark key under `hf_flow_unet_wm/`.
+
+Generate the broader table experiment grid without running it:
+
+```bash
+python run_table_experiments.py --out_root table_runs --manifest table_runs/manifest.json
+```
+
+Generate only SD3.5 ablations:
+
+```bash
+python run_table_experiments.py --only sd35-query,sd35-epsilon,sd35-rank,sd35-steps --slurm table_runs/run_sd35_grid.sh
+```
+
+On a GPU node, add `--run` to execute directly. The HF flow-UNet rows are
+supporting evidence only; include them in the paper if the resulting
+watermark accuracy and separation are strong enough.
+
+After runs finish, aggregate across watermark messages:
+
+```bash
+python collect_results.py --manifest table_runs/manifest.json --out_dir table_runs/summary
+```
+
+Use `table_runs/summary/aggregate.csv` for table entries; it reports
+mean, standard deviation, minimum, and maximum for detection, false-positive
+rate, separation, score margin, endpoint drift, and FID ratio.
 
 ## Reproducibility
 
