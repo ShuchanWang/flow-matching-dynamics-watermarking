@@ -171,14 +171,27 @@ gc.collect(); torch.cuda.empty_cache()
 # SECRET KEY
 # ============================================================================
 D_latent = 16 * args.latent_size * args.latent_size
+if WM_K > D_latent:
+    raise ValueError(
+        f"wm_K={WM_K} exceeds flattened latent dimension D={D_latent}. "
+        "Choose a smaller --wm_K or a larger --latent_size."
+    )
 torch.manual_seed(12345)
 with torch.no_grad():
     P_raw = torch.randn(D_latent, WM_K, device='cuda', dtype=torch.float32)
     Q_p, _ = torch.linalg.qr(P_raw)
     P = Q_p[:, :WM_K]
     codes_raw = torch.randn(N_MESSAGES, WM_K, device='cuda', dtype=torch.float32)
-    Q_c, _ = torch.linalg.qr(codes_raw.T)
-    codes = Q_c.T
+    if N_MESSAGES <= WM_K:
+        Q_c, _ = torch.linalg.qr(codes_raw.T)
+        codes = Q_c.T
+    else:
+        print(
+            f"[codebook] Using overcomplete random codebook: "
+            f"{N_MESSAGES} messages in K={WM_K} dimensions.",
+            flush=True,
+        )
+        codes = codes_raw
     codes = codes / codes.norm(dim=1, keepdim=True)
 
 codebook = {}

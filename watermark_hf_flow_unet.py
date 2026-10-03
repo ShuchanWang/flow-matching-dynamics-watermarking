@@ -341,13 +341,26 @@ def freeze_non_lora(model: nn.Module, train_extra: str = ""):
 
 def make_codebook(D: int, n_bits: int, K: int, device: torch.device):
     n_messages = 2 ** n_bits
+    if K > D:
+        raise ValueError(
+            f"wm_K={K} exceeds flattened data dimension D={D}. "
+            "Choose a smaller --wm_K or a larger latent/image dimension."
+        )
     with torch.no_grad():
         P_raw = torch.randn(D, K, device=device, dtype=torch.float32)
         Q_p, _ = torch.linalg.qr(P_raw)
         P = Q_p[:, :K]
         codes_raw = torch.randn(n_messages, K, device=device, dtype=torch.float32)
-        Q_c, _ = torch.linalg.qr(codes_raw.T)
-        codes = Q_c.T
+        if n_messages <= K:
+            Q_c, _ = torch.linalg.qr(codes_raw.T)
+            codes = Q_c.T
+        else:
+            print(
+                f"[codebook] Using overcomplete random codebook: "
+                f"{n_messages} messages in K={K} dimensions.",
+                flush=True,
+            )
+            codes = codes_raw
         codes = codes / codes.norm(dim=1, keepdim=True)
     codebook = {}
     for idx in range(n_messages):
