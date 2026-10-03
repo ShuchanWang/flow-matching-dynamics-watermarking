@@ -94,6 +94,9 @@ def flow_unet_base(out_root: str, dataset: str, message: str = "10101") -> list[
         cmd.extend([
             "--data_source", "base_samples",
             "--base_sample_pool", f"{out_root}/cache/celeba64_base_samples.pt",
+            "--fid_reference", "base_samples",
+            "--fid_feature", "inception",
+            "--fid_batch_size", "4",
         ])
     return cmd
 
