@@ -8,6 +8,9 @@
 !/flow_watermark_mnist_mlp.py
 !/flow_watermark_unet_lora.py
 !/ftss_wm_hf_flow_unet.py
+!/ftss_wm_sd35.py
+!/run_table_experiments.py
+!/collect_results.py
 !/paper/
 !/paper/main.tex
 !/paper/ref.bib
