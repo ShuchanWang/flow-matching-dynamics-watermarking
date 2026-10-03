@@ -23,6 +23,13 @@ from pathlib import Path
 SD35_MESSAGES_5BIT = ["00000", "00111", "01010", "10101", "11001"]
 SD35_CANONICAL_MESSAGE = "10101"
 FLOW_UNET_MESSAGES_5BIT = ["00000", "00111", "01010", "10101", "11001"]
+PAYLOAD_MESSAGES = {
+    1: ["0", "1"],
+    3: ["000", "011", "101", "110", "111"],
+    5: ["00000", "00111", "01010", "10101", "11001"],
+    8: ["00000000", "00110101", "01011010", "10100101", "11110000"],
+    12: ["000000000000", "001101011010", "010110101101", "101001010010", "111100001111"],
+}
 
 
 @dataclass
@@ -66,10 +73,16 @@ def sd35_base(out_root: str, message: str = "10101", steps: str = "500") -> list
     return cmd
 
 
-def flow_unet_base(out_root: str, dataset: str, message: str = "10101") -> list[str]:
+def flow_unet_base(
+    out_root: str,
+    dataset: str,
+    message: str = "10101",
+    *,
+    subdir: str = "hf_flow_unet",
+) -> list[str]:
     cmd = py(
         "ftss_wm_hf_flow_unet.py",
-        "--output_dir", f"{out_root}/hf_flow_unet",
+        "--output_dir", f"{out_root}/{subdir}",
         "--dataset", dataset,
         "--wm_message", message,
         "--objective", "full",
@@ -99,6 +112,21 @@ def flow_unet_base(out_root: str, dataset: str, message: str = "10101") -> list[
             "--fid_batch_size", "4",
         ])
     return cmd
+
+
+def set_arg(cmd: list[str], name: str, value: object) -> list[str]:
+    if name in cmd:
+        cmd[cmd.index(name) + 1] = str(value)
+    else:
+        cmd.extend([name, str(value)])
+    return cmd
+
+
+def canonical_message(bits: int) -> str:
+    messages = PAYLOAD_MESSAGES.get(bits)
+    if not messages:
+        return "1" * bits
+    return messages[min(3, len(messages) - 1)]
 
 
 def build_jobs(selected: set[str], out_root: str) -> list[Job]:
@@ -189,7 +217,7 @@ def build_jobs(selected: set[str], out_root: str) -> list[Job]:
                 ))
 
     if "flow-unet-query" in selected:
-        cmd = flow_unet_base(out_root, "cifar10")
+        cmd = flow_unet_base(out_root, "cifar10", subdir="flow_unet_query")
         cmd.extend(["--sweep", "queries"])
         jobs.append(Job(
             name="flow_unet_cifar_query",
@@ -197,6 +225,66 @@ def build_jobs(selected: set[str], out_root: str) -> list[Job]:
             command=cmd,
             note="HF flow-UNet query-budget sweep.",
         ))
+
+    if "flow-unet-payload" in selected:
+        for dataset in ["cifar10", "celeba64"]:
+            for bits, messages in PAYLOAD_MESSAGES.items():
+                for msg in messages:
+                    cmd = flow_unet_base(out_root, dataset, msg, subdir="flow_unet_payload")
+                    jobs.append(Job(
+                        name=f"flow_unet_payload_{dataset}_{bits}bit_{msg}",
+                        table="tab:app-ablation(a)",
+                        command=cmd,
+                        note="Payload-capacity ablation; aggregate by bit length and dataset.",
+                    ))
+
+    if "flow-unet-epsilon" in selected:
+        for eps in [0.1, 0.5, 1.0, 1.5, 3.0, 5.0]:
+            for msg in FLOW_UNET_MESSAGES_5BIT:
+                cmd = flow_unet_base(out_root, "cifar10", msg, subdir=f"flow_unet_epsilon/eps_{eps}")
+                set_arg(cmd, "--wm_eps", eps)
+                jobs.append(Job(
+                    name=f"flow_unet_epsilon_{eps}_{msg}",
+                    table="tab:app-ablation(d)",
+                    command=cmd,
+                    note="HF flow-UNet perturbation-strength ablation on CIFAR-10.",
+                ))
+
+    if "flow-unet-rank" in selected:
+        for rank in [4, 8, 16, 32, 64]:
+            for msg in FLOW_UNET_MESSAGES_5BIT:
+                cmd = flow_unet_base(out_root, "cifar10", msg, subdir=f"flow_unet_rank/rank_{rank}")
+                set_arg(cmd, "--lora_rank", rank)
+                set_arg(cmd, "--lora_alpha", rank)
+                jobs.append(Job(
+                    name=f"flow_unet_rank_{rank}_{msg}",
+                    table="tab:app-ablation(e)",
+                    command=cmd,
+                    note="HF flow-UNet LoRA-rank ablation on CIFAR-10.",
+                ))
+
+    if "flow-unet-finetune" in selected:
+        for post_steps in [0, 100, 500, 1000]:
+            for msg in FLOW_UNET_MESSAGES_5BIT:
+                cmd = flow_unet_base(out_root, "cifar10", msg, subdir=f"flow_unet_finetune/post_{post_steps}")
+                set_arg(cmd, "--post_ft_steps", post_steps)
+                jobs.append(Job(
+                    name=f"flow_unet_finetune_{post_steps}_{msg}",
+                    table="tab:app-finetune",
+                    command=cmd,
+                    note="Robustness to clean continued flow-matching fine-tuning.",
+                ))
+
+    if "sd35-payload" in selected:
+        for bits, messages in PAYLOAD_MESSAGES.items():
+            for msg in messages:
+                cmd = sd35_base(f"{out_root}/sd35_payload/{bits}bit", msg, "500")
+                jobs.append(Job(
+                    name=f"sd35_payload_{bits}bit_{msg}",
+                    table="tab:app-ablation(a)",
+                    command=cmd,
+                    note="SD3.5 payload-capacity ablation.",
+                ))
 
     return jobs
 
@@ -223,6 +311,11 @@ def main():
         "sd35-steps",
         "flow-unet-main",
         "flow-unet-query",
+        "flow-unet-payload",
+        "flow-unet-epsilon",
+        "flow-unet-rank",
+        "flow-unet-finetune",
+        "sd35-payload",
     }
     selected = all_groups if args.only == "all" else {x.strip() for x in args.only.split(",") if x.strip()}
     unknown = selected - all_groups

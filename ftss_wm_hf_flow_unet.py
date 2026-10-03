@@ -171,6 +171,16 @@ def parse_args():
         ),
     )
     parser.add_argument("--steps", type=int, default=500)
+    parser.add_argument(
+        "--post_ft_steps",
+        type=int,
+        default=0,
+        help=(
+            "After watermark training, continue clean flow-matching fine-tuning "
+            "for this many steps before evaluation. This probes robustness to "
+            "ordinary downstream fine-tuning."
+        ),
+    )
     parser.add_argument("--batch_size", type=int, default=128)
     parser.add_argument("--grad_accum", type=int, default=1)
     parser.add_argument("--lr", type=float, default=5e-4)
@@ -568,6 +578,43 @@ def train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, o
     return history
 
 
+def clean_finetune(model, train_loader, cfg, args, device):
+    if args.post_ft_steps <= 0:
+        return []
+    c, h, w = cfg.dim
+    opt_params = [p for p in model.parameters() if p.requires_grad]
+    if not opt_params:
+        opt_params = freeze_non_lora(model, args.train_extra)
+    opt = torch.optim.AdamW(opt_params, lr=args.lr, weight_decay=args.weight_decay)
+    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, max(args.post_ft_steps, 1))
+    model.train()
+    data_iter = iter(train_loader) if train_loader is not None else None
+    history = []
+    pbar = tqdm(range(args.post_ft_steps), desc="Clean fine-tune")
+    for step in pbar:
+        opt.zero_grad(set_to_none=True)
+        total_loss = 0.0
+        for _ in range(args.grad_accum):
+            x1, y, data_iter = next_train_batch(train_loader, data_iter, cfg, args, device)
+            b = x1.shape[0]
+            x0 = torch.randn_like(x1)
+            t = torch.rand(b, device=device)
+            x_t = (1 - t.view(b, 1, 1, 1)) * x0 + t.view(b, 1, 1, 1) * x1
+            u_true = x1 - x0
+            pred = model_velocity(model, x_t, t, y)
+            loss = F.mse_loss(pred.float(), u_true.float()) / args.grad_accum
+            loss.backward()
+            total_loss += loss.item()
+        torch.nn.utils.clip_grad_norm_(opt_params, 1.0)
+        opt.step()
+        sched.step()
+        row = {"post_ft_step": step + 1, "clean_finetune_mse": total_loss}
+        history.append(row)
+        if step % 10 == 0:
+            pbar.set_postfix(clean=f"{total_loss:.4f}")
+    return history
+
+
 def save_adapter(model: nn.Module, path: Path):
     path.parent.mkdir(parents=True, exist_ok=True)
     trainable_names = {name for name, p in model.named_parameters() if p.requires_grad}
@@ -865,6 +912,10 @@ def main():
     else:
         history = train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, out_dir)
         save_adapter(model, out_dir / "adapter_final.pt")
+        post_history = clean_finetune(model, train_loader, cfg, args, device)
+        if post_history:
+            history.extend(post_history)
+            save_adapter(model, out_dir / f"adapter_post_ft_{args.post_ft_steps}.pt")
     elapsed_min = (time.time() - t0) / 60
     torch.save(
         {"P": P.cpu(), "codes": codes.cpu(), "message": args.wm_message, "config": vars(args)},
@@ -885,6 +936,7 @@ def main():
         "bits": len(wm_bits),
         "N": args.n_queries,
         "steps": args.steps,
+        "post_ft_steps": args.post_ft_steps,
         "objective": args.objective,
         "detect_distribution": args.detect_distribution,
         "elapsed_min": elapsed_min,

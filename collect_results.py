@@ -93,14 +93,20 @@ def hf_rows(path: Path) -> list[dict]:
     metrics = payload.get("metrics", {})
     if not metrics:
         return []
-    row = dict(metrics)
-    row.setdefault("message", config.get("wm_message"))
-    row.setdefault("bits", len(str(config.get("wm_message", ""))))
-    row.setdefault("model_family", "hf_flow_unet")
-    row.setdefault("steps", config.get("steps"))
-    row.setdefault("n_detect_queries", config.get("n_queries"))
-    row.setdefault("output_dir", str(path))
-    return [row]
+    def enrich(row: dict) -> dict:
+        row.setdefault("message", config.get("wm_message"))
+        row.setdefault("bits", len(str(config.get("wm_message", ""))))
+        row.setdefault("model_family", "hf_flow_unet")
+        row.setdefault("steps", config.get("steps"))
+        row.setdefault("post_ft_steps", config.get("post_ft_steps"))
+        row.setdefault("n_detect_queries", row.get("value", config.get("n_queries")))
+        row.setdefault("output_dir", str(path))
+        return row
+
+    rows = [enrich(dict(metrics))]
+    for sweep_row in payload.get("sweeps", []):
+        rows.append(enrich(dict(sweep_row)))
+    return rows
 
 
 def infer_group(job_name: str, row: dict) -> tuple[str, str]:
@@ -119,6 +125,25 @@ def infer_group(job_name: str, row: dict) -> tuple[str, str]:
         return "sd35_rank", m.group(1) if m else "unknown"
     if job_name.startswith("sd35_steps"):
         return "sd35_steps", str(row.get("steps"))
+    if job_name.startswith("sd35_payload"):
+        m = re.search(r"sd35_payload_(\d+)bit", job_name)
+        return "sd35_payload", f"{m.group(1)}bit" if m else str(row.get("bits"))
+    if job_name.startswith("flow_unet_payload"):
+        m = re.search(r"flow_unet_payload_([^_]+)_(\d+)bit", job_name)
+        if m:
+            return f"flow_unet_payload_{m.group(1)}", f"{m.group(2)}bit"
+        return "flow_unet_payload", str(row.get("bits"))
+    if job_name.startswith("flow_unet_epsilon"):
+        m = re.search(r"flow_unet_epsilon_([0-9.]+)", job_name)
+        return "flow_unet_epsilon", m.group(1) if m else "unknown"
+    if job_name.startswith("flow_unet_rank"):
+        m = re.search(r"flow_unet_rank_(\d+)", job_name)
+        return "flow_unet_rank", m.group(1) if m else "unknown"
+    if job_name.startswith("flow_unet_finetune"):
+        m = re.search(r"flow_unet_finetune_(\d+)", job_name)
+        return "flow_unet_finetune", m.group(1) if m else str(row.get("post_ft_steps"))
+    if job_name.startswith("flow_unet_cifar_query"):
+        return "flow_unet_query", str(row.get("n_detect_queries"))
     if job_name.startswith("flow_unet"):
         return "flow_unet_main", str(row.get("dataset", "unknown"))
     if "query" in str(row.get("output_dir", "")):
