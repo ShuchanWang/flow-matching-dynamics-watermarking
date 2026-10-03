@@ -22,6 +22,7 @@ from pathlib import Path
 
 SD35_MESSAGES_5BIT = ["00000", "00111", "01010", "10101", "11001"]
 SD35_CANONICAL_MESSAGE = "10101"
+FLOW_UNET_MESSAGES_5BIT = ["00000", "00111", "01010", "10101", "11001"]
 
 
 @dataclass
@@ -77,7 +78,7 @@ def flow_unet_base(out_root: str, dataset: str, message: str = "10101") -> list[
         "--lora_rank", 16,
         "--lora_alpha", 16,
         "--lora_targets", "both",
-        "--train_extra", "time_embed,out",
+        "--train_extra", "time_embed,out.",
         "--batch_size", 64,
         "--lr", 1e-4,
         "--wm_eps", 1.5,
@@ -173,15 +174,16 @@ def build_jobs(selected: set[str], out_root: str) -> list[Job]:
 
     if "flow-unet-main" in selected:
         for dataset in ["mnist", "cifar10", "celeba64"]:
-            jobs.append(Job(
-                name=f"flow_unet_{dataset}",
-                table="tab:app-main",
-                command=flow_unet_base(out_root, dataset),
-                note=(
-                    "Public pretrained flow-matching UNet. Use as supporting "
-                    "same-family evidence; include only if WM Acc/Sep are strong."
-                ),
-            ))
+            for msg in FLOW_UNET_MESSAGES_5BIT:
+                jobs.append(Job(
+                    name=f"flow_unet_{dataset}_{msg}",
+                    table="tab:app-main",
+                    command=flow_unet_base(out_root, dataset, msg),
+                    note=(
+                        "Public pretrained flow-matching UNet. Aggregate across "
+                        "messages with collect_results.py."
+                    ),
+                ))
 
     if "flow-unet-query" in selected:
         cmd = flow_unet_base(out_root, "cifar10")

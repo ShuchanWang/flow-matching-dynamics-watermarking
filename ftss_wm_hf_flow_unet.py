@@ -163,10 +163,11 @@ def parse_args():
     parser.add_argument("--lora_targets", choices=["conv", "linear", "both"], default="both")
     parser.add_argument(
         "--train_extra",
-        default="time_embed,out",
+        default="time_embed,out.",
         help=(
             "Comma-separated name fragments for non-LoRA parameters to train. "
-            "The time embedding is useful because the watermark is time-modulated."
+            "Use `out.` rather than `out`, otherwise modules such as "
+            "`output_blocks` may be unintentionally unfrozen."
         ),
     )
     parser.add_argument("--steps", type=int, default=500)
@@ -175,6 +176,8 @@ def parse_args():
     parser.add_argument("--lr", type=float, default=5e-4)
     parser.add_argument("--weight_decay", type=float, default=0.01)
     parser.add_argument("--save_every", type=int, default=100)
+    parser.add_argument("--eval_only", action="store_true")
+    parser.add_argument("--adapter_path", default=None)
 
     parser.add_argument("--n_train_samples", type=int, default=20000)
     parser.add_argument(
@@ -190,6 +193,7 @@ def parse_args():
     parser.add_argument("--base_sample_batch_size", type=int, default=128)
     parser.add_argument("--n_fid_samples", type=int, default=500)
     parser.add_argument("--fid_batch_size", type=int, default=16)
+    parser.add_argument("--fid_feature", choices=["inception", "pixel"], default="inception")
     parser.add_argument(
         "--fid_reference",
         choices=["auto", "real", "base_samples", "none"],
@@ -317,6 +321,11 @@ def freeze_non_lora(model: nn.Module, train_extra: str = ""):
     n_train = sum(p.numel() for p in params)
     n_total = sum(p.numel() for p in model.parameters())
     print(f"Trainable parameters: {n_train:,} / {n_total:,} ({100*n_train/n_total:.3f}%)")
+    if n_train / max(n_total, 1) > 0.25:
+        print(
+            "[warning] More than 25% of the model is trainable. "
+            "Check --train_extra; a broad token such as `out` may match `output_blocks`."
+        )
     return params
 
 
@@ -570,6 +579,17 @@ def save_adapter(model: nn.Module, path: Path):
     torch.save(state, path)
 
 
+def load_adapter(model: nn.Module, path: Path, device: torch.device):
+    state = torch.load(path, map_location=device)
+    missing, unexpected = model.load_state_dict(state, strict=False)
+    print(f"Loaded adapter/eval state from {path}")
+    if unexpected:
+        print(f"[adapter] unexpected keys: {len(unexpected)}")
+    # Missing keys are expected because adapter checkpoints contain only trainable parameters.
+    if missing:
+        print(f"[adapter] missing base keys: {len(missing)}")
+
+
 @torch.no_grad()
 def sample_detection_batch(model, cfg, args, device, n_queries, train_loader=None):
     c, h, w = cfg.dim
@@ -648,7 +668,7 @@ def sample_for_fid(model, cfg, args, device, n_samples):
     return torch.cat(batches, dim=0)
 
 
-def compute_fid(real, gen):
+def compute_fid_pixel(real, gen):
     real = real.detach().cpu().reshape(real.shape[0], -1).numpy()
     gen = gen.detach().cpu().reshape(gen.shape[0], -1).numpy()
     mu_r, sigma_r = real.mean(0), np.cov(real, rowvar=False)
@@ -661,6 +681,58 @@ def compute_fid(real, gen):
     if np.iscomplexobj(covmean):
         covmean = covmean.real
     return float(diff @ diff + np.trace(sigma_r + sigma_g - 2 * covmean))
+
+
+def compute_fid_from_features(features_a, features_b):
+    f_a = features_a.detach().cpu().numpy()
+    f_b = features_b.detach().cpu().numpy()
+    mu_a, mu_b = f_a.mean(0), f_b.mean(0)
+    sig_a, sig_b = np.cov(f_a, rowvar=False), np.cov(f_b, rowvar=False)
+    eps = 1e-6
+    sig_a += eps * np.eye(sig_a.shape[0])
+    sig_b += eps * np.eye(sig_b.shape[0])
+    diff = mu_a - mu_b
+    covmean = sqrtm(sig_a @ sig_b)
+    if np.iscomplexobj(covmean):
+        covmean = covmean.real
+    return float(diff @ diff + np.trace(sig_a + sig_b - 2 * covmean))
+
+
+@torch.no_grad()
+def inception_features(images, device, batch_size=16):
+    from torchvision.models import Inception_V3_Weights, inception_v3
+
+    inception = inception_v3(
+        weights=Inception_V3_Weights.IMAGENET1K_V1,
+        transform_input=False,
+    ).to(device).eval()
+    inception.fc = torch.nn.Identity()
+    mean = torch.tensor([0.485, 0.456, 0.406], device=device).view(1, 3, 1, 1)
+    std = torch.tensor([0.229, 0.224, 0.225], device=device).view(1, 3, 1, 1)
+
+    feats = []
+    for start in range(0, len(images), batch_size):
+        batch = images[start:start + batch_size].to(device)
+        if batch.shape[1] == 1:
+            batch = batch.repeat(1, 3, 1, 1)
+        batch = (batch.clamp(-1, 1) + 1) / 2
+        batch = F.interpolate(batch, size=(299, 299), mode="bilinear", align_corners=False)
+        batch = (batch - mean) / std
+        feats.append(inception(batch).cpu())
+        if device.type == "cuda":
+            torch.cuda.empty_cache()
+    del inception
+    if device.type == "cuda":
+        torch.cuda.empty_cache()
+    return torch.cat(feats, dim=0)
+
+
+def compute_fid(real, gen, args, device):
+    if args.fid_feature == "pixel":
+        return compute_fid_pixel(real, gen)
+    real_feats = inception_features(real, device, batch_size=args.fid_batch_size)
+    gen_feats = inception_features(gen, device, batch_size=args.fid_batch_size)
+    return compute_fid_from_features(real_feats, gen_feats)
 
 
 def evaluate(model, base_model, cfg, P, codes, codebook, true_msg, args, device, real_images=None, train_loader=None):
@@ -699,8 +771,8 @@ def evaluate(model, base_model, cfg, P, codes, codebook, true_msg, args, device,
         n = min(args.n_fid_samples, real_images.shape[0])
         clean_samples = sample_for_fid(base_model, cfg, args, device, n)
         wm_samples = sample_for_fid(model, cfg, args, device, n)
-        fid_clean = compute_fid(real_images[:n], clean_samples)
-        fid_wm = compute_fid(real_images[:n], wm_samples)
+        fid_clean = compute_fid(real_images[:n], clean_samples, args, device)
+        fid_wm = compute_fid(real_images[:n], wm_samples, args, device)
         metrics.update({
             "fid_clean": fid_clean,
             "fid_wm": fid_wm,
@@ -786,9 +858,14 @@ def main():
     if real_images is None:
         real_images = build_fid_reference(base_model, cfg, args, device)
     t0 = time.time()
-    history = train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, out_dir)
+    if args.eval_only:
+        adapter_path = Path(args.adapter_path) if args.adapter_path else out_dir / "adapter_final.pt"
+        load_adapter(model, adapter_path, device)
+        history = []
+    else:
+        history = train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, out_dir)
+        save_adapter(model, out_dir / "adapter_final.pt")
     elapsed_min = (time.time() - t0) / 60
-    save_adapter(model, out_dir / "adapter_final.pt")
     torch.save(
         {"P": P.cpu(), "codes": codes.cpu(), "message": args.wm_message, "config": vars(args)},
         out_dir / "watermark_key.pt",
