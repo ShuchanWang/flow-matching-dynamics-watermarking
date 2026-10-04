@@ -18,6 +18,51 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
+import argparse
+import json
+from pathlib import Path
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Small UNet LoRA dynamics-watermark experiment.")
+    parser.add_argument("--dataset", choices=["mnist", "cifar10"], default="cifar10")
+    parser.add_argument("--checkpoint_dir", default=None)
+    parser.add_argument("--output_dir", default="outputs")
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--target_steps", type=int, default=5000)
+    parser.add_argument("--save_every", type=int, default=500)
+    parser.add_argument("--wm_K", type=int, default=32)
+    parser.add_argument("--wm_bits", type=int, default=5)
+    parser.add_argument("--wm_eps", type=float, default=0.2)
+    parser.add_argument("--wm_lambda", type=float, default=0.01)
+    parser.add_argument("--n_queries", type=int, default=4096)
+    parser.add_argument("--n_clean", type=int, default=1)
+    parser.add_argument("--n_wm", type=int, default=1)
+    parser.add_argument(
+        "--wm_messages",
+        default="00000,00111,01010,10101,11001",
+        help="Comma-separated bit strings. Use 'random' to reproduce the old random selection.",
+    )
+    parser.add_argument("--test_messages", type=int, default=5, help="Used only with --wm_messages random.")
+    parser.add_argument("--lora_rank", type=int, default=4)
+    parser.add_argument("--lora_alpha", type=float, default=1.0)
+    parser.add_argument("--lora_steps", type=int, default=500)
+    parser.add_argument("--lora_lr", type=float, default=5e-4)
+    return parser.parse_args()
+
+
+args = parse_args()
+
+
+def parse_message(text):
+    text = text.strip()
+    if len(text) != args.wm_bits or any(ch not in "01" for ch in text):
+        raise ValueError(f"Expected a {args.wm_bits}-bit binary message, got {text!r}")
+    return tuple(int(ch) for ch in text)
+
+
+def message_to_str(msg):
+    return "".join(str(int(bit)) for bit in msg)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Device: {device}")
@@ -25,13 +70,14 @@ print(f"Device: {device}")
 # ============================================================
 # CONFIGURATION
 # ============================================================
-SEED = 42
+SEED = args.seed
 random.seed(SEED); np.random.seed(SEED); torch.manual_seed(SEED)
 
-DATASET = "cifar10"  # "mnist" or "cifar10"
-CHECKPOINT_DIR = "checkpointsCIFAR"
+DATASET = args.dataset
+CHECKPOINT_DIR = args.checkpoint_dir or ("checkpointsMNIST" if DATASET == "mnist" else "checkpointsCIFAR")
+OUTPUT_DIR = Path(args.output_dir)
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
-os.makedirs("outputs", exist_ok=True)
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 if DATASET == "mnist":
     IMG_SIZE, IN_CHANNELS, D = 28, 1, 784
@@ -42,18 +88,18 @@ elif DATASET == "cifar10":
     N_TRAIN, N_TEST = 20000, 2000
     BASE_CH, BATCH_SIZE, LR = 64, 128, 3e-4
 
-TARGET_STEPS = 5000
-SAVE_EVERY = 500
+TARGET_STEPS = args.target_steps
+SAVE_EVERY = args.save_every
 
 # Watermark
-K, N_BITS = 32, 5
-EPSILON, WM_LOSS_WEIGHT = 0.2, 0.01
-N_QUERIES = 4096
-N_CLEAN, N_WM, TEST_MESSAGES = 1, 1, 3
+K, N_BITS = args.wm_K, args.wm_bits
+EPSILON, WM_LOSS_WEIGHT = args.wm_eps, args.wm_lambda
+N_QUERIES = args.n_queries
+N_CLEAN, N_WM, TEST_MESSAGES = args.n_clean, args.n_wm, args.test_messages
 
 # LoRA
-LORA_RANK, LORA_ALPHA = 4, 1.0
-LORA_STEPS, LORA_LR = 500, 5e-4
+LORA_RANK, LORA_ALPHA = args.lora_rank, args.lora_alpha
+LORA_STEPS, LORA_LR = args.lora_steps, args.lora_lr
 
 print(f"\n{'='*70}")
 print(f"UNet WATERMARK: {DATASET.upper()} (Resume to {TARGET_STEPS} steps)")
@@ -105,7 +151,10 @@ with torch.no_grad():
         codebook[bits] = codes[k] / codes[k].norm()
 
 all_messages = list(codebook.keys())
-test_messages = random.sample(all_messages, TEST_MESSAGES)
+if args.wm_messages.strip().lower() == "random":
+    test_messages = random.sample(all_messages, TEST_MESSAGES)
+else:
+    test_messages = [parse_message(msg) for msg in args.wm_messages.split(",") if msg.strip()]
 print(f"Test messages: {test_messages}")
 
 # ============================================================
@@ -458,7 +507,7 @@ real_01 = (real_images_all + 1) / 2
 clean_01 = (clean_samples + 1) / 2
 clean_fid = compute_fid(real_01[:500], clean_01[:500])
 print(f"  Clean FID: {clean_fid:.1f}")
-save_fid_samples(real_01, clean_01, clean_fid, f"outputs/{DATASET}_clean_fid{clean_fid:.0f}.png")
+save_fid_samples(real_01, clean_01, clean_fid, str(OUTPUT_DIR / f"{DATASET}_clean_fid{clean_fid:.0f}.png"))
 
 clean_models = [clean_model]
 
@@ -478,7 +527,7 @@ for msg_idx, msg in enumerate(test_messages):
     model.load_state_dict(ckpt_data['model'] if isinstance(ckpt_data, dict) and 'model' in ckpt_data else ckpt_data)
     
     t0 = time.time()
-    wm_model = lora_finetune_resume(model, codebook[msg], msg_name=str(msg))
+    wm_model = lora_finetune_resume(model, codebook[msg], msg_name=message_to_str(msg))
     wm_models[msg] = [wm_model]
     print(f"    Time: {(time.time()-t0)/60:.1f} min")
 
@@ -493,10 +542,12 @@ N_TRIALS = 20
 
 print("\nWatermarked models:")
 wm_correct = 0
+wm_correct_by_msg = {}
 for msg in test_messages:
     for model in wm_models[msg]:
         correct = sum(decode_watermark(model, P, codebook)[0] == msg for _ in range(N_TRIALS))
         wm_correct += correct
+        wm_correct_by_msg[msg] = wm_correct_by_msg.get(msg, 0) + correct
         print(f"  {msg}: {correct}/{N_TRIALS}")
 
 wm_acc = wm_correct / (len(test_messages) * N_WM * N_TRIALS) * 100
@@ -518,6 +569,7 @@ print("\nStatistical separation (Welch's t-test):")
 from scipy import stats as scipy_stats
 
 N_STAT_SAMPLES = 30
+per_message_metrics = {}
 
 for msg in test_messages:
     wm_scores = []
@@ -552,6 +604,16 @@ for msg in test_messages:
     print(f"    Clean:        {clean_mean:.4f} +/- {clean_std:.4f}")
     print(f"    Cohen's d:    {cohens_d:.1f}")
     print(f"    t = {t_stat:.2f}, p = {p_value:.2e}")
+    per_message_metrics[msg] = {
+        "message": message_to_str(msg),
+        "wm_score_mean": float(wm_mean),
+        "wm_score_std": float(wm_std),
+        "clean_score_mean": float(clean_mean),
+        "clean_score_std": float(clean_std),
+        "separation_sigma": float(cohens_d),
+        "sep_sigma": float(cohens_d),
+        "p_value": float(p_value),
+    }
 
 print("\nSample Quality:")
 wm_fids = {}
@@ -615,11 +677,58 @@ fig.tight_layout(
     w_pad=0.1,
     pad=0.5
 )
-fig.savefig(f"outputs/{DATASET}_lora_results.png", dpi=150, bbox_inches='tight', facecolor='white')
+fig.savefig(OUTPUT_DIR / f"{DATASET}_lora_results.png", dpi=150, bbox_inches='tight', facecolor='white')
 plt.close(fig)
 
 print(f"\n{'='*70}")
 print(f"FINAL: WM acc={wm_acc:.1f}%, Clean FID={clean_fid:.1f}")
 print(f"Resume: Change TARGET_STEPS and run again to continue training")
 print(f"{'='*70}")
+
+clean_fp = sum(clean_hits.values()) / (N_CLEAN * N_TRIALS) * 100
+per_message = []
+for msg in test_messages:
+    msg_fp = clean_hits[msg] / (N_CLEAN * N_TRIALS) * 100
+    msg_wm_acc = wm_correct_by_msg[msg] / (N_WM * N_TRIALS) * 100
+    msg_metrics = dict(per_message_metrics[msg])
+    msg_metrics.update({
+        "detection_accuracy_wm": float(msg_wm_acc),
+        "detection_accuracy_clean": float(msg_fp),
+        "wm_acc": float(msg_wm_acc),
+        "clean_fp": float(msg_fp),
+        "fid_real_clean": float(clean_fid),
+        "fid_real_wm": float(wm_fids[msg]),
+        "fid_ratio": float(wm_fids[msg] / clean_fid),
+    })
+    per_message.append(msg_metrics)
+
+aggregate_metrics = {
+    "detection_accuracy_wm": float(wm_acc),
+    "detection_accuracy_clean": float(clean_fp),
+    "wm_acc": float(wm_acc),
+    "clean_fp": float(clean_fp),
+    "fid_real_clean": float(clean_fid),
+    "fid_real_wm": float(np.mean(list(wm_fids.values()))),
+    "fid_ratio": float(max(wm_fids.values()) / clean_fid),
+}
+
+with open(OUTPUT_DIR / "results.json", "w") as f:
+    json.dump({
+        "config": {
+            "model_family": "classic_unet",
+            "dataset": DATASET,
+            "wm_messages": [message_to_str(msg) for msg in test_messages],
+            "wm_bits": N_BITS,
+            "wm_K": K,
+            "target_steps": TARGET_STEPS,
+            "lora_steps": LORA_STEPS,
+            "lora_rank": LORA_RANK,
+            "n_queries": N_QUERIES,
+            "checkpoint_dir": CHECKPOINT_DIR,
+            "output_dir": str(OUTPUT_DIR),
+        },
+        "metrics": aggregate_metrics,
+        "per_message": per_message,
+    }, f, indent=2)
+print(f"Results JSON saved to: {OUTPUT_DIR / 'results.json'}")
 print("Done!")

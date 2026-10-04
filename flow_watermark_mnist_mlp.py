@@ -18,6 +18,49 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
+import argparse
+import json
+from pathlib import Path
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="MNIST MLP dynamics-watermark experiment.")
+    parser.add_argument("--output_dir", default="outputs")
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--steps", type=int, default=10000)
+    parser.add_argument("--batch_size", type=int, default=512)
+    parser.add_argument("--n_train", type=int, default=12000)
+    parser.add_argument("--n_test", type=int, default=1000)
+    parser.add_argument("--hidden_dim", type=int, default=1024)
+    parser.add_argument("--lr", type=float, default=1e-3)
+    parser.add_argument("--wm_K", type=int, default=32)
+    parser.add_argument("--wm_bits", type=int, default=5)
+    parser.add_argument("--wm_eps", type=float, default=0.2)
+    parser.add_argument("--wm_lambda", type=float, default=0.018)
+    parser.add_argument("--n_queries", type=int, default=4096)
+    parser.add_argument("--n_clean", type=int, default=1)
+    parser.add_argument("--n_wm", type=int, default=1)
+    parser.add_argument(
+        "--wm_messages",
+        default="00000,00111,01010,10101,11001",
+        help="Comma-separated bit strings. Use 'random' to reproduce the old random selection.",
+    )
+    parser.add_argument("--test_messages", type=int, default=5, help="Used only with --wm_messages random.")
+    return parser.parse_args()
+
+
+args = parse_args()
+
+
+def parse_message(text):
+    text = text.strip()
+    if len(text) != args.wm_bits or any(ch not in "01" for ch in text):
+        raise ValueError(f"Expected a {args.wm_bits}-bit binary message, got {text!r}")
+    return tuple(int(ch) for ch in text)
+
+
+def message_to_str(msg):
+    return "".join(str(int(bit)) for bit in msg)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Device: {device}")
@@ -25,29 +68,30 @@ print(f"Device: {device}")
 # ============================================================
 # CONFIGURATION
 # ============================================================
-SEED = 42
+SEED = args.seed
 random.seed(SEED); np.random.seed(SEED); torch.manual_seed(SEED)
 
 D = 784
-N_TRAIN = 12000
-N_TEST = 1000
-HIDDEN_DIM = 1024
-STEPS = 10000
-BATCH_SIZE = 512
-LR = 1e-3
+N_TRAIN = args.n_train
+N_TEST = args.n_test
+HIDDEN_DIM = args.hidden_dim
+STEPS = args.steps
+BATCH_SIZE = args.batch_size
+LR = args.lr
 
 # Watermark parameters
-K = 32
-N_BITS = 5
-EPSILON = 0.2
-WM_LOSS_WEIGHT = 0.018
-N_QUERIES = 4096
+K = args.wm_K
+N_BITS = args.wm_bits
+EPSILON = args.wm_eps
+WM_LOSS_WEIGHT = args.wm_lambda
+N_QUERIES = args.n_queries
 
-N_CLEAN = 1
-N_WM = 1
-TEST_MESSAGES = 3
+N_CLEAN = args.n_clean
+N_WM = args.n_wm
+TEST_MESSAGES = args.test_messages
 
-os.makedirs("outputs", exist_ok=True)
+OUTPUT_DIR = Path(args.output_dir)
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 print(f"\n{'='*70}")
 print(f"FAST MNIST WATERMARK (with FID)")
@@ -189,7 +233,10 @@ def train_model(seed_offset, use_wm=False, wm_code=None):
 # ============================================================
 # TRAIN MODELS
 # ============================================================
-test_messages = random.sample(all_messages, TEST_MESSAGES)
+if args.wm_messages.strip().lower() == "random":
+    test_messages = random.sample(all_messages, TEST_MESSAGES)
+else:
+    test_messages = [parse_message(msg) for msg in args.wm_messages.split(",") if msg.strip()]
 print(f"\nTest messages: {test_messages}")
 
 print(f"\nTraining {N_CLEAN} clean models...")
@@ -405,10 +452,12 @@ N_TRIALS = 20
 
 print("\nWatermarked models:")
 wm_correct = 0
+wm_correct_by_msg = {}
 for msg in test_messages:
     for model in wm_models[msg]:
         correct = sum(decode_watermark(model, P, codebook)[0] == msg for _ in range(N_TRIALS))
         wm_correct += correct
+        wm_correct_by_msg[msg] = wm_correct_by_msg.get(msg, 0) + correct
         print(f"  {msg}: {correct}/{N_TRIALS}")
 
 wm_acc = wm_correct / (len(test_messages) * N_WM * N_TRIALS) * 100
@@ -429,6 +478,7 @@ for msg in test_messages:
 print(f"  Overall FP: {sum(clean_hits.values())/(N_CLEAN*N_TRIALS)*100:.1f}%")
 
 print("\nStatistical separation:")
+per_message_metrics = {}
 for msg in test_messages:
     wm_scores = []
     code = codebook[msg]
@@ -447,8 +497,21 @@ for msg in test_messages:
             s = (torch.sin(2*math.pi*t_q) * (v@P)).mean(0)
             clean_scores.append((s * code).sum().item())
     
-    d = (np.mean(wm_scores) - np.mean(clean_scores)) / max(np.std(wm_scores), np.std(clean_scores), 1e-8)
-    print(f"  {msg}: WM={np.mean(wm_scores):.3f}, Clean={np.mean(clean_scores):.3f}, sep={d:.1f} sigma")
+    wm_mean = float(np.mean(wm_scores))
+    wm_std = float(np.std(wm_scores))
+    clean_mean = float(np.mean(clean_scores))
+    clean_std = float(np.std(clean_scores))
+    d = (wm_mean - clean_mean) / max(wm_std, clean_std, 1e-8)
+    per_message_metrics[msg] = {
+        "message": message_to_str(msg),
+        "wm_score_mean": wm_mean,
+        "wm_score_std": wm_std,
+        "clean_score_mean": clean_mean,
+        "clean_score_std": clean_std,
+        "separation_sigma": float(d),
+        "sep_sigma": float(d),
+    }
+    print(f"  {msg}: WM={wm_mean:.3f}, Clean={clean_mean:.3f}, sep={d:.1f} sigma")
 
 # ============================================================
 # OVERALL SIGNATURE STATISTICS
@@ -505,14 +568,14 @@ print("GENERATING VISUALIZATIONS")
 print(f"{'='*70}")
 
 print("\nCreating comparison grid (Real vs Generated)...")
-save_comparison_grid(real_01, clean_models[0], wm_models, test_messages, wm_fids,clean_fid)
+save_comparison_grid(real_01, clean_models[0], wm_models, test_messages, wm_fids, clean_fid, str(OUTPUT_DIR / "comparison.png"))
 
 print("Creating distribution plots...")
-save_distribution_plot(real_01, clean_models[0], wm_models, test_messages)
+save_distribution_plot(real_01, clean_models[0], wm_models, test_messages, str(OUTPUT_DIR / "distribution.png"))
 
-print(f"\nAll outputs in 'outputs/':")
-for f in sorted(os.listdir("outputs")):
-    fpath = os.path.join("outputs", f)
+print(f"\nAll outputs in '{OUTPUT_DIR}/':")
+for f in sorted(os.listdir(OUTPUT_DIR)):
+    fpath = OUTPUT_DIR / f
     size_kb = os.path.getsize(fpath) / 1024
     print(f"  {f} ({size_kb:.1f} KB)")
 
@@ -548,5 +611,49 @@ print(f"    Zero false positives on clean models")
 print(f"    Sample quality is preserved")
 print(f"    Watermark is invisible without secret key")
 print(f"{'='*70}")
+
+clean_fp = sum(clean_hits.values()) / (N_CLEAN * N_TRIALS) * 100
+per_message = []
+for msg in test_messages:
+    msg_metrics = dict(per_message_metrics[msg])
+    msg_fp = clean_hits[msg] / (N_CLEAN * N_TRIALS) * 100
+    msg_wm_acc = wm_correct_by_msg[msg] / (N_WM * N_TRIALS) * 100
+    msg_metrics.update({
+        "detection_accuracy_wm": msg_wm_acc,
+        "detection_accuracy_clean": msg_fp,
+        "wm_acc": msg_wm_acc,
+        "clean_fp": msg_fp,
+        "fid_real_clean": float(clean_fid),
+        "fid_real_wm": float(wm_fids[msg]),
+        "fid_ratio": float(wm_fids[msg] / clean_fid),
+    })
+    per_message.append(msg_metrics)
+
+aggregate_metrics = {
+    "detection_accuracy_wm": float(wm_acc),
+    "detection_accuracy_clean": float(clean_fp),
+    "wm_acc": float(wm_acc),
+    "clean_fp": float(clean_fp),
+    "fid_real_clean": float(clean_fid),
+    "fid_real_wm": float(np.mean(list(wm_fids.values()))),
+    "fid_ratio": float(max(wm_fids.values()) / clean_fid),
+}
+
+with open(OUTPUT_DIR / "results.json", "w") as f:
+    json.dump({
+        "config": {
+            "model_family": "classic_mlp",
+            "dataset": "mnist",
+            "wm_messages": [message_to_str(msg) for msg in test_messages],
+            "wm_bits": N_BITS,
+            "wm_K": K,
+            "steps": STEPS,
+            "n_queries": N_QUERIES,
+            "output_dir": str(OUTPUT_DIR),
+        },
+        "metrics": aggregate_metrics,
+        "per_message": per_message,
+    }, f, indent=2)
+print(f"Results JSON saved to: {OUTPUT_DIR / 'results.json'}")
 print("Done!")
 print(f"{'='*70}")

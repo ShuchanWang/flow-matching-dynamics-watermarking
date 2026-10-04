@@ -5,6 +5,8 @@ in the model-specific experiment scripts:
 
   - watermark_sd35.py
   - watermark_hf_flow_unet.py
+  - flow_watermark_mnist_mlp.py
+  - flow_watermark_unet_lora.py
 
 By default this script prints commands and writes a manifest. Use --run to
 execute them directly on a GPU machine.
@@ -23,12 +25,17 @@ from pathlib import Path
 SD35_MESSAGES_5BIT = ["00000", "00111", "01010", "10101", "11001"]
 SD35_CANONICAL_MESSAGE = "10101"
 FLOW_UNET_MESSAGES_5BIT = ["00000", "00111", "01010", "10101", "11001"]
+CLASSIC_MESSAGES_5BIT = ["00000", "00111", "01010", "10101", "11001"]
 PAYLOAD_MESSAGES = {
     1: ["0", "1"],
     3: ["000", "011", "101", "110", "111"],
     5: ["00000", "00111", "01010", "10101", "11001"],
     8: ["00000000", "00110101", "01011010", "10100101", "11110000"],
     12: ["000000000000", "001101011010", "010110101101", "101001010010", "111100001111"],
+}
+PAYLOAD_STRESS_MESSAGES = {
+    12: ["000000000000", "001101011010", "010110101101", "101001010010", "111100001111"],
+    16: ["0000000000000000", "0011010110101100", "0101101011010011", "1010010100101100", "1111000011110000"],
 }
 
 
@@ -112,6 +119,31 @@ def flow_unet_base(
             "--fid_batch_size", "4",
         ])
     return cmd
+
+
+def classic_mlp_base(out_root: str) -> list[str]:
+    return py(
+        "flow_watermark_mnist_mlp.py",
+        "--output_dir", f"{out_root}/classic_mlp/mnist",
+        "--steps", 10000,
+        "--wm_bits", 5,
+        "--wm_messages", ",".join(CLASSIC_MESSAGES_5BIT),
+        "--n_queries", 4096,
+    )
+
+
+def classic_unet_base(out_root: str, dataset: str) -> list[str]:
+    return py(
+        "flow_watermark_unet_lora.py",
+        "--dataset", dataset,
+        "--output_dir", f"{out_root}/classic_unet/{dataset}",
+        "--checkpoint_dir", f"{out_root}/checkpoints/classic_unet_{dataset}",
+        "--target_steps", 5000,
+        "--lora_steps", 500,
+        "--wm_bits", 5,
+        "--wm_messages", ",".join(CLASSIC_MESSAGES_5BIT),
+        "--n_queries", 4096,
+    )
 
 
 def set_arg(cmd: list[str], name: str, value: object) -> list[str]:
@@ -216,6 +248,21 @@ def build_jobs(selected: set[str], out_root: str) -> list[Job]:
                     ),
                 ))
 
+    if "classic-main" in selected:
+        jobs.append(Job(
+            name="classic_mlp_mnist",
+            table="tab:main, tab:app-main",
+            command=classic_mlp_base(out_root),
+            note="Original MNIST MLP experiment rerun with the same explicit five-message protocol.",
+        ))
+        for dataset in ["mnist", "cifar10"]:
+            jobs.append(Job(
+                name=f"classic_unet_{dataset}",
+                table="tab:main, tab:app-main",
+                command=classic_unet_base(out_root, dataset),
+                note="Original small UNet LoRA experiment rerun with the same explicit five-message protocol.",
+            ))
+
     if "flow-unet-query" in selected:
         cmd = flow_unet_base(out_root, "cifar10", subdir="flow_unet_query")
         cmd.extend(["--sweep", "queries"])
@@ -236,6 +283,27 @@ def build_jobs(selected: set[str], out_root: str) -> list[Job]:
                         table="tab:app-ablation(a)",
                         command=cmd,
                         note="Payload-capacity ablation; aggregate by bit length and dataset.",
+                    ))
+
+    if "flow-unet-payload-stress" in selected:
+        for n_queries in [128, 256, 512, 1024]:
+            for bits, messages in PAYLOAD_STRESS_MESSAGES.items():
+                for msg in messages:
+                    cmd = flow_unet_base(
+                        out_root,
+                        "cifar10",
+                        msg,
+                        subdir=f"flow_unet_payload_stress/N_{n_queries}",
+                    )
+                    set_arg(cmd, "--n_queries", n_queries)
+                    jobs.append(Job(
+                        name=f"flow_unet_payload_stress_cifar10_N{n_queries}_{bits}bit_{msg}",
+                        table="tab:app-payload-stress",
+                        command=cmd,
+                        note=(
+                            "Payload stress test on CIFAR-10. Lower query budgets "
+                            "and larger codebooks should reveal the capacity tradeoff."
+                        ),
                     ))
 
     if "flow-unet-epsilon" in selected:
@@ -310,8 +378,10 @@ def main():
         "sd35-rank",
         "sd35-steps",
         "flow-unet-main",
+        "classic-main",
         "flow-unet-query",
         "flow-unet-payload",
+        "flow-unet-payload-stress",
         "flow-unet-epsilon",
         "flow-unet-rank",
         "flow-unet-finetune",
