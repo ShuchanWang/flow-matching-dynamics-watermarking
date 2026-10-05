@@ -7,7 +7,6 @@ the paper.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import DataLoader, Subset
 from torchvision import datasets, transforms
 import numpy as np
 import random
@@ -40,6 +39,7 @@ def parse_args():
     parser.add_argument("--n_queries", type=int, default=4096)
     parser.add_argument("--n_clean", type=int, default=1)
     parser.add_argument("--n_wm", type=int, default=1)
+    parser.add_argument("--skip_plots", action="store_true", help="Skip sample/distribution plots.")
     parser.add_argument(
         "--wm_messages",
         default="00000,00111,01010,10101,11001",
@@ -110,34 +110,18 @@ transform = transforms.Compose([
 train_ds = datasets.MNIST(root="./data", train=True, download=True, transform=transform)
 test_ds = datasets.MNIST(root="./data", train=False, download=True, transform=transform)
 
-train_subset = Subset(train_ds, range(N_TRAIN))
-test_subset = Subset(test_ds, range(N_TEST))
-
-train_loader = DataLoader(
-    train_subset, batch_size=BATCH_SIZE, shuffle=True,
-    num_workers=4, pin_memory=True, drop_last=True
-)
-
 # Get real MNIST samples for FID comparison
-real_loader = DataLoader(
-    Subset(test_ds, range(min(1000, N_TEST))),
-    batch_size=1000, shuffle=False
-)
-real_images_all = next(iter(real_loader))[0].view(-1, D).to(device)
+real_n = min(1000, N_TEST)
+real_images_all = (test_ds.data[:real_n].float().view(real_n, -1) / 127.5 - 1.0).to(device)
 
 # ============================================================
 # FLOW MATCHING DATA
 # ============================================================
 print("Preparing flow matching data...")
 t0 = time.time()
-all_x1 = []
-for x, _ in train_loader:
-    all_x1.append(x.view(x.size(0), -1))
-all_x1 = torch.cat(all_x1, dim=0)
-n_data = all_x1.size(0)
+x1_pool = train_ds.data[:N_TRAIN].float().view(N_TRAIN, -1) / 127.5 - 1.0
+n_data = x1_pool.size(0)
 print(f"Samples: {n_data}")
-x1_pool = all_x1
-del all_x1
 print(f"Data preparation took {time.time() - t0:.1f}s")
 
 # ============================================================
@@ -406,7 +390,7 @@ def save_distribution_plot(real_data, clean_model, wm_models, test_messages,
                            filename="outputs/distribution.png"):
     """Distribution comparison plot"""
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-    colors = ['#2A9D8F', '#E76F51', '#264653', '#E9C46A']
+    cmap = plt.get_cmap("tab10")
     
     # Real MNIST statistics
     real_01 = real_data.cpu().numpy()
@@ -419,18 +403,19 @@ def save_distribution_plot(real_data, clean_model, wm_models, test_messages,
     clean_samples = generate_samples(clean_model, n_samples=500)
     clean_01 = ((clean_samples + 1) / 2).cpu().numpy()
     axes[0].hist(np.mean(clean_01, axis=1), bins=50, alpha=0.5,
-                label='Clean', density=True, color=colors[0])
+                label='Clean', density=True, color=cmap(0))
     axes[1].hist(np.std(clean_01, axis=1), bins=50, alpha=0.5,
-                label='Clean', density=True, color=colors[0])
+                label='Clean', density=True, color=cmap(0))
     
     # Watermarked models
     for idx, msg in enumerate(test_messages):
         wm_samples = generate_samples(wm_models[msg][0], n_samples=500)
         wm_01 = ((wm_samples + 1) / 2).cpu().numpy()
+        color = cmap((idx + 1) % cmap.N)
         axes[0].hist(np.mean(wm_01, axis=1), bins=50, alpha=0.3,
-                    label=f'WM{idx}', density=True, color=colors[idx+1])
+                    label=f'WM{idx}', density=True, color=color)
         axes[1].hist(np.std(wm_01, axis=1), bins=50, alpha=0.3,
-                    label=f'WM{idx}', density=True, color=colors[idx+1])
+                    label=f'WM{idx}', density=True, color=color)
     
     axes[0].set_xlabel('Pixel Mean'); axes[0].set_ylabel('Density')
     axes[0].set_title('Distribution of Sample Means'); axes[0].legend(fontsize=7)
@@ -560,58 +545,6 @@ for msg in test_messages:
     diff = (clean_01[:500] - wm_01).abs().mean().item()
     print(f"    WM:     mean={wm_01.mean():.4f}, std={wm_01.std():.4f}, |Δ|={diff:.4f}")
 
-# ============================================================
-# VISUALIZATIONS
-# ============================================================
-print(f"\n{'='*70}")
-print("GENERATING VISUALIZATIONS")
-print(f"{'='*70}")
-
-print("\nCreating comparison grid (Real vs Generated)...")
-save_comparison_grid(real_01, clean_models[0], wm_models, test_messages, wm_fids, clean_fid, str(OUTPUT_DIR / "comparison.png"))
-
-print("Creating distribution plots...")
-save_distribution_plot(real_01, clean_models[0], wm_models, test_messages, str(OUTPUT_DIR / "distribution.png"))
-
-print(f"\nAll outputs in '{OUTPUT_DIR}/':")
-for f in sorted(os.listdir(OUTPUT_DIR)):
-    fpath = OUTPUT_DIR / f
-    size_kb = os.path.getsize(fpath) / 1024
-    print(f"  {f} ({size_kb:.1f} KB)")
-
-# ============================================================
-# TRAINING QUALITY ANALYSIS
-# ============================================================
-print(f"\n{'='*70}")
-print("TRAINING QUALITY ANALYSIS")
-print(f"{'='*70}")
-
-print(f"""
-  Clean FID: {clean_fid:.1f}
-  WM FID range: {min(wm_fids.values()):.1f} - {max(wm_fids.values()):.1f}
-  Ratio: {max(wm_fids.values())/clean_fid:.3f}x (essentially identical)
-""")
-
-# ============================================================
-# FINAL SUMMARY
-# ============================================================
-print(f"\n{'='*70}")
-print("FINAL SUMMARY")
-print(f"{'='*70}")
-print(f"  Watermark Detection:")
-print(f"    WM accuracy:     {wm_acc:.1f}% ({wm_correct}/{len(test_messages)*N_WM*N_TRIALS})")
-print(f"    Clean FP rate:   {sum(clean_hits.values())/(N_CLEAN*N_TRIALS)*100:.1f}% ({sum(clean_hits.values())}/{N_CLEAN*N_TRIALS})")
-print(f"  Sample Quality:")
-print(f"    Clean FID:       {clean_fid:.1f}")
-print(f"    WM FID:          {np.mean(list(wm_fids.values())):.1f} +/- {np.std(list(wm_fids.values())):.1f}")
-print(f"    Quality impact:  {max(wm_fids.values())/clean_fid:.3f}x (negligible)")
-print(f"  Verdict:")
-print(f"    Watermark is 100% detectable")
-print(f"    Zero false positives on clean models")
-print(f"    Sample quality is preserved")
-print(f"    Watermark is invisible without secret key")
-print(f"{'='*70}")
-
 clean_fp = sum(clean_hits.values()) / (N_CLEAN * N_TRIALS) * 100
 per_message = []
 for msg in test_messages:
@@ -655,5 +588,60 @@ with open(OUTPUT_DIR / "results.json", "w") as f:
         "per_message": per_message,
     }, f, indent=2)
 print(f"Results JSON saved to: {OUTPUT_DIR / 'results.json'}")
+
+# ============================================================
+# VISUALIZATIONS
+# ============================================================
+if args.skip_plots:
+    print("\nSkipping visualizations (--skip_plots).")
+else:
+    print(f"\n{'='*70}")
+    print("GENERATING VISUALIZATIONS")
+    print(f"{'='*70}")
+
+    print("\nCreating comparison grid (Real vs Generated)...")
+    save_comparison_grid(real_01, clean_models[0], wm_models, test_messages, wm_fids, clean_fid, str(OUTPUT_DIR / "comparison.png"))
+
+    print("Creating distribution plots...")
+    save_distribution_plot(real_01, clean_models[0], wm_models, test_messages, str(OUTPUT_DIR / "distribution.png"))
+
+    print(f"\nAll outputs in '{OUTPUT_DIR}/':")
+    for f in sorted(os.listdir(OUTPUT_DIR)):
+        fpath = OUTPUT_DIR / f
+        size_kb = os.path.getsize(fpath) / 1024
+        print(f"  {f} ({size_kb:.1f} KB)")
+
+# ============================================================
+# TRAINING QUALITY ANALYSIS
+# ============================================================
+print(f"\n{'='*70}")
+print("TRAINING QUALITY ANALYSIS")
+print(f"{'='*70}")
+
+print(f"""
+  Clean FID: {clean_fid:.1f}
+  WM FID range: {min(wm_fids.values()):.1f} - {max(wm_fids.values()):.1f}
+  Ratio: {max(wm_fids.values())/clean_fid:.3f}x (essentially identical)
+""")
+
+# ============================================================
+# FINAL SUMMARY
+# ============================================================
+print(f"\n{'='*70}")
+print("FINAL SUMMARY")
+print(f"{'='*70}")
+print(f"  Watermark Detection:")
+print(f"    WM accuracy:     {wm_acc:.1f}% ({wm_correct}/{len(test_messages)*N_WM*N_TRIALS})")
+print(f"    Clean FP rate:   {sum(clean_hits.values())/(N_CLEAN*N_TRIALS)*100:.1f}% ({sum(clean_hits.values())}/{N_CLEAN*N_TRIALS})")
+print(f"  Sample Quality:")
+print(f"    Clean FID:       {clean_fid:.1f}")
+print(f"    WM FID:          {np.mean(list(wm_fids.values())):.1f} +/- {np.std(list(wm_fids.values())):.1f}")
+print(f"    Quality impact:  {max(wm_fids.values())/clean_fid:.3f}x (negligible)")
+print(f"  Verdict:")
+print(f"    Watermark is 100% detectable")
+print(f"    Zero false positives on clean models")
+print(f"    Sample quality is preserved")
+print(f"    Watermark is invisible without secret key")
+print(f"{'='*70}")
 print("Done!")
 print(f"{'='*70}")

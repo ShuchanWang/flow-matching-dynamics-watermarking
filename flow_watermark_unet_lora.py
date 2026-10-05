@@ -48,6 +48,7 @@ def parse_args():
     parser.add_argument("--lora_alpha", type=float, default=1.0)
     parser.add_argument("--lora_steps", type=int, default=500)
     parser.add_argument("--lora_lr", type=float, default=5e-4)
+    parser.add_argument("--skip_plots", action="store_true", help="Skip sample-grid plots.")
     return parser.parse_args()
 
 
@@ -507,7 +508,8 @@ real_01 = (real_images_all + 1) / 2
 clean_01 = (clean_samples + 1) / 2
 clean_fid = compute_fid(real_01[:500], clean_01[:500])
 print(f"  Clean FID: {clean_fid:.1f}")
-save_fid_samples(real_01, clean_01, clean_fid, str(OUTPUT_DIR / f"{DATASET}_clean_fid{clean_fid:.0f}.png"))
+if not args.skip_plots:
+    save_fid_samples(real_01, clean_01, clean_fid, str(OUTPUT_DIR / f"{DATASET}_clean_fid{clean_fid:.0f}.png"))
 
 clean_models = [clean_model]
 
@@ -623,16 +625,6 @@ for msg in test_messages:
     wm_fids[msg] = compute_fid(real_01[:500], wm_01[:500])
     print(f"  WM {str(msg)[:12]}... FID: {wm_fids[msg]:.1f} (ratio: {wm_fids[msg]/clean_fid:.3f}x)")
 
-n_rows = 2 + len(test_messages)
-fig, axes = plt.subplots(
-    n_rows,
-    8,
-    figsize=(12, 0.7 * n_rows),
-    constrained_layout=True
-)
-
-real_01 = (real_images_all + 1) / 2
-
 # ============================================================
 # OVERALL SIGNATURE STATISTICS
 # ============================================================
@@ -643,47 +635,6 @@ for msg in test_messages:
     print(f"  {msg}:")
     print(f"    WM:    sig_norm={wm_stats['sig_norm_mean']:.4f}, true={wm_stats['true_mean']:.4f}+/-{wm_stats['true_std']:.4f}, margin={wm_stats['margin']:.4f}")
     print(f"    Clean: sig_norm={clean_stats['sig_norm_mean']:.4f}, true={clean_stats['true_mean']:.4f}+/-{clean_stats['true_std']:.4f}")
-
-for i in range(8):
-    img_data = real_01[i].reshape(IN_CHANNELS, IMG_SIZE, IMG_SIZE).cpu().numpy()
-    img = img_data.squeeze() if IN_CHANNELS == 1 else np.transpose(img_data, (1, 2, 0))
-    axes[0, i].imshow(img, cmap='gray' if IN_CHANNELS == 1 else None, vmin=0, vmax=1)
-    axes[0, i].axis('off')
-axes[0, 0].set_title('Real', fontsize=10, fontweight='bold')
-
-clean_imgs = generate_samples(clean_model, n_samples=8)
-clean_imgs = ((clean_imgs + 1) / 2).clamp(0, 1)
-for i in range(8):
-    img_data = clean_imgs[i].reshape(IN_CHANNELS, IMG_SIZE, IMG_SIZE).cpu().numpy()
-    img = img_data.squeeze() if IN_CHANNELS == 1 else np.transpose(img_data, (1, 2, 0))
-    axes[1, i].imshow(img, cmap='gray' if IN_CHANNELS == 1 else None, vmin=0, vmax=1)
-    axes[1, i].axis('off')
-axes[1, 0].set_title(f'Clean (FID={clean_fid:.0f})', fontsize=10, fontweight='bold')
-
-for row, msg in enumerate(test_messages):
-    wm_imgs = generate_samples(wm_models[msg][0], n_samples=8)
-    wm_imgs = ((wm_imgs + 1) / 2).clamp(0, 1)
-    for i in range(8):
-        img_data = wm_imgs[i].reshape(IN_CHANNELS, IMG_SIZE, IMG_SIZE).cpu().numpy()
-        img = img_data.squeeze() if IN_CHANNELS == 1 else np.transpose(img_data, (1, 2, 0))
-        axes[row + 2, i].imshow(img, cmap='gray' if IN_CHANNELS == 1 else None, vmin=0, vmax=1)
-        axes[row + 2, i].axis('off')
-    axes[row + 2, 0].set_title(f'WM (FID={wm_fids[msg]:.0f})', fontsize=10)
-
-fig.suptitle(f'{DATASET.upper()}: LoRA Watermark', fontsize=12, y=0.98)
-fig.tight_layout(
-    rect=[0, 0, 1, 0.96],
-    h_pad=0.3,
-    w_pad=0.1,
-    pad=0.5
-)
-fig.savefig(OUTPUT_DIR / f"{DATASET}_lora_results.png", dpi=150, bbox_inches='tight', facecolor='white')
-plt.close(fig)
-
-print(f"\n{'='*70}")
-print(f"FINAL: WM acc={wm_acc:.1f}%, Clean FID={clean_fid:.1f}")
-print(f"Resume: Change TARGET_STEPS and run again to continue training")
-print(f"{'='*70}")
 
 clean_fp = sum(clean_hits.values()) / (N_CLEAN * N_TRIALS) * 100
 per_message = []
@@ -731,4 +682,57 @@ with open(OUTPUT_DIR / "results.json", "w") as f:
         "per_message": per_message,
     }, f, indent=2)
 print(f"Results JSON saved to: {OUTPUT_DIR / 'results.json'}")
+
+if args.skip_plots:
+    print("Skipping sample-grid plot (--skip_plots).")
+else:
+    n_rows = 2 + len(test_messages)
+    fig, axes = plt.subplots(
+        n_rows,
+        8,
+        figsize=(12, 0.7 * n_rows),
+        constrained_layout=True
+    )
+
+    real_01 = (real_images_all + 1) / 2
+    for i in range(8):
+        img_data = real_01[i].reshape(IN_CHANNELS, IMG_SIZE, IMG_SIZE).cpu().numpy()
+        img = img_data.squeeze() if IN_CHANNELS == 1 else np.transpose(img_data, (1, 2, 0))
+        axes[0, i].imshow(img, cmap='gray' if IN_CHANNELS == 1 else None, vmin=0, vmax=1)
+        axes[0, i].axis('off')
+    axes[0, 0].set_title('Real', fontsize=10, fontweight='bold')
+
+    clean_imgs = generate_samples(clean_model, n_samples=8)
+    clean_imgs = ((clean_imgs + 1) / 2).clamp(0, 1)
+    for i in range(8):
+        img_data = clean_imgs[i].reshape(IN_CHANNELS, IMG_SIZE, IMG_SIZE).cpu().numpy()
+        img = img_data.squeeze() if IN_CHANNELS == 1 else np.transpose(img_data, (1, 2, 0))
+        axes[1, i].imshow(img, cmap='gray' if IN_CHANNELS == 1 else None, vmin=0, vmax=1)
+        axes[1, i].axis('off')
+    axes[1, 0].set_title(f'Clean (FID={clean_fid:.0f})', fontsize=10, fontweight='bold')
+
+    for row, msg in enumerate(test_messages):
+        wm_imgs = generate_samples(wm_models[msg][0], n_samples=8)
+        wm_imgs = ((wm_imgs + 1) / 2).clamp(0, 1)
+        for i in range(8):
+            img_data = wm_imgs[i].reshape(IN_CHANNELS, IMG_SIZE, IMG_SIZE).cpu().numpy()
+            img = img_data.squeeze() if IN_CHANNELS == 1 else np.transpose(img_data, (1, 2, 0))
+            axes[row + 2, i].imshow(img, cmap='gray' if IN_CHANNELS == 1 else None, vmin=0, vmax=1)
+            axes[row + 2, i].axis('off')
+        axes[row + 2, 0].set_title(f'WM (FID={wm_fids[msg]:.0f})', fontsize=10)
+
+    fig.suptitle(f'{DATASET.upper()}: LoRA Watermark', fontsize=12, y=0.98)
+    fig.tight_layout(
+        rect=[0, 0, 1, 0.96],
+        h_pad=0.3,
+        w_pad=0.1,
+        pad=0.5
+    )
+    fig.savefig(OUTPUT_DIR / f"{DATASET}_lora_results.png", dpi=150, bbox_inches='tight', facecolor='white')
+    plt.close(fig)
+
+print(f"\n{'='*70}")
+print(f"FINAL: WM acc={wm_acc:.1f}%, Clean FID={clean_fid:.1f}")
+print(f"Resume: Change TARGET_STEPS and run again to continue training")
+print(f"{'='*70}")
 print("Done!")

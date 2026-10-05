@@ -129,6 +129,7 @@ def classic_mlp_base(out_root: str) -> list[str]:
         "--wm_bits", 5,
         "--wm_messages", ",".join(CLASSIC_MESSAGES_5BIT),
         "--n_queries", 4096,
+        "--skip_plots",
     )
 
 
@@ -143,6 +144,7 @@ def classic_unet_base(out_root: str, dataset: str) -> list[str]:
         "--wm_bits", 5,
         "--wm_messages", ",".join(CLASSIC_MESSAGES_5BIT),
         "--n_queries", 4096,
+        "--skip_plots",
     )
 
 
