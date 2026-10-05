@@ -118,21 +118,22 @@ elif DATASET == "cifar10":
     train_ds = datasets.CIFAR10(root="./data", train=True, download=True, transform=transform)
     test_ds = datasets.CIFAR10(root="./data", train=False, download=True, transform=transform)
 
-train_subset = Subset(train_ds, range(N_TRAIN))
-test_subset = Subset(test_ds, range(N_TEST))
-train_loader = DataLoader(train_subset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4, pin_memory=True, drop_last=True)
-real_loader = DataLoader(Subset(test_ds, range(min(1000, N_TEST))), batch_size=1000, shuffle=False)
-real_images_all = next(iter(real_loader))[0].view(-1, D).to(device)
+def dataset_tensor(ds, n, dataset):
+    if dataset == "mnist":
+        return ds.data[:n].float().unsqueeze(1) / 127.5 - 1.0
+    if dataset == "cifar10":
+        data = torch.from_numpy(ds.data[:n]).float().permute(0, 3, 1, 2)
+        return data / 127.5 - 1.0
+    raise ValueError(f"Unsupported dataset: {dataset}")
+
+
+real_n = min(1000, N_TEST)
+real_images_all = dataset_tensor(test_ds, real_n, DATASET).view(real_n, D).to(device)
 
 print("Preparing flow matching data...")
 t0 = time.time()
-all_x1 = []
-for x, _ in train_loader:
-    all_x1.append(x.view(x.size(0), -1))
-all_x1 = torch.cat(all_x1, dim=0)
-print(f"Samples: {all_x1.size(0)}")
-x1_pool = all_x1
-del all_x1
+x1_pool = dataset_tensor(train_ds, N_TRAIN, DATASET).view(N_TRAIN, D)
+print(f"Samples: {x1_pool.size(0)}")
 print(f"Data prep: {time.time() - t0:.1f}s")
 
 # ============================================================
