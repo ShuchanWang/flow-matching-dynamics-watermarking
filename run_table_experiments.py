@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 import shlex
 import subprocess
 from dataclasses import asdict, dataclass
@@ -33,10 +34,12 @@ PAYLOAD_MESSAGES = {
     8: ["00000000", "00110101", "01011010", "10100101", "11110000"],
     12: ["000000000000", "001101011010", "010110101101", "101001010010", "111100001111"],
 }
-PAYLOAD_STRESS_MESSAGES = {
-    12: ["000000000000", "001101011010", "010110101101", "101001010010", "111100001111"],
-    16: ["0000000000000000", "0011010110101100", "0101101011010011", "1010010100101100", "1111000011110000"],
-}
+PAYLOAD_STRESS_BITS = (5, 8, 12, 16, 18, 20)
+
+
+def payload_stress_messages(bits: int) -> list[str]:
+    indices = random.Random(2605 + bits).sample(range(1 << bits), 5)
+    return [format(index, f"0{bits}b") for index in indices]
 
 
 @dataclass
@@ -60,6 +63,28 @@ def add_arg(cmd: list[str], name: str, value: object | None = None) -> list[str]
 
 def quote_cmd(cmd: list[str]) -> str:
     return " ".join(shlex.quote(part) for part in cmd)
+
+
+def has_completed_result(cmd: list[str]) -> bool:
+    if "--output_dir" not in cmd:
+        return False
+    out_dir = Path(cmd[cmd.index("--output_dir") + 1])
+    if "--dataset" in cmd and "--wm_message" in cmd:
+        dataset = cmd[cmd.index("--dataset") + 1]
+        message = cmd[cmd.index("--wm_message") + 1]
+        out_dir = out_dir / dataset / message
+    result_name = "sweep_results.json" if cmd[1] == "watermark_sd35.py" else "results.json"
+    result_path = out_dir / result_name
+    try:
+        with open(result_path) as f:
+            payload = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return False
+    config = payload.get("config", {})
+    for flag in ("--dataset", "--wm_message", "--codebook_mode", "--wm_K", "--n_queries", "--steps"):
+        if flag in cmd and str(config.get(flag[2:])) != cmd[cmd.index(flag) + 1]:
+            return False
+    return bool(payload.get("metrics") or payload.get("results"))
 
 
 def sd35_base(out_root: str, message: str = "10101", steps: str = "500") -> list[str]:
@@ -287,26 +312,25 @@ def build_jobs(selected: set[str], out_root: str) -> list[Job]:
                         note="Payload-capacity ablation; aggregate by bit length and dataset.",
                     ))
 
-    if "flow-unet-payload-stress" in selected:
-        for n_queries in [128, 256, 512, 1024]:
-            for bits, messages in PAYLOAD_STRESS_MESSAGES.items():
-                for msg in messages:
-                    cmd = flow_unet_base(
-                        out_root,
-                        "cifar10",
-                        msg,
-                        subdir=f"flow_unet_payload_stress/N_{n_queries}",
-                    )
-                    set_arg(cmd, "--n_queries", n_queries)
-                    jobs.append(Job(
-                        name=f"flow_unet_payload_stress_cifar10_N{n_queries}_{bits}bit_{msg}",
-                        table="tab:app-payload-stress",
-                        command=cmd,
-                        note=(
-                            "Payload stress test on CIFAR-10. Lower query budgets "
-                            "and larger codebooks should reveal the capacity tradeoff."
-                        ),
-                    ))
+    if selected & {"flow-unet-payload-capacity", "flow-unet-payload-stress"}:
+        for bits in PAYLOAD_STRESS_BITS:
+            for msg in payload_stress_messages(bits):
+                cmd = flow_unet_base(
+                    out_root,
+                    "cifar10",
+                    msg,
+                    subdir="flow_unet_payload_capacity",
+                )
+                set_arg(cmd, "--wm_K", 32)
+                set_arg(cmd, "--codebook_mode", "random")
+                set_arg(cmd, "--n_queries", 4096)
+                set_arg(cmd, "--n_detect_trials", 40)
+                jobs.append(Job(
+                    name=f"flow_unet_payload_capacity_cifar10_{bits}bit_{msg}",
+                    table="tab:app-payload",
+                    command=cmd,
+                    note="Fixed K=32 and N=4096; vary only payload length with random codebooks.",
+                ))
 
     if "flow-unet-epsilon" in selected:
         for eps in [0.1, 0.5, 1.0, 1.5, 3.0, 5.0]:
@@ -383,6 +407,7 @@ def main():
         "classic-main",
         "flow-unet-query",
         "flow-unet-payload",
+        "flow-unet-payload-capacity",
         "flow-unet-payload-stress",
         "flow-unet-epsilon",
         "flow-unet-rank",
@@ -419,10 +444,7 @@ def main():
 
     if args.run:
         for job in jobs:
-            out_dir = None
-            if "--output_dir" in job.command:
-                out_dir = Path(job.command[job.command.index("--output_dir") + 1])
-            if args.skip_existing and out_dir and (out_dir / "results.json").exists():
+            if args.skip_existing and has_completed_result(job.command):
                 print(f"Skipping existing job: {job.name}")
                 continue
             print(f"\nRunning {job.name}")

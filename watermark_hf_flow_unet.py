@@ -135,6 +135,10 @@ def parse_args():
 
     parser.add_argument("--wm_message", default="10101")
     parser.add_argument("--wm_K", type=int, default=32)
+    parser.add_argument(
+        "--codebook_mode", choices=["auto", "random"], default="auto",
+        help="Use orthogonal codes when possible (auto), or normalized random codes for every payload size.",
+    )
     parser.add_argument("--wm_eps", type=float, default=0.5)
     parser.add_argument("--wm_lambda", type=float, default=0.2)
     parser.add_argument("--wm_proj_weight", type=float, default=1.0)
@@ -339,7 +343,12 @@ def freeze_non_lora(model: nn.Module, train_extra: str = ""):
     return params
 
 
-def make_codebook(D: int, n_bits: int, K: int, device: torch.device):
+def message_index(bits):
+    # Preserve the original codebook's least-significant-bit-first ordering.
+    return sum(int(bit) << i for i, bit in enumerate(bits))
+
+
+def make_codebook(D: int, n_bits: int, K: int, device: torch.device, mode: str = "auto"):
     n_messages = 2 ** n_bits
     if K > D:
         raise ValueError(
@@ -351,22 +360,18 @@ def make_codebook(D: int, n_bits: int, K: int, device: torch.device):
         Q_p, _ = torch.linalg.qr(P_raw)
         P = Q_p[:, :K]
         codes_raw = torch.randn(n_messages, K, device=device, dtype=torch.float32)
-        if n_messages <= K:
+        if mode == "auto" and n_messages <= K:
             Q_c, _ = torch.linalg.qr(codes_raw.T)
             codes = Q_c.T
         else:
             print(
-                f"[codebook] Using overcomplete random codebook: "
+                f"[codebook] Using normalized random codebook: "
                 f"{n_messages} messages in K={K} dimensions.",
                 flush=True,
             )
             codes = codes_raw
         codes = codes / codes.norm(dim=1, keepdim=True)
-    codebook = {}
-    for idx in range(n_messages):
-        bits = tuple((idx >> i) & 1 for i in range(n_bits))
-        codebook[bits] = codes[idx]
-    return P, codes, codebook
+    return P, codes
 
 
 def load_real_data(cfg: DatasetConfig, args, device: torch.device):
@@ -683,11 +688,10 @@ def sample_detection_batch(model, cfg, args, device, n_queries, train_loader=Non
 
 
 @torch.no_grad()
-def detect(model, cfg, P, codes, codebook, args, device, n_queries=None, train_loader=None):
+def detect(model, cfg, P, codes, args, device, n_queries=None, train_loader=None):
     n_queries = n_queries or args.n_queries
     signature = torch.zeros(args.wm_K, device=device)
     all_codes = codes.to(device)
-    keys = list(codebook.keys())
     for start in range(0, n_queries, args.batch_size):
         b = min(args.batch_size, n_queries - start)
         x, t, y = sample_detection_batch(model, cfg, args, device, b, train_loader)
@@ -697,7 +701,8 @@ def detect(model, cfg, P, codes, codebook, args, device, n_queries=None, train_l
     signature /= n_queries
     scores = signature.view(1, -1) @ all_codes.T
     best_idx = int(scores.argmax(dim=1).item())
-    return keys[best_idx], scores.squeeze(0).detach().cpu().numpy(), signature.detach().cpu().numpy()
+    decoded = tuple((best_idx >> i) & 1 for i in range(len(args.wm_message)))
+    return decoded, scores.squeeze(0).detach().cpu().numpy(), signature.detach().cpu().numpy()
 
 
 @torch.no_grad()
@@ -795,19 +800,25 @@ def compute_fid(real, gen, args, device):
     return compute_fid_from_features(real_feats, gen_feats)
 
 
-def evaluate(model, base_model, cfg, P, codes, codebook, true_msg, args, device, real_images=None, train_loader=None):
+def evaluate(model, base_model, cfg, P, codes, true_msg, args, device, real_images=None, train_loader=None):
     true_bits = tuple(int(b) for b in true_msg)
-    true_idx = list(codebook.keys()).index(true_bits)
+    true_idx = message_index(true_bits)
+    code_similarities = codes @ codes[true_idx]
+    code_similarities[true_idx] = -torch.inf
 
     wm_hits = 0
     clean_hits = 0
     wm_scores = []
     clean_scores = []
+    wm_margins = []
     for _ in range(args.n_detect_trials):
-        decoded, scores, _ = detect(model, cfg, P, codes, codebook, args, device, train_loader=train_loader)
+        decoded, scores, _ = detect(model, cfg, P, codes, args, device, train_loader=train_loader)
         wm_hits += int(decoded == true_bits)
         wm_scores.append(float(scores[true_idx]))
-        decoded_clean, clean_scores_arr, _ = detect(base_model, cfg, P, codes, codebook, args, device, train_loader=train_loader)
+        competing_score = max(np.max(scores[:true_idx], initial=-np.inf),
+                              np.max(scores[true_idx + 1:], initial=-np.inf))
+        wm_margins.append(float(scores[true_idx] - competing_score))
+        decoded_clean, clean_scores_arr, _ = detect(base_model, cfg, P, codes, args, device, train_loader=train_loader)
         clean_hits += int(decoded_clean == true_bits)
         clean_scores.append(float(clean_scores_arr[true_idx]))
 
@@ -825,6 +836,9 @@ def evaluate(model, base_model, cfg, P, codes, codebook, true_msg, args, device,
         "clean_score_mean": clean_mean,
         "wm_score_std": wm_std,
         "clean_score_std": clean_std,
+        "wm_margin_mean": float(np.mean(wm_margins)),
+        "wm_margin_std": float(np.std(wm_margins)),
+        "nearest_code_cosine": float(code_similarities.max().item()),
     }
 
     if real_images is not None and args.n_fid_samples > 1:
@@ -841,13 +855,13 @@ def evaluate(model, base_model, cfg, P, codes, codebook, true_msg, args, device,
     return metrics
 
 
-def run_query_sweep(model, base_model, cfg, P, codes, codebook, true_msg, args, device, train_loader=None):
+def run_query_sweep(model, base_model, cfg, P, codes, true_msg, args, device, train_loader=None):
     rows = []
     saved_n = args.n_queries
     for n in [int(x) for x in args.query_values.split(",") if x]:
         args.n_queries = n
         rows.append({"sweep": "queries", "value": n, **evaluate(
-            model, base_model, cfg, P, codes, codebook, true_msg, args, device, None, train_loader
+            model, base_model, cfg, P, codes, true_msg, args, device, None, train_loader
         )})
     args.n_queries = saved_n
     return rows
@@ -902,8 +916,8 @@ def main():
 
     D = int(np.prod(cfg.dim))
     wm_bits = tuple(int(b) for b in args.wm_message)
-    P, codes, codebook = make_codebook(D, len(wm_bits), args.wm_K, device)
-    wm_code = codebook[wm_bits]
+    P, codes = make_codebook(D, len(wm_bits), args.wm_K, device, args.codebook_mode)
+    wm_code = codes[message_index(wm_bits)]
 
     real_images = None
     if args.data_source == "real" or (
@@ -936,7 +950,7 @@ def main():
     )
 
     metrics = evaluate(
-        model, base_model, cfg, P, codes, codebook, args.wm_message,
+        model, base_model, cfg, P, codes, args.wm_message,
         args, device, real_images, train_loader
     )
     metrics.update({
@@ -958,7 +972,7 @@ def main():
     sweep_rows = []
     if args.sweep == "queries":
         sweep_rows = run_query_sweep(
-            model, base_model, cfg, P, codes, codebook, args.wm_message,
+            model, base_model, cfg, P, codes, args.wm_message,
             args, device, train_loader
         )
     elif args.sweep != "none":

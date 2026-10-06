@@ -132,6 +132,35 @@ Use `table_runs/summary/aggregate.csv` for table entries; it reports
 mean, standard deviation, minimum, and maximum for detection, false-positive
 rate, separation, score margin, endpoint drift, and FID ratio.
 
+### Fixed-protocol payload capacity
+
+The payload-capacity sweep varies message length while keeping the CIFAR-10
+checkpoint, projection dimension (`K=32`), detection budget (`N=4096`),
+LoRA training, and FID protocol fixed. It uses normalized random codebooks
+at every length (5, 8, 12, 16, 18, and 20 bits), with five sampled messages
+and 40 detection trials per message. Report exact-message accuracy, the
+true-versus-nearest-competitor score margin, and FID ratio. If accuracy
+remains perfect at the largest tested length, report a tested lower bound
+rather than an estimated maximum capacity.
+
+Run the sweep from the repository root on the GPU machine. The runner
+creates `table_runs/` itself, and `--skip_existing` resumes after an
+interruption without repeating completed messages:
+
+```bash
+nohup python -u run_table_experiments.py \
+  --only flow-unet-payload-capacity --run --skip_existing \
+  --manifest table_runs/manifest_payload_capacity.json \
+  > payload_capacity.log 2>&1 &
+```
+
+After it finishes, aggregate the five messages at each payload size:
+
+```bash
+python collect_results.py --manifest table_runs/manifest_payload_capacity.json \
+  --out_dir table_runs/summary_payload_capacity
+```
+
 ## Reproducibility
 
 The scripts set random seeds for Python, NumPy, and PyTorch. Results may still

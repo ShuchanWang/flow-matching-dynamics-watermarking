@@ -31,6 +31,9 @@ METRICS = [
     "score_margin",
     "wm_score_mean",
     "wm_score_std",
+    "wm_margin_mean",
+    "wm_margin_std",
+    "nearest_code_cosine",
     "clean_score_mean",
     "clean_score_std",
     "paired_endpoint_distance_mean",
@@ -173,9 +176,18 @@ def infer_group(job_name: str, row: dict) -> tuple[str, str]:
         m = re.search(r"sd35_payload_(\d+)bit", job_name)
         return "sd35_payload", f"{m.group(1)}bit" if m else str(row.get("bits"))
     if job_name.startswith("flow_unet_payload"):
+        m = re.search(r"flow_unet_payload_capacity_([^_]+)_(\d+)bit", job_name)
+        if m:
+            return f"flow_unet_payload_capacity_{m.group(1)}", f"{m.group(2)}bit"
         m = re.search(r"flow_unet_payload_stress_([^_]+)_N(\d+)_(\d+)bit", job_name)
         if m:
-            return f"flow_unet_payload_stress_{m.group(1)}_{m.group(3)}bit", f"N={m.group(2)}"
+            return (
+                f"flow_unet_payload_stress_{m.group(1)}_{m.group(3)}bit",
+                f"N={row.get('n_detect_queries', m.group(2))}",
+            )
+        m = re.search(r"flow_unet_payload_stress_([^_]+)_(\d+)bit", job_name)
+        if m:
+            return f"flow_unet_payload_stress_{m.group(1)}", f"{m.group(2)}bit"
         m = re.search(r"flow_unet_payload_([^_]+)_(\d+)bit", job_name)
         if m:
             return f"flow_unet_payload_{m.group(1)}", f"{m.group(2)}bit"
