@@ -34,7 +34,7 @@ PAYLOAD_MESSAGES = {
     8: ["00000000", "00110101", "01011010", "10100101", "11110000"],
     12: ["000000000000", "001101011010", "010110101101", "101001010010", "111100001111"],
 }
-PAYLOAD_STRESS_BITS = (5, 8, 12, 16, 18, 20)
+PAYLOAD_STRESS_BITS = (4, 8, 16, 32)
 
 
 def payload_stress_messages(bits: int) -> list[str]:
@@ -319,17 +319,17 @@ def build_jobs(selected: set[str], out_root: str) -> list[Job]:
                     out_root,
                     "cifar10",
                     msg,
-                    subdir="flow_unet_payload_capacity",
+                    subdir="flow_unet_payload_hypercube",
                 )
                 set_arg(cmd, "--wm_K", 32)
-                set_arg(cmd, "--codebook_mode", "random")
+                set_arg(cmd, "--codebook_mode", "hypercube")
                 set_arg(cmd, "--n_queries", 4096)
                 set_arg(cmd, "--n_detect_trials", 40)
                 jobs.append(Job(
                     name=f"flow_unet_payload_capacity_cifar10_{bits}bit_{msg}",
                     table="tab:app-payload",
                     command=cmd,
-                    note="Fixed K=32 and N=4096; vary only payload length with random codebooks.",
+                    note="Fixed K=32 and N=4096; vary payload length over the implicit hypercube codebook.",
                 ))
 
     if "flow-unet-epsilon" in selected:

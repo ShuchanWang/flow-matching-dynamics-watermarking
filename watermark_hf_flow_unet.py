@@ -136,8 +136,8 @@ def parse_args():
     parser.add_argument("--wm_message", default="10101")
     parser.add_argument("--wm_K", type=int, default=32)
     parser.add_argument(
-        "--codebook_mode", choices=["auto", "random"], default="auto",
-        help="Use orthogonal codes when possible (auto), or normalized random codes for every payload size.",
+        "--codebook_mode", choices=["auto", "random", "hypercube"], default="auto",
+        help="Use orthogonal codes when possible (auto), normalized random codes, or an implicit binary hypercube codebook.",
     )
     parser.add_argument("--wm_eps", type=float, default=0.5)
     parser.add_argument("--wm_lambda", type=float, default=0.2)
@@ -349,16 +349,21 @@ def message_index(bits):
 
 
 def make_codebook(D: int, n_bits: int, K: int, device: torch.device, mode: str = "auto"):
-    n_messages = 2 ** n_bits
     if K > D:
         raise ValueError(
             f"wm_K={K} exceeds flattened data dimension D={D}. "
             "Choose a smaller --wm_K or a larger latent/image dimension."
         )
+    if mode == "hypercube" and n_bits > K:
+        raise ValueError(f"Hypercube codebook requires payload bits <= wm_K ({K}).")
     with torch.no_grad():
         P_raw = torch.randn(D, K, device=device, dtype=torch.float32)
         Q_p, _ = torch.linalg.qr(P_raw)
         P = Q_p[:, :K]
+        if mode == "hypercube":
+            # Rows represent bit axes; all 2**n_bits signed codewords are implicit.
+            return P, torch.eye(K, device=device, dtype=torch.float32)[:n_bits]
+        n_messages = 2 ** n_bits
         codes_raw = torch.randn(n_messages, K, device=device, dtype=torch.float32)
         if mode == "auto" and n_messages <= K:
             Q_c, _ = torch.linalg.qr(codes_raw.T)
@@ -370,8 +375,24 @@ def make_codebook(D: int, n_bits: int, K: int, device: torch.device, mode: str =
                 flush=True,
             )
             codes = codes_raw
-        codes = codes / codes.norm(dim=1, keepdim=True)
+        codes.div_(codes.norm(dim=1, keepdim=True))
     return P, codes
+
+
+def hypercube_code(bits, axes):
+    signs = torch.tensor([2 * int(bit) - 1 for bit in bits], device=axes.device, dtype=axes.dtype)
+    return (signs @ axes) / math.sqrt(len(bits))
+
+
+def hypercube_score(coordinates, bits):
+    signs = np.array([2 * int(bit) - 1 for bit in bits], dtype=coordinates.dtype)
+    true_score = float(signs @ coordinates / math.sqrt(len(bits)))
+    best_score = float(np.abs(coordinates).sum() / math.sqrt(len(bits)))
+    if all((coordinate > 0) == bool(bit) for coordinate, bit in zip(coordinates, bits)):
+        competitor = best_score - 2 * float(np.abs(coordinates).min()) / math.sqrt(len(bits))
+    else:
+        competitor = best_score
+    return true_score, true_score - competitor
 
 
 def load_real_data(cfg: DatasetConfig, args, device: torch.device):
@@ -699,6 +720,10 @@ def detect(model, cfg, P, codes, args, device, n_queries=None, train_loader=None
         carrier = torch.sin(2 * math.pi * t).view(b, 1)
         signature += (carrier * (v.reshape(b, -1).float() @ P)).sum(dim=0)
     signature /= n_queries
+    if args.codebook_mode == "hypercube":
+        coordinates = (signature @ all_codes.T).detach().cpu().numpy()
+        decoded = tuple(int(value > 0) for value in coordinates)
+        return decoded, coordinates, signature.detach().cpu().numpy()
     scores = signature.view(1, -1) @ all_codes.T
     best_idx = int(scores.argmax(dim=1).item())
     decoded = tuple((best_idx >> i) & 1 for i in range(len(args.wm_message)))
@@ -802,9 +827,14 @@ def compute_fid(real, gen, args, device):
 
 def evaluate(model, base_model, cfg, P, codes, true_msg, args, device, real_images=None, train_loader=None):
     true_bits = tuple(int(b) for b in true_msg)
-    true_idx = message_index(true_bits)
-    code_similarities = codes @ codes[true_idx]
-    code_similarities[true_idx] = -torch.inf
+    hypercube = args.codebook_mode == "hypercube"
+    if hypercube:
+        nearest_code_cosine = 1.0 - 2.0 / len(true_bits)
+    else:
+        true_idx = message_index(true_bits)
+        code_similarities = codes @ codes[true_idx]
+        code_similarities[true_idx] = -torch.inf
+        nearest_code_cosine = float(code_similarities.max().item())
 
     wm_hits = 0
     clean_hits = 0
@@ -814,13 +844,21 @@ def evaluate(model, base_model, cfg, P, codes, true_msg, args, device, real_imag
     for _ in range(args.n_detect_trials):
         decoded, scores, _ = detect(model, cfg, P, codes, args, device, train_loader=train_loader)
         wm_hits += int(decoded == true_bits)
-        wm_scores.append(float(scores[true_idx]))
-        competing_score = max(np.max(scores[:true_idx], initial=-np.inf),
-                              np.max(scores[true_idx + 1:], initial=-np.inf))
-        wm_margins.append(float(scores[true_idx] - competing_score))
+        if hypercube:
+            true_score, margin = hypercube_score(scores, true_bits)
+            wm_scores.append(true_score)
+            wm_margins.append(margin)
+        else:
+            wm_scores.append(float(scores[true_idx]))
+            competing_score = max(np.max(scores[:true_idx], initial=-np.inf),
+                                  np.max(scores[true_idx + 1:], initial=-np.inf))
+            wm_margins.append(float(scores[true_idx] - competing_score))
         decoded_clean, clean_scores_arr, _ = detect(base_model, cfg, P, codes, args, device, train_loader=train_loader)
         clean_hits += int(decoded_clean == true_bits)
-        clean_scores.append(float(clean_scores_arr[true_idx]))
+        if hypercube:
+            clean_scores.append(hypercube_score(clean_scores_arr, true_bits)[0])
+        else:
+            clean_scores.append(float(clean_scores_arr[true_idx]))
 
     wm_mean = float(np.mean(wm_scores))
     clean_mean = float(np.mean(clean_scores))
@@ -838,7 +876,7 @@ def evaluate(model, base_model, cfg, P, codes, true_msg, args, device, real_imag
         "clean_score_std": clean_std,
         "wm_margin_mean": float(np.mean(wm_margins)),
         "wm_margin_std": float(np.std(wm_margins)),
-        "nearest_code_cosine": float(code_similarities.max().item()),
+        "nearest_code_cosine": nearest_code_cosine,
     }
 
     if real_images is not None and args.n_fid_samples > 1:
@@ -917,7 +955,7 @@ def main():
     D = int(np.prod(cfg.dim))
     wm_bits = tuple(int(b) for b in args.wm_message)
     P, codes = make_codebook(D, len(wm_bits), args.wm_K, device, args.codebook_mode)
-    wm_code = codes[message_index(wm_bits)]
+    wm_code = hypercube_code(wm_bits, codes) if args.codebook_mode == "hypercube" else codes[message_index(wm_bits)]
 
     real_images = None
     if args.data_source == "real" or (
