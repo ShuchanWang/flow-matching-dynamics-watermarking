@@ -188,7 +188,7 @@ def canonical_message(bits: int) -> str:
     return messages[min(3, len(messages) - 1)]
 
 
-def build_jobs(selected: set[str], out_root: str) -> list[Job]:
+def build_jobs(selected: set[str], out_root: str, capacity_bits: tuple[int, ...] = PAYLOAD_STRESS_BITS) -> list[Job]:
     jobs: list[Job] = []
 
     if "sd35-main" in selected:
@@ -313,7 +313,7 @@ def build_jobs(selected: set[str], out_root: str) -> list[Job]:
                     ))
 
     if selected & {"flow-unet-payload-capacity", "flow-unet-payload-stress"}:
-        for bits in PAYLOAD_STRESS_BITS:
+        for bits in capacity_bits:
             for msg in payload_stress_messages(bits):
                 cmd = flow_unet_base(
                     out_root,
@@ -389,6 +389,7 @@ def parse_args():
     parser.add_argument("--manifest", default="table_runs/manifest.json")
     parser.add_argument("--run", action="store_true", help="Execute jobs instead of only printing commands.")
     parser.add_argument("--only", default="all", help="Comma-separated job groups, or all.")
+    parser.add_argument("--capacity_bits", default="4,8,16,32", help="Comma-separated bit lengths for the flow-UNet payload-capacity group.")
     parser.add_argument("--skip_existing", action="store_true")
     parser.add_argument("--slurm", default=None, help="Write one SLURM-style shell script with all commands.")
     return parser.parse_args()
@@ -419,7 +420,14 @@ def main():
     if unknown:
         raise SystemExit(f"Unknown group(s): {sorted(unknown)}")
 
-    jobs = build_jobs(selected, args.out_root)
+    try:
+        capacity_bits = tuple(int(value.strip()) for value in args.capacity_bits.split(",") if value.strip())
+    except ValueError as exc:
+        raise SystemExit("--capacity_bits must be a comma-separated list of integers") from exc
+    if not capacity_bits or len(set(capacity_bits)) != len(capacity_bits) or set(capacity_bits) - set(PAYLOAD_STRESS_BITS):
+        raise SystemExit(f"--capacity_bits must contain distinct values from {PAYLOAD_STRESS_BITS}")
+
+    jobs = build_jobs(selected, args.out_root, capacity_bits)
     manifest_path = Path(args.manifest)
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     with open(manifest_path, "w") as f:
