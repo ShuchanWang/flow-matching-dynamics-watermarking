@@ -176,6 +176,9 @@ def infer_group(job_name: str, row: dict) -> tuple[str, str]:
         m = re.search(r"sd35_payload_(\d+)bit", job_name)
         return "sd35_payload", f"{m.group(1)}bit" if m else str(row.get("bits"))
     if job_name.startswith("flow_unet_payload"):
+        m = re.search(r"flow_unet_payload_capacity_k(\d+)_([^_]+)_(\d+)bit", job_name)
+        if m:
+            return f"flow_unet_payload_capacity_{m.group(2)}_k{m.group(1)}", f"{m.group(3)}bit"
         m = re.search(r"flow_unet_payload_capacity_([^_]+)_(\d+)bit", job_name)
         if m:
             return f"flow_unet_payload_capacity_{m.group(1)}", f"{m.group(2)}bit"

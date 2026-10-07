@@ -34,11 +34,18 @@ PAYLOAD_MESSAGES = {
     8: ["00000000", "00110101", "01011010", "10100101", "11110000"],
     12: ["000000000000", "001101011010", "010110101101", "101001010010", "111100001111"],
 }
-PAYLOAD_STRESS_BITS = (4, 8, 16, 32)
+PAYLOAD_STRESS_BITS = (4, 8, 16, 32, 64, 128)
 
 
 def payload_stress_messages(bits: int) -> list[str]:
-    indices = random.Random(2605 + bits).sample(range(1 << bits), 5)
+    rng = random.Random(2605 + bits)
+    if bits <= 32:
+        indices = rng.sample(range(1 << bits), 5)
+    else:
+        indices = set()
+        while len(indices) < 5:
+            indices.add(rng.getrandbits(bits))
+        indices = sorted(indices)
     return [format(index, f"0{bits}b") for index in indices]
 
 
@@ -188,7 +195,7 @@ def canonical_message(bits: int) -> str:
     return messages[min(3, len(messages) - 1)]
 
 
-def build_jobs(selected: set[str], out_root: str, capacity_bits: tuple[int, ...] = PAYLOAD_STRESS_BITS) -> list[Job]:
+def build_jobs(selected: set[str], out_root: str, capacity_bits: tuple[int, ...] = (4, 8, 16, 32), capacity_K: int = 32) -> list[Job]:
     jobs: list[Job] = []
 
     if "sd35-main" in selected:
@@ -319,17 +326,19 @@ def build_jobs(selected: set[str], out_root: str, capacity_bits: tuple[int, ...]
                     out_root,
                     "cifar10",
                     msg,
-                    subdir="flow_unet_payload_hypercube",
+                    subdir=("flow_unet_payload_hypercube" if capacity_K == 32
+                            else f"flow_unet_payload_hypercube_k{capacity_K}"),
                 )
-                set_arg(cmd, "--wm_K", 32)
+                set_arg(cmd, "--wm_K", capacity_K)
                 set_arg(cmd, "--codebook_mode", "hypercube")
                 set_arg(cmd, "--n_queries", 4096)
                 set_arg(cmd, "--n_detect_trials", 40)
                 jobs.append(Job(
-                    name=f"flow_unet_payload_capacity_cifar10_{bits}bit_{msg}",
+                    name=(f"flow_unet_payload_capacity_cifar10_{bits}bit_{msg}" if capacity_K == 32
+                          else f"flow_unet_payload_capacity_k{capacity_K}_cifar10_{bits}bit_{msg}"),
                     table="tab:app-payload",
                     command=cmd,
-                    note="Fixed K=32 and N=4096; vary payload length over the implicit hypercube codebook.",
+                    note=f"Fixed K={capacity_K} and N=4096; vary payload length over the implicit hypercube codebook.",
                 ))
 
     if "flow-unet-epsilon" in selected:
@@ -390,6 +399,7 @@ def parse_args():
     parser.add_argument("--run", action="store_true", help="Execute jobs instead of only printing commands.")
     parser.add_argument("--only", default="all", help="Comma-separated job groups, or all.")
     parser.add_argument("--capacity_bits", default="4,8,16,32", help="Comma-separated bit lengths for the flow-UNet payload-capacity group.")
+    parser.add_argument("--capacity_K", type=int, default=32, help="Projection dimension for the flow-UNet payload-capacity group.")
     parser.add_argument("--skip_existing", action="store_true")
     parser.add_argument("--slurm", default=None, help="Write one SLURM-style shell script with all commands.")
     return parser.parse_args()
@@ -426,8 +436,10 @@ def main():
         raise SystemExit("--capacity_bits must be a comma-separated list of integers") from exc
     if not capacity_bits or len(set(capacity_bits)) != len(capacity_bits) or set(capacity_bits) - set(PAYLOAD_STRESS_BITS):
         raise SystemExit(f"--capacity_bits must contain distinct values from {PAYLOAD_STRESS_BITS}")
+    if args.capacity_K < max(capacity_bits) or args.capacity_K > 3072:
+        raise SystemExit("--capacity_K must be at least the largest payload and at most 3072 for CIFAR-10")
 
-    jobs = build_jobs(selected, args.out_root, capacity_bits)
+    jobs = build_jobs(selected, args.out_root, capacity_bits, args.capacity_K)
     manifest_path = Path(args.manifest)
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     with open(manifest_path, "w") as f:
