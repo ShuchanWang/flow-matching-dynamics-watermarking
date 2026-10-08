@@ -24,16 +24,18 @@ MESSAGES = ("00000", "00111", "01010", "10101", "11001")
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--runs_root", type=Path, default=Path("table_runs/hf_flow_unet/cifar10"))
-    parser.add_argument("--messages", nargs="+", default=["10101"],
+    parser.add_argument("--messages", nargs="+", default=["all"],
                         help="Saved message directories, or 'all' for the five stage-1 messages.")
     parser.add_argument("--output_dir", type=Path, default=Path("table_runs/robustness_cifar10"))
-    parser.add_argument("--ft_steps", type=int, nargs="*", default=[100],
+    parser.add_argument("--ft_steps", type=int, nargs="*", default=[100, 500, 1000],
                         help="Clean flow-matching continuation steps; use an empty list to omit.")
     parser.add_argument("--ft_lr", type=float, default=1e-5)
-    parser.add_argument("--prune", type=float, nargs="*", default=[0.25],
+    parser.add_argument("--prune", type=float, nargs="*", default=[0.25, 0.5],
                         help="Global magnitude-pruned fractions of saved trainable weights.")
-    parser.add_argument("--quant_bits", type=int, nargs="*", default=[8],
+    parser.add_argument("--quant_bits", type=int, nargs="*", default=[8, 4],
                         help="Signed symmetric per-tensor fake-quantization bit widths.")
+    parser.add_argument("--only", nargs="+", choices=["baseline", "ft", "prune", "quant"],
+                        help="Run only selected condition families; omit to run all.")
     parser.add_argument("--batch_size", type=int, default=32)
     parser.add_argument("--fid_batch_size", type=int, default=4)
     parser.add_argument("--n_queries", type=int, default=4096)
@@ -42,7 +44,7 @@ def parse_args():
     parser.add_argument("--n_sample_steps", type=int, default=100)
     parser.add_argument("--num_workers", type=int, default=0)
     parser.add_argument("--device", default="cuda")
-    parser.add_argument("--skip_existing", action="store_true")
+    parser.add_argument("--skip_existing", action=argparse.BooleanOptionalAction, default=True)
     return parser.parse_args()
 
 
@@ -77,19 +79,32 @@ def attack_weights(model, names, kind, value):
 
 
 def conditions(cli):
-    yield "baseline", None, 0
-    for steps in cli.ft_steps:
-        if steps <= 0:
-            raise ValueError("Fine-tuning steps must be positive.")
-        yield f"clean_ft_{steps}", "ft", steps
+    selected = set(cli.only or ["baseline", "ft", "prune", "quant"])
+    if "baseline" in selected:
+        yield "baseline", None, 0
     for fraction in cli.prune:
         if not 0 < fraction < 1:
             raise ValueError("Pruning fractions must be between 0 and 1.")
-        yield f"prune_{fraction:g}", "prune", fraction
+        if "prune" in selected:
+            yield f"prune_{fraction:g}", "prune", fraction
     for bits in cli.quant_bits:
         if not 2 <= bits <= 16:
             raise ValueError("Quantization bits must be between 2 and 16.")
-        yield f"quant_{bits}bit", "quant", bits
+        if "quant" in selected:
+            yield f"quant_{bits}bit", "quant", bits
+    for steps in cli.ft_steps:
+        if steps <= 0:
+            raise ValueError("Fine-tuning steps must be positive.")
+        if "ft" in selected:
+            yield f"clean_ft_{steps}", "ft", steps
+
+
+def write_csv(path, rows):
+    fields = sorted({key for row in rows for key in row})
+    with path.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 def main():
@@ -100,7 +115,11 @@ def main():
     device = torch.device(cli.device)
     cfg = wm.DEFAULT_CONFIGS["cifar10"]
     cli.output_dir.mkdir(parents=True, exist_ok=True)
-    rows = []
+    rows = {}
+    csv_path = cli.output_dir / "results.csv"
+    for existing in cli.output_dir.glob("*/*.json"):
+        row = json.loads(existing.read_text())
+        rows[(row["message"], row["condition"])] = row
     base_model = None
     checkpoint = None
 
@@ -154,7 +173,7 @@ def main():
         for label, kind, severity in conditions(cli):
             result_path = cli.output_dir / message / f"{label}.json"
             if cli.skip_existing and result_path.exists():
-                rows.append(json.loads(result_path.read_text()))
+                write_csv(csv_path, list(rows.values()))
                 print(f"Skipping {message}/{label}: saved result exists", flush=True)
                 continue
             model.load_state_dict(original, strict=True)
@@ -184,7 +203,8 @@ def main():
             }
             result_path.parent.mkdir(parents=True, exist_ok=True)
             result_path.write_text(json.dumps(row, indent=2) + "\n")
-            rows.append(row)
+            rows[(message, label)] = row
+            write_csv(csv_path, list(rows.values()))
             print(f"{message}/{label}: recovery={metrics['wm_acc']:.1f}% "
                   f"clean_fp={metrics['clean_fp']:.1f}% "
                   f"FID ratio={metrics.get('fid_ratio', float('nan')):.3f}", flush=True)
@@ -193,12 +213,7 @@ def main():
         if device.type == "cuda":
             torch.cuda.empty_cache()
 
-    fields = sorted({key for row in rows for key in row})
-    with (cli.output_dir / "results.csv").open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fields)
-        writer.writeheader()
-        writer.writerows(rows)
-    print(f"Saved {len(rows)} rows to {cli.output_dir / 'results.csv'}", flush=True)
+    print(f"Saved {len(rows)} rows to {csv_path}", flush=True)
 
 
 if __name__ == "__main__":
