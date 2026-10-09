@@ -51,11 +51,12 @@ Rather than embedding signals into model weights or outputs, we embed the
 watermark directly into the learned continuous dynamics---the velocity
 field of a flow matching model. We formulate this as random coding over a
 continuous channel: a key-dependent perturbation is added during training,
-and the message is recovered at detection time from black-box queries. The
+and the message is recovered at detection time from black-box velocity
+queries. The
 perturbation is designed to leave the generated distribution unchanged.
 Experiments on MNIST and CIFAR-10 across different architectures confirm
-reliable message recovery, preserved generation quality, and chance-level
-decoding accuracy without the secret key.
+reliable message recovery, preserved generation quality, and poor
+message recovery under independently sampled wrong keys.
 \end{abstract}
 
 \section{Introduction}
@@ -89,10 +90,11 @@ A watermarking scheme for a generative model should satisfy the following
 properties. The watermark should be embedded in the model itself, so that
 it persists across different generated outputs and cannot be circumvented
 simply by bypassing a post-processing step (model-level embedding).
-Detection should require only query access to the model, without access to
-weights, training data, or the generation pipeline, enabling verification
-of deployed models accessible only through APIs (black-box
-verifiability). Watermarked models should generate samples that are
+Detection should require velocity-query access to the model, without
+access to weights or training data. This permits verification through
+an API that exposes velocity evaluations, but not through an API that
+returns only generated images (black-box verifiability under the stated
+query interface). Watermarked models should generate samples that are
 statistically indistinguishable from those of unwatermarked models, with
 no visible artifacts or degradation in fidelity (quality preservation).
 Detection and message recovery should require knowledge of a secret key;
@@ -110,10 +112,12 @@ can remain correlated.
 \subsection{Limitations of Existing Approaches}
 
 We categorize existing watermarking methods by what they watermark.
-Output-level methods embed signals into generated
-samples~\cite{wen2023tree,fernandez2023stable}. These are not model-level:
-removing the post-processing step eliminates the watermark, and they
-provide no evidence of model ownership if the model itself is copied.
+Sampling-level methods such as Tree-Ring modify the latent noise used
+to generate images~\cite{wen2023tree}. Decoder-level methods such as
+Stable Signature fine-tune the generator's image decoder so its outputs
+carry a detectable signal~\cite{fernandez2023stable}. Both are verified
+from images; their respective attack surfaces are the sampling process
+and the decoder, rather than direct access to the velocity field.
 Weight-level methods embed bits into model
 parameters~\cite{uchida2017embedding}. While model-level, they require
 white-box access and are fragile to fine-tuning, pruning, or
@@ -145,9 +149,9 @@ This gap motivates our core question:
 \begin{quote}
 \emph{Can we embed a verifiable, keyed, multi-bit message directly into
 the learned velocity field of a flow matching model, such that (1) the
-watermark is detectable with only black-box access, (2) generation
-quality is preserved, and (3) reliable detection requires access to a
-secret key?}
+watermark is detectable through black-box velocity queries, (2)
+generation quality is preserved, and (3) an independent wrong key fails
+to recover the message?}
 \end{quote}
 
 \subsection{Our Approach and Contributions}
@@ -158,13 +162,13 @@ message as a key-dependent perturbation of the continuous velocity field
 rather than into weights or outputs (model-level embedding). Second, we
 use a zero-mean temporal carrier that avoids a persistent drift direction
 and enables synchronous demodulation at detection time; sample quality is
-evaluated empirically through FID (quality preservation). Third, the watermark is keyed by a secret projection matrix and an orthogonal
-codebook; without this key, empirical detection accuracy matches the random
-guess rate (keyed security). Fourth, the scheme supports multi-bit messages via the codebook construction, enabling identification beyond binary verification (multi-bit capacity).
-Fifth, we validate the method on MNIST and CIFAR-10 across MLP and UNet
-architectures, achieving $100\%$ message recovery with chance-level
-false positive rate, FID ratios $0.95\times$--$1.1\times$, and
-statistical separation exceeding $8.4\sigma$ across all settings
+evaluated empirically through FID (quality preservation). Third, the watermark is keyed by a secret projection matrix and a
+codebook; independently sampled wrong keys fail to recover the tested
+messages, while adaptive key attacks remain open. Fourth, the scheme supports multi-bit messages via the codebook construction, enabling identification beyond binary verification (multi-bit capacity).
+Fifth, we validate the method on MNIST, CIFAR-10, CelebA-64, and
+SD3.5 latent models, achieving $100\%$ five-bit message recovery in the
+reported cross-model settings and FID ratios near their respective clean
+references
 (empirical validation). These properties make dynamics-level watermarking
 a potential foundation for applications such as model ownership
 verification, traitor tracing, and regulatory compliance, though we leave
@@ -320,13 +324,12 @@ satisfying $P^T P = I_k$, generated by QR decomposition of a random matrix
 seeded by $K$. This maps from the $D$-dimensional velocity space to a
 $k$-dimensional latent code space. The component
 $C = \{c_m\}_{m \in \mathcal{M}}$ is a codebook of $|\mathcal{M}| = 2^L$
-unit vectors in $\mathbb{R}^k$, also generated via QR decomposition from
-$K$, such that each $L$-bit message maps to a distinct codeword $c_m$. We
-require $L \leq k$ so that pairwise orthogonal codewords can be assigned;
-in practice we use $L < k$ and select $2^L$ approximately orthogonal
-vectors from a random codebook, ensuring
-$\langle c_m, c_{m'} \rangle \approx \delta_{m,m'}$ with high probability
-for sufficiently large $k$.
+unit vectors in $\mathbb{R}^k$ such that each message maps to a distinct
+codeword. When $2^L\leq k$, QR decomposition yields pairwise orthogonal
+codewords. For $2^L>k$, the explicit-codebook experiments use normalized
+random vectors, which are not pairwise orthogonal. The implicit
+hypercube construction used for longer payloads is specified in
+Appendix~\ref{app:payload}.
 
 Throughout the paper, let
 \begin{equation}
@@ -612,12 +615,14 @@ correlated, $r_{\mathrm{eff}}$ can be smaller than $k$.
 See Appendix~\ref{app:capacity_proof}.
 \end{proof}
 
-This result formalizes the scaling behaviour of the demodulated channel.
-For a single model, increasing $k$ increases the ambient projection
-dimension, but it does not create $k$ independent scalar channels unless
-the projected velocity covariance is well conditioned. Correlations among
-velocity coordinates are captured by $\Sigma$ and reduce the effective
-rank of the channel. In contrast, if the same keyed construction is used
+The distinction between projection dimension $k$ and effective rank
+$r_{\mathrm{eff}}$ matters for payload selection: adding projection
+coordinates need not add equally informative directions at a finite
+query budget. The spectrum of the measured projected-channel covariance,
+rather than $k$ alone, determines which directions can be distinguished
+from query noise. We do not estimate $r_{\mathrm{eff}}$ in the experiments,
+so the observed payload limit is empirical rather than an estimate of
+channel capacity. In contrast, if the same keyed construction is used
 to distribute independently trained model copies to different users, the
 corresponding channel observations are independent across copies and the
 aggregate evidence scales additively with the number of models. This is
@@ -630,258 +635,248 @@ Definition~\ref{def:admissible}, condition~2, limits the construction to
 $k$ codewords, or $\log_2 k$ bits. The 5-bit orthogonal runs with $k=32$
 reach this geometric limit. The longer-payload runs in
 Table~\ref{tab:app-payload} instead use normalized random codewords in
-the same $k$-dimensional space, relaxing exact orthogonality. Their
-reliability depends on the separation between the true codeword and its
-nearest competitor relative to detection noise.
+the same $k$-dimensional space, relaxing exact orthogonality.
+Table~\ref{tab:app-capacity} also reports a separate hypercube construction
+in which each bit occupies one projection axis. Neither construction
+makes the projected velocity coordinates statistically independent;
+reliability must be measured empirically.
 
 \subsection{Security Analysis}\label{sec:security_analysis}
 
-The security of the watermarking scheme relies on the secrecy of the
-projection matrix $P \in \mathbb{R}^{D \times k}$ and the codebook
-$C = \{c_m\}_{m \in \mathcal{M}} \subset \mathbb{R}^k$. We consider an
-attacker with black-box access to a single deployed model
-$v_{\theta,K,m}$ containing an unknown message $m$. The attacker may
-query the model at arbitrary inputs $(x_i, t_i)$, $i = 1, \dots, N$, and
-observe the velocity vectors
-$y_i = v_{\theta,K,m}(x_i, t_i) \in \mathbb{R}^D$.
+\paragraph{Verification and attack goals.}
+The object under verification is a model's velocity field $w(x,t)$, not
+an individual generated image. The verifier holds $K=(P,C)$ and has
+oracle access to $w(x,t)$. Algorithm~\ref{alg:detection} returns a
+decoded message $\hat m_K(w)$ and a score; its argmax always returns
+some message, even for a clean model. For a prespecified key $K$ and
+target message $m$, define the exact-match ownership decision
+$D_{K,m}(w)=\mathbf{1}\{\hat m_K(w)=m\}$. The reported clean false-positive
+rate is the fraction of clean-model trials for which $D_{K,m}=1$;
+watermarked exact-message recovery is the corresponding acceptance
+rate on the marked model. This is an empirical false-positive rate for
+that fixed-target rule, not for arbitrary-key or multiple-message
+searches. We call an attack successful at \emph{unauthorized decoding}
+if an adversary without $K$ recovers $m$; at \emph{removal} if it
+produces a modified model $w'$ that preserves useful generation quality
+but satisfies $\hat m_K(w')\ne m$; and at \emph{forgery} if it produces
+a model without the owner's watermark for which $\hat m_K(w')=m$.
+Recovering $K$ (or an equivalent decoding key) is a separate, stronger
+key-recovery goal. A service exposing only generated images does not
+provide the velocity queries required by this verifier. A deployment
+with multiple ownership claims must account for the number of keys
+and messages tested; a score threshold may further trade false
+positives against missed detections.
 
-The watermark is embedded as
-$s_{K,m}(x,t) = \sin(2\pi t) \cdot P c_m$, where $P$ maps the
-$k$-dimensional latent code space into the $D$-dimensional velocity
-space. An attacker without these components must recover them, or
-learn an equivalent decoding rule, from queries alone.
+These goals mirror the removal and false-attribution questions in
+generative watermarking, but the attacked object differs. Tree-Ring
+encodes a fingerprint in the sampling noise and detects it from
+generated images~\cite{wen2023tree}; Stable Signature embeds a signal
+through a fine-tuned decoder and likewise verifies
+images~\cite{fernandez2023stable}. An attack using a public autoencoder
+has weakened Tree-Ring detection in images~\cite{lin2025crack}, but
+image editing or inversion does not directly test our velocity-field
+verifier. Model modification is a closer analogue: fine-tuning has
+been used to remove Stable Signature while retaining image
+quality~\cite{hu2024unstable}. Image-level false attribution has also
+been demonstrated against semantic diffusion watermarks~\cite{muller2025forgery};
+for our model-level claim, forgery instead concerns a model that passes
+the keyed velocity-query test.
 
-\begin{proposition}[Subspace search problem]\label{prop:subspace_search}
-Given black-box query access to a single watermarked model
-$v_{\theta,K,m}$, recovering the watermark subspace
-$\text{span}(P) \subset \mathbb{R}^D$ requires searching the Grassmann
-manifold $\text{Gr}(k,D)$ of all $k$-dimensional subspaces in
-$\mathbb{R}^D$, which has dimension $k(D-k)$.
+For a fixed embedded message $m$, write $u=P c_m\in\mathbb{R}^D$.
+Even if the attacker estimates $u$ exactly, the following geometric
+ambiguities remain.
+
+\begin{proposition}[Single-message subspace ambiguity]
+\label{prop:subspace_search}
+Suppose $u\ne0$ and $1<k<D$. Knowledge of $u$ alone does not determine
+$\operatorname{span}(P)$. The $k$-dimensional subspaces containing $u$
+form a Grassmannian $\operatorname{Gr}(k-1,D-1)$ of dimension
+$(k-1)(D-k)$.
 \end{proposition}
 
 \begin{proof}
-From the observations $y_i = v_\theta(x_i,t_i) + \eta(x_i,t_i)
-+ \epsilon \sin(2\pi t_i) P c_m$, the attacker can estimate the
-watermark component $\sin(2\pi t) P c_m$ up to statistical noise. This
-reveals the action of $P$ only through the vector $P c_m \in
-\mathbb{R}^D$, which lies in the $k$-dimensional subspace
-$\text{span}(P)$. To identify this subspace among all $k$-dimensional
-subspaces of $\mathbb{R}^D$, the attacker must solve a continuous
-optimization problem over the Grassmann manifold $\text{Gr}(k,D)$, whose
-dimension is $k(D-k)$~\cite{zheng2002communication}.
+Let $U=\operatorname{span}(u)$. The quotient space
+$\mathbb{R}^D/U$ has dimension $D-1$. For every $k$-dimensional
+subspace $S$ containing $U$, the quotient $S/U$ is a $(k-1)$-dimensional
+subspace of $\mathbb{R}^D/U$, and conversely the inverse image of
+every such subspace is a $k$-dimensional subspace containing $U$.
+The correspondence is bijective. The dimension of
+$\operatorname{Gr}(k-1,D-1)$~\cite{zheng2002communication} is
+$(k-1)((D-1)-(k-1))=(k-1)(D-k)$.
 \end{proof}
 
-For our experimental parameters $D = 784$ (MNIST) and $k = 32$, the
-search space has dimension $32 \times 752 = 24{,}064$. Subspace
-estimation from noisy linear measurements is a well-studied problem; the subsequent recovery of the correct basis and codebook introduces
-additional ambiguity, as shown below.
-
-\begin{proposition}[Non-identifiability of the projection matrix]\label{prop:P_hidden}
-Even if the attacker identifies the correct subspace
-$\text{span}(P)$, the projection matrix $P$ is identifiable only up to
-an unknown orthogonal transformation of the latent code space. The
-original key pair $(P, C)$ is not uniquely determined by the
-observations.
+\begin{proposition}[Orthogonal key ambiguity]\label{prop:P_hidden}
+For every orthogonal $Q\in\mathbb{R}^{k\times k}$, the key pairs
+$(P,C)$ and $(P Q,\{Q^T c_j\}_{j\in\mathcal M})$ produce the same
+watermark signal for every message $j$.
 \end{proposition}
 
 \begin{proof}
-Any matrix $P' = P Q$ with orthogonal $Q \in \mathbb{R}^{k \times k}$
-spans the identical subspace and generates observationally equivalent
-watermark signals:
-$\sin(2\pi t) P' (Q^T c_m) = \sin(2\pi t) P c_m$.
-The pair $(P', Q^T C)$ produces the same velocity field as $(P, C)$.
-Since infinitely many orthonormal bases span the same subspace, and each
-corresponds to a different latent codebook $Q^T C$, the original key
-pair $(P, C)$ is underdetermined by the observations. An attacker who
-identifies the correct subspace still faces the problem of selecting the
-correct basis from among infinitely many candidates.
+For each $j$, $(P Q)(Q^T c_j)=P(QQ^T)c_j=P c_j$.
+The time-dependent carrier is therefore identical under both keys.
 \end{proof}
 
-Together, Propositions~\ref{prop:subspace_search}
-and~\ref{prop:P_hidden} characterize two obstacles to key recovery:
-identifying the watermark subspace requires search over a high-dimensional manifold, and even given the subspace, the
-projection matrix and codebook are not uniquely determined. A rigorous
-characterization of the sample and computational complexity of key
-recovery under our construction is left to future work.
+These propositions establish ambiguity of the original key from one
+message's signal. They do not bound the cost of removal or forgery. In
+particular, an attacker with arbitrary velocity-query access could try
+to estimate $u$ directly in output space using the public temporal
+carrier $\sin(2\pi t)$, then subtract its estimate from the responses
+of a copied model or train a surrogate without the signal. The
+unwatermarked velocity also varies with time, so the success of this
+estimator is an empirical question. Knowing $u$ need not reveal the
+message label assigned by the secret codebook.
 
-Empirically, detection with an incorrect projection matrix $P' \neq P$
-yields $0/50$ correct message recoveries on both MNIST and CIFAR-10,
-matching the random guess rate of $1/|\mathcal{M}| \approx 3.1\%$
-(Table~\ref{tab:detection}). Clean models show no significant correlation
-with any codeword, confirming that the watermark signal does not arise
-from training artifacts.
+\paragraph{Evidence under the stated access model.}
+The experiments test complementary properties. The random wrong-key
+trial yields $0/50$ correct recoveries across the reported trials
+(Table~\ref{tab:detection}), showing key specificity against an
+independent projection. Clean-model score distributions are separated
+from watermarked scores by at least $8.4\sigma$ in the reported settings
+(Table~\ref{tab:separation}). Across the five-message RF-UNet runs,
+clean-model target-match rates
+were $3.0\pm2.4\%$ on MNIST, $1.0\pm2.0\%$ on CIFAR-10, and
+$3.0\pm4.0\%$ on CelebA-64; these estimate false positives for the
+fixed-target decision above. In the MNIST MLP
+experiment, message
+recovery remains $100\%$ after $10{,}000$ training steps
+(Appendix~\ref{app:persistence}), establishing persistence during
+continued training with the watermark objective active. The measured
+FID ratios in Table~\ref{tab:quality} track utility alongside these
+detection results. In a separate single-message CIFAR-10 RF-UNet sweep,
+recovery is $80\%$ at $16$ velocity queries and $100\%$ from $32$ to
+$4{,}096$ queries (20 trials per budget), describing sensitivity to the
+verifier's query budget rather than to model modification.
+
+These observations support keyed recovery and persistence under the
+tested training procedure. Clean continuation after embedding is a
+different, directly relevant model-modification test: the released
+\texttt{flow-unet-finetune} protocol resumes training without the
+watermark loss and measures message recovery and FID after
+$0$, $100$, $500$, and $1{,}000$ steps. Its outcomes should be reported
+once those runs are complete. For LoRA deployments, verification applies
+to the composed base model and adapter; distributing the adapter
+separately also permits a recipient to revert to the unwatermarked base.
+Neither the wrong-key trial nor watermark-aware continuation measures
+adaptive signal estimation or forged ownership claims.
 
 \section{Experiments}\label{sec:experiments}
 
-We evaluate our watermarking method on two image datasets: MNIST and
-CIFAR-10. We assess three key properties: (i) watermark detection
-accuracy, (ii) preservation of sample quality as measured by Fr\'echet
-Inception Distance (FID), and (iii) security against detection without
-the secret key.
+We evaluate five-bit message recovery across model families, then study
+payload scaling under fixed codebook settings. Exact-message recovery,
+the clean false-positive rate for a prespecified key and target message,
+and FID ratio are the primary outcomes. Wrong-key recovery and score
+separation are security diagnostics; nearest-competitor margins explain
+payload failures but are not substitutes for exact recovery.
 
 \subsection{Experimental Setup}
 
-We evaluate on two datasets: MNIST (grayscale, $28 \times 28$) and
-CIFAR-10 (color, $32 \times 32$). For MNIST, we use two architectures:
-a 4-layer MLP with $1{,}024$ hidden units and SiLU activations, trained
-for both $5{,}000$ and $10{,}000$ steps to assess whether the watermark
-persists under extended training; and a UNet architecture with LoRA
-fine-tuning~\cite{hu2022lora}, where a clean UNet base model is trained
-for $5{,}000$ steps and watermarks are embedded via low-rank adaptation
-matrices trained for $500$ steps per message while base weights remain
-frozen. For CIFAR-10, we train a UNet architecture for $5{,}000$ steps to
-obtain a clean base model, then apply LoRA fine-tuning for $500$ steps per
-message. The MLP on MNIST serves as a fast testbed; the UNet on both
-datasets demonstrates the method at a practical scale.
+The main comparison uses five messages each on public rectified-flow
+UNets for MNIST, CIFAR-10, and CelebA-64, an SD3.5 medium DiT, and an
+MNIST MLP trained from initialization. The RF-UNet and DiT experiments
+watermark pretrained backbones with LoRA~\cite{hu2022lora}; the MLP
+updates all weights. We use $L=5$ bits and $k=32$ as a common controlled
+setting: an orthogonal codebook can hold exactly $k=32$ codewords, or
+$\log_2 k=5$ bits. This choice makes the cross-model comparison
+interpretable, but is not a claimed payload limit. The separate payload
+sweep tests what happens after relaxing codeword orthogonality.
+The RF-UNet and MLP detectors use $N=4096$ velocity queries, whereas
+SD3.5 uses $N=256$. FID uses real-image references where available;
+CelebA-64 and SD3.5 use base-model references. Accordingly, the rows
+test applicability across settings rather than isolate a causal effect
+of architecture. Additional training and evaluation settings are given
+in Appendix~\ref{app:hyperparams}.
 
-All experiments use projection dimension $k = 32$ and 5-bit messages
-($L = 5$, yielding $|\mathcal{M}| = 32$). Detection uses $N = 4{,}096$
-random queries throughout. Complete hyperparameters are provided in
-Appendix~\ref{app:hyperparams}. We report detection accuracy, FID between generated and real samples, and the statistical separation between watermarked and clean models.
-
-\subsection{Watermark Detection}
+\subsection{Five-Bit Results}
 
 \begin{table}[t]
 \centering
-\caption{Watermark detection performance across all models and datasets.}
-\label{tab:detection}
-\begin{tabular}{lccc}
+\caption{Five-bit watermark results across tested models. Entries are
+mean $\pm$ standard deviation over five messages. Exact recovery uses
+20 trials per message. Clean FP is the fixed-target exact-match rate on
+an unwatermarked model (uniform-decoder baseline $1/32$). The RF-UNet
+checkpoints are from
+\texttt{WayBob/FlowMatching-Unet-Celeb-64x64}~\cite{waybobflowmatchingunet}
+and use the Rectified Flow formulation of Liu et al.~\cite{liuflow}.
+FID ratios compare watermarked and clean models using real reference
+images where available and base-model reference samples otherwise;
+latent-model samples use the same pretrained decoder.}
+\label{tab:main}
+\small
+\setlength{\tabcolsep}{2pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llclcccc}
 \toprule
- & Trials & Accuracy ($\uparrow$) \\
+Model & Dataset & Params & Train & Bits & Exact recovery ($\uparrow$) & Clean FP ($\downarrow$) & FID ratio ($\downarrow$) \\
 \midrule
-\multicolumn{3}{c}{\textit{MNIST (MLP, 5K steps)}} \\
-\quad Watermarked models (6 total) & 120 & 120/120 (100\%) \\
-\quad Clean models (2 total) & 40 & 0/40 (0\%) \\
-\midrule
-\multicolumn{3}{c}{\textit{MNIST (MLP, 10K steps)}} \\
-\quad Watermarked models (6 total) & 120 & 120/120 (100\%) \\
-\quad Clean models (2 total) & 40 & 1/40 (2.5\%) \\
-\midrule
-\multicolumn{3}{c}{\textit{MNIST (UNet + LoRA)}} \\
-\quad Watermarked models (3 total) & 60 & 60/60 (100\%) \\
-\quad Clean model & 60 & 0/60 (0\%) \\
-\midrule
-\multicolumn{3}{c}{\textit{CIFAR-10 (UNet + LoRA)}} \\
-\quad Watermarked models (3 total) & 60 & 60/60 (100\%) \\
-\quad Clean model & 60 & 0/60 (0\%) \\
-\midrule
-\multicolumn{3}{c}{\textit{Wrong key attack (all datasets)}} \\
-\quad Random $P' \neq P$ & 50 & 0/50 (0\%) \\
-\midrule
-Random guess baseline & -- & 3.1\% (1/32) \\
+RF-UNet & MNIST          & 6.2M  & LoRA & 5 & $100.0{\pm}0.0$\% & $3.0{\pm}2.4$\% & $0.974{\pm}0.031$ \\
+RF-UNet & CIFAR-10       & 9.0M  & LoRA & 5 & $100.0{\pm}0.0$\% & $1.0{\pm}2.0$\% & $1.010{\pm}0.018$ \\
+RF-UNet & CelebA-64      & 83M   & LoRA & 5 & $100.0{\pm}0.0$\% & $3.0{\pm}4.0$\% & $1.073{\pm}0.007$ \\
+DiT (SD3.5 Med.) & SD3.5 latents & 2.25B & LoRA & 5 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $0.995{\pm}0.017$ \\
+MLP (1024) & MNIST          & 3.71M & Full training & 5 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.086{\pm}0.018$ \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
-Table~\ref{tab:detection} summarizes detection performance. Across all
-architectures and training durations, watermarked models achieve $100\%$
-detection accuracy. On clean models, we observe zero false positives in
-all settings except the 10K-step MNIST MLP configuration, where one clean
-trial out of 40 produced a spurious detection (2.5\%), which is below the
-random guess baseline of $3.1\%$ and not statistically significant. An
-attacker using a random projection matrix instead of the true $P$ achieves
-$0/50$ accuracy, matching the random guess rate.
+Table~\ref{tab:main} establishes five-bit feasibility across the tested
+models. The FID ratios are relative to each row's own clean reference;
+they should not be ranked across datasets as absolute image-quality
+scores. The MLP clean reference is independently trained, whereas the
+pretrained-model rows share their respective base checkpoints. The
+longer-payload and velocity-scale results are reported in
+Appendix~\ref{app:payload}.
 
-\subsection{Statistical Separation}
+\subsection{Payload Scaling}
 
-\begin{table}[t]
-\centering
-\caption{Statistical separation and signature statistics.}
-\label{tab:separation}
-\begin{tabular}{lcccc}
-\toprule
-Dataset / Architecture & WM Score ($\uparrow$) & Clean Score ($\downarrow$) & $\|\hat{s}\|$ (WM / Clean) & Min.\ Separation ($\uparrow$) \\
-\midrule
-MNIST (MLP, 5K)  & $0.58$--$1.11$ & $-0.09$--$0.11$ & $1.06$ / $0.69$ & $8.4\sigma$ \\
-MNIST (MLP, 10K) & $1.41$--$2.07$ & $0.01$--$0.16$ & $1.85$ / $0.84$ & $25.5\sigma$ \\
-MNIST (UNet)     & $0.29$--$0.45$ & $-0.07$--$0.15$ & $0.66$ / $0.56$ & $8.6\sigma$ \\
-CIFAR-10 (UNet)  & $0.62$--$0.64$ & $-0.01$--$0.00$ & $0.65$ / $0.13$ & $17.9\sigma$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+On CIFAR-10, the explicit random-codeword sweep at fixed $k=32$
+recovers all tested 5--20-bit messages; its nearest-competitor margin
+decreases as payload length grows. The separate hypercube sweep at
+fixed $k=128$ falls from $95.5\pm6.6\%$ exact recovery at 64 bits
+to $1.5\pm3.0\%$ at 128 bits, while mean FID ratios remain
+$1.052$ and $1.044$, respectively. Thus the evaluated decoder reaches
+a recovery limit before the reported quality metric changes comparably.
+These are within-codebook comparisons; changing the codebook or $k$
+does not isolate payload length. Full results, including shorter
+cross-dataset runs, are in Appendix~\ref{app:payload}.
 
-Table~\ref{tab:separation} reports per-message score statistics. Watermarked
-models consistently produce large positive scores, while clean model scores
-are near zero. The minimum separation across all settings is $8.4\sigma$
-(MNIST MLP), and all $p$-values are below $10^{-37}$ (Welch's $t$-test). These margins indicate that detection is robust to sampling variability and that false positives are highly unlikely under the observed statistics.
+\subsection{Security and Utility}
 
-We additionally examine the signature norm $\|\hat{s}\|$, which measures
-the total signal energy in the projected space before correlating with any
-specific codeword. On MNIST, $\|\hat{s}\|$ is comparable between
-watermarked and clean models across all architectures (e.g., $0.66$ vs.\
-$0.56$ for UNet). On CIFAR-10, watermarked models exhibit a larger
-signature norm ($0.65$ vs.\ $0.13$), meaning an attacker could potentially
-identify a model as watermarked by measuring the projected energy. We note
-that this does not compromise message recovery: without the codebook $C$,
-the attacker still cannot determine which message is embedded, and
-wrong-key decoding remains at chance level (Table~\ref{tab:detection}).
-The watermark therefore satisfies the keyed security requirement:
-detection and message recovery require knowledge of the secret key.
-
-\subsection{Sample Quality Preservation}
-
-\begin{table}[t]
-\centering
-\caption{Sample quality metrics across datasets and architectures.
-FID is computed against real test images ($1{,}000$ for MNIST;
-$10{,}000$ for CIFAR-10).}
-\label{tab:quality}
-\begin{tabular}{lcc}
-\toprule
-Dataset / Architecture / Model & FID ($\downarrow$) & FID Ratio ($\downarrow$) \\
-\midrule
-\multicolumn{3}{c}{\textit{MNIST (MLP, 5K steps)}} \\
-Clean & $7.4$ & -- \\
-WM Average & $8.1 \pm 0.3$ & $1.10\times$ \\
-\midrule
-\multicolumn{3}{c}{\textit{MNIST (MLP, 10K steps)}} \\
-Clean & $7.3$ & -- \\
-WM Average & $6.9 \pm 0.1$ & $0.947\times$ \\
-\midrule
-\multicolumn{3}{c}{\textit{MNIST (UNet + LoRA)}} \\
-Clean & $7.1$ & -- \\
-WM range & $6.8$--$7.5$ & $0.955\times$--$1.059\times$ \\
-\midrule
-\multicolumn{3}{c}{\textit{CIFAR-10 (UNet + LoRA)}} \\
-Clean & $24.3$ & -- \\
-WM range & $23.5$--$25.1$ & $0.966\times$--$1.032\times$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:quality} quantifies sample quality. Across all settings,
-the FID ratio between watermarked and clean models remains close to
-$1.0\times$. We note that in several configurations watermarked models
-achieve marginally lower FID than the corresponding clean baseline (e.g.,
-$6.9$ vs.\ $7.3$ at 10K steps). This is attributable to random training
-variation and finite-sample FID estimation noise. The key finding is that FID ratios remain
-tightly clustered around $1.0\times$, confirming that the watermark
-perturbation does not degrade sample quality. The generated samples are provided in Appendix~\ref{app:samples}.
-
-These results validate the design of the time-modulated perturbation:
-the zero-mean carrier provides a centered, demodulatable watermark
-signal, while the measured FID ratios show that this signal preserves
-sample quality in practice across datasets, architectures, and training
-durations.
+The five-bit results use the prespecified-key exact-match decision in
+Section~\ref{sec:security_analysis}. The earlier scratch-trained models
+also show no assigned-message recovery in 50 random wrong-key trials;
+this limited test does not establish resistance to adaptive attacks.
+Their score distributions and clean-model controls are detailed in
+Appendix~\ref{app:classic-diagnostics}. Across the main five-message
+runs, FID ratios stay near each model's clean reference
+(Table~\ref{tab:main}), with the reference protocol stated in the table
+caption. The single-message CIFAR-10 RF-UNet query sweep reaches 80\%
+recovery with 16 queries and 100\% from 32 to 4,096 queries (20 trials
+per budget); it measures query sensitivity, not model-modification
+robustness.
 
 \section{Conclusion}
 
 We have presented a method for embedding verifiable, multi-bit messages
 directly into the learned dynamics of flow matching generative models.
 The watermark is a key-dependent perturbation of the velocity field,
-recovered through synchronous demodulation from black-box queries, and
+recovered through synchronous demodulation from black-box velocity
+queries, and
 uses a zero-mean temporal carrier to avoid a persistent velocity bias.
 
-Experiments across MNIST and CIFAR-10 with MLP and UNet architectures
-confirm $100\%$ detection accuracy, FID ratios close to $1.0\times$, and
-chance-level detection without the secret key. Extending training to
+Five-bit experiments across the tested MLP, RF-UNet, and DiT settings
+show $100\%$ message recovery with FID ratios near each model's clean
+reference. At fixed $k=128$, the longer-payload sweep reveals a
+substantial drop in exact recovery between 64 and 128 bits despite
+similar FID ratios. The limited random wrong-key trials yield no
+correct recoveries. Extending training to
 $10{,}000$ steps does not degrade watermark recovery; a persistence
 analysis is provided in Appendix~\ref{app:persistence}.
 
 Several directions remain open. A rigorous finite-sample analysis of the
-demodulated channel would sharpen the capacity guarantees. Extending the
-approach to other generative model families and evaluating robustness to
-model compression or fine-tuning are natural next steps. The dynamics-level perspective
+demodulated channel would sharpen the capacity guarantees. The released
+clean-continuation protocol provides a direct next measurement of
+watermark persistence after unmarked fine-tuning. Extending the
+approach to other generative model families is another next step. The dynamics-level perspective
 introduced here, treating the learned velocity field as a continuous
 communication channel, may also prove useful beyond watermarking.
 
@@ -1098,13 +1093,13 @@ observed statistical separation ($>8.4\sigma$, Table~\ref{tab:separation})
 indicates that the empirical SNR is far above the threshold for reliable
 decoding of 5-bit messages. Appendix Table~\ref{tab:app-payload} extends
 this check to longer payloads on public rectified-flow UNet checkpoints.
-Since all completed rows remain at 100\% watermark accuracy, these
-experiments should be interpreted as payload-scaling evidence rather than
-as a measurement of the capacity boundary. To locate that boundary, the
-payload length must increase while $k$, the query budget $N$, watermark
-strength, training procedure, and quality evaluation stay fixed. Exact
-message recovery, the nearest-competitor score margin, and FID ratio then
-jointly show whether additional bits remain usable.
+In the additional CIFAR-10 sweep (Table~\ref{tab:app-capacity}), exact
+recovery drops sharply from 64 to 128 bits at fixed $k=128$, while the
+nearest-competitor margin changes sign. This identifies a failure of the
+tested decoder under its stated query protocol, not the
+information-theoretic capacity of the velocity channel. Comparisons
+across $k=32$ and $k=128$ do not isolate payload length because the
+carrier dimension also changes.
 
 \section{Watermark Persistence Under Extended Training}\label{app:persistence}
 
@@ -1122,49 +1117,10 @@ $s_{K,m}(x,t)$ is orthogonal to the clean velocity field in expectation,
 the two objectives do not directly compete, and the watermark signal is
 maintained as a persistent offset in the learned dynamics.
 
-The watermark correlation term stabilizes despite extended training (Table~\ref{tab:separation}). The single false positive observed in the 10K-step
-clean model evaluation ($1/40 = 2.5\%$) is below the random guess
-baseline of $3.1\%$ and is not statistically significant after
-multiplicity correction.
-
-\section{Comparison with Existing Methods}\label{app:comparison}
-
-\begin{table}[h]
-\centering
-\caption{Comparison with existing generative model watermarking methods.}
-\label{tab:comparison}
-\begin{tabular}{lccccc}
-\toprule
-Method & Model-Level & Black-Box & Quality & Keyed & Multi-Bit \\
-\midrule
-Tree-Ring~\cite{wen2023tree}            
-& \xmark & \cmark & \cmark & \cmark & \cmark \\
-Stable Signature~\cite{fernandez2023stable} 
-& \cmark & \cmark & \cmark & Partial & \cmark \\
-Weight embedding~\cite{uchida2017embedding} 
-& \cmark & \xmark & \xmark & \xmark & \cmark \\
-Backdoor~\cite{adi2018turning}          
-& \cmark & \cmark & \xmark & \xmark & \xmark \\
-BlackMarks~\cite{chen2019blackmarks}    
-& \cmark & \cmark & \cmark & Partial & \cmark \\
-\midrule
-\textbf{Ours}                           
-& \cmark & \cmark & \cmark & \cmark & \cmark \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:comparison} summarizes how existing paradigms compare
-against the five desiderata. Our dynamics-level approach provides all five
-properties simultaneously. Two methods warrant additional discussion.
-Stable Signature~\cite{fernandez2023stable} trains a decoder network
-alongside the generative model; the decoder weights serve as the key.
-Since the decoder is distributed with the model, anyone with model access
-has the key---the key is not an independent secret.
-BlackMarks~\cite{chen2019blackmarks} uses a secret trigger set for
-verification, providing keying through input-output behavior, though the
-triggers must remain confidential. Neither approach embeds the watermark
-at the level of continuous generative dynamics.
+The watermark correlation term stabilizes despite extended training
+(Table~\ref{tab:separation}). In the 10K-step clean-model evaluation,
+one of 40 trials decoded to a tested message. This is a target-set match,
+not a calibrated watermark-presence false positive.
 
 \section{Capacity and Multiplexing}\label{app:multiplexing}
 
@@ -1620,57 +1576,14 @@ left as a separate ablation; here, sample-quality preservation is
 supported by the measured FID ratios rather than by this first-order
 analysis alone.
 
-\begin{table}[t]
-\centering
-\caption{Watermark performance across tested models. The public
-rectified-flow UNet rows use the Rectified Flow formulation of
-Liu et al.~\cite{liuflow}; checkpoints are from
-\texttt{WayBob/FlowMatching-Unet-Celeb-64x64}~\cite{waybobflowmatchingunet}
-with dataset-specific files \texttt{mnist/ckpt.pth},
-\texttt{cifar10/ckpt.pth}, and \texttt{celeba64/ckpt.pth}. All results use $N{=}4096$ detection
-queries except SD3.5 ($N{=}256$). Detection
-accuracy is measured over 20 trials per model. Clean false-positive rate
-is measured on an un-watermarked reference model; for the scratch-trained
-MLP, this reference is trained independently. FID is computed against
-the dataset's real reference set when available and against base-model
-reference samples for latent or pretrained-checkpoint settings without a
-real-data reference. For latent diffusion models, samples are decoded
-with the same pretrained decoder used by the base and watermarked
-pipelines; no independent image decoder is trained. For FID ratio, lower
-values indicate less measured quality degradation relative to the clean
-reference, and values near or below $1.0$ indicate no observed
-degradation. Entries report mean $\pm$ standard deviation across the
-completed five-message runs. The MLP uses three 1024-unit hidden layers;
-each watermarked model is trained from random initialization with all
-weights updated.}
-\label{tab:main}
-\small
-\setlength{\tabcolsep}{3pt}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{llccccrrr}
-\toprule
-Model & Dataset & Params & Train & Bits & WM Acc ($\uparrow$) & Clean FP ($\downarrow$) & Sep ($\uparrow$) & FID ratio ($\downarrow$) \\
-\midrule
-RF-UNet & MNIST          & 6.2M  & LoRA & 5 & $100.0{\pm}0.0$\% & $3.0{\pm}2.4$\% & $46.5{\pm}9.8$ & $0.974{\pm}0.031$ \\
-RF-UNet & CIFAR-10       & 9.0M  & LoRA & 5 & $100.0{\pm}0.0$\% & $1.0{\pm}2.0$\% & $55.6{\pm}8.7$ & $1.010{\pm}0.018$ \\
-RF-UNet & CelebA-64      & 83M   & LoRA & 5 & $100.0{\pm}0.0$\% & $3.0{\pm}4.0$\% & $56.8{\pm}5.8$ & $1.073{\pm}0.007$ \\
-DiT (SD3.5 Med.) & SD3.5 latents  & 2.25B & LoRA & 5 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $22.3{\pm}3.6$ & $0.995{\pm}0.017$ \\
-MLP (1024) & MNIST          & 3.71M & Full training & 5 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $22.4{\pm}7.1$ & $1.086{\pm}0.018$ \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
 % ============================================================
 % APPENDIX: EXPERIMENTAL TABLES
 % ============================================================
 \section{Additional Experimental Results}
 \label{app:tables}
 
-This appendix reports only completed experimental results. Planned
-robustness and scalability sweeps are generated by the released scripts,
-but are omitted from the paper until the corresponding runs are complete.
-This avoids mixing measured claims with placeholders.
+This appendix reports completed experimental groups and separates
+scratch-trained diagnostics from public-checkpoint payload sweeps.
 
 For pretrained latent models such as SD3.5, the reported FID ratio is a
 preservation metric relative to base-model reference samples decoded with
@@ -1678,50 +1591,178 @@ the same pretrained VAE/decoder. It tests whether watermarking changes
 the base model's decoded output distribution, rather than serving as an
 absolute measure of image fidelity.
 
-% ------------------------------------------------------------
-\subsection{Multi-Message Aggregates}
-\label{app:main}
+\subsection{Classic-Model Diagnostics}\label{app:classic-diagnostics}
+
+The original MNIST MLP is trained with all weights updated for 5,000
+and 10,000 steps. The scratch-trained MNIST and CIFAR-10 UNets first
+train a clean base for 5,000 steps and then watermark it with 500 LoRA
+steps per message. These runs use five-bit messages, $k=32$, and
+$N=4096$ velocity queries. The tables below retain trial counts,
+score distributions, and absolute real-reference FID for this
+protocol; they are not additional rows in the public-checkpoint study.
+
+\subsubsection{Detection and Key Controls}
 
 \begin{table}[t]
 \centering
-\caption{Aggregate results for completed five-message experiments. Entries
-show mean $\pm$ standard deviation across the five 5-bit messages
-\texttt{00000}, \texttt{00111}, \texttt{01010}, \texttt{10101}, and
-\texttt{11001}. RF-UNet denotes Rectified Flow~\cite{liuflow} UNet
-checkpoints downloaded from
-\texttt{WayBob/FlowMatching-Unet-Celeb-64x64}~\cite{waybobflowmatchingunet}
-and uses $N{=}4096$ velocity queries; SD3.5 uses
-$N{=}256$ latent-model queries.}
-\label{tab:app-main}
-\small
-\setlength{\tabcolsep}{5pt}
-\begin{tabular}{llcccc}
+\caption{Detection and key controls for the scratch-trained MLP and UNets.}
+\label{tab:detection}
+\begin{tabular}{lccc}
 \toprule
-Model & Dataset & WM Acc ($\uparrow$) & Clean FP ($\downarrow$) & Sep ($\sigma$, $\uparrow$) & FID ratio ($\downarrow$) \\
+ & Trials & Accuracy ($\uparrow$) \\
 \midrule
-RF-UNet & MNIST     & $100.0\pm0.0$\% & $3.0\pm2.4$\% & $46.5\pm9.8$ & $0.974\pm0.031$ \\
-RF-UNet & CIFAR-10  & $100.0\pm0.0$\% & $1.0\pm2.0$\% & $55.6\pm8.7$ & $1.010\pm0.018$ \\
-RF-UNet & CelebA-64 & $100.0\pm0.0$\% & $3.0\pm4.0$\% & $56.8\pm5.8$ & $1.073\pm0.007$ \\
-DiT (SD3.5 M)  & SD3.5 latents & $100.0\pm0.0$\% & $0.0\pm0.0$\% & $22.3\pm3.6$ & $0.995\pm0.017$ \\
-MLP (1024) & MNIST & $100.0\pm0.0$\% & $0.0\pm0.0$\% & $22.4\pm7.1$ & $1.086\pm0.018$ \\
+\multicolumn{3}{c}{\textit{MNIST (MLP, 5K steps)}} \\
+\quad Watermarked models (6 total) & 120 & 120/120 (100\%) \\
+\quad Clean models (2 total) & 40 & 0/40 (0\%) \\
+\midrule
+\multicolumn{3}{c}{\textit{MNIST (MLP, 10K steps)}} \\
+\quad Watermarked models (6 total) & 120 & 120/120 (100\%) \\
+\quad Clean models (2 total) & 40 & 1/40 (2.5\%) \\
+\midrule
+\multicolumn{3}{c}{\textit{MNIST (UNet + LoRA)}} \\
+\quad Watermarked models (3 total) & 60 & 60/60 (100\%) \\
+\quad Clean model & 60 & 0/60 (0\%) \\
+\midrule
+\multicolumn{3}{c}{\textit{CIFAR-10 (UNet + LoRA)}} \\
+\quad Watermarked models (3 total) & 60 & 60/60 (100\%) \\
+\quad Clean model & 60 & 0/60 (0\%) \\
+\midrule
+\multicolumn{3}{c}{\textit{Wrong key attack (all datasets)}} \\
+\quad Random $P' \neq P$ & 50 & 0/50 (0\%) \\
+\midrule
+Single-message random match & -- & 3.1\% (1/32) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The MLP uses the same five-message protocol, with a separate model trained
-from random initialization for each message. Its FID ratio is normalized
-by the FID of an independently trained clean MLP, rather than a shared
-pretrained checkpoint. Unrun architectures such as SD~1.4, SDXL, FLUX,
-and audio diffusion models are not included.
+Table~\ref{tab:detection} summarizes message recovery. Across these
+scratch-trained settings and training durations, watermarked models achieve $100\%$
+recovery of their assigned message. The clean-model rows count matches
+to any of the tested messages; one such match occurred in the 10K-step
+MNIST MLP configuration (1/40). The $1/32$ baseline applies to one
+preselected target message, whereas the aggregate clean-model match
+probability depends on how many messages are included. With a random
+projection rather than the true $P$, none of 50 trials recovered the
+assigned message; this limited wrong-key test does not establish a
+calibrated ownership false-positive rate.
+
+\subsubsection{Statistical Separation}
+
+\begin{table}[t]
+\centering
+\caption{Statistical separation and signature statistics.}
+\label{tab:separation}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccc}
+\toprule
+Dataset / Architecture & WM Score ($\uparrow$) & Clean Score ($\downarrow$) & $\|\hat{s}\|$ (WM / Clean) & Min.\ Separation ($\uparrow$) \\
+\midrule
+MNIST (MLP, 5K)  & $0.58$--$1.11$ & $-0.09$--$0.11$ & $1.06$ / $0.69$ & $8.4\sigma$ \\
+MNIST (MLP, 10K) & $1.41$--$2.07$ & $0.01$--$0.16$ & $1.85$ / $0.84$ & $25.5\sigma$ \\
+MNIST (UNet)     & $0.29$--$0.45$ & $-0.07$--$0.15$ & $0.66$ / $0.56$ & $8.6\sigma$ \\
+CIFAR-10 (UNet)  & $0.62$--$0.64$ & $-0.01$--$0.00$ & $0.65$ / $0.13$ & $17.9\sigma$ \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+Table~\ref{tab:separation} reports per-message score statistics. Watermarked
+models consistently produce large positive scores, while clean model scores
+are near zero. The minimum separation across all settings is $8.4\sigma$
+(MNIST MLP), and all $p$-values are below $10^{-37}$ (Welch's $t$-test).
+These margins show separation for the tested messages and query
+distribution; an ownership decision still requires calibration of a
+score threshold against clean and attacked models.
+
+We additionally examine the signature norm $\|\hat{s}\|$, which measures
+the total signal energy in the projected space before correlating with any
+specific codeword. On MNIST, $\|\hat{s}\|$ is comparable between
+watermarked and clean models across all architectures (e.g., $0.66$ vs.\
+$0.56$ for UNet). On CIFAR-10, watermarked models exhibit a larger
+signature norm ($0.65$ vs.\ $0.13$), meaning an attacker could potentially
+identify a model as watermarked by measuring the projected energy. We note
+that this does not compromise message recovery: without the codebook $C$,
+the attacker still cannot determine which message is embedded, and
+wrong-key decoding remains at chance level (Table~\ref{tab:detection}).
+The watermark therefore satisfies the keyed security requirement:
+detection and message recovery require knowledge of the secret key.
+
+\subsubsection{Sample Quality Preservation}
+
+\begin{table}[t]
+\centering
+\caption{Sample quality metrics across datasets and architectures.
+FID is computed against real test images ($1{,}000$ for MNIST;
+$10{,}000$ for CIFAR-10).}
+\label{tab:quality}
+\begin{tabular}{lcc}
+\toprule
+Dataset / Architecture / Model & FID ($\downarrow$) & FID Ratio ($\downarrow$) \\
+\midrule
+\multicolumn{3}{c}{\textit{MNIST (MLP, 5K steps)}} \\
+Clean & $7.4$ & -- \\
+WM Average & $8.1 \pm 0.3$ & $1.10\times$ \\
+\midrule
+\multicolumn{3}{c}{\textit{MNIST (MLP, 10K steps)}} \\
+Clean & $7.3$ & -- \\
+WM Average & $6.9 \pm 0.1$ & $0.947\times$ \\
+\midrule
+\multicolumn{3}{c}{\textit{MNIST (UNet + LoRA)}} \\
+Clean & $7.1$ & -- \\
+WM range & $6.8$--$7.5$ & $0.955\times$--$1.059\times$ \\
+\midrule
+\multicolumn{3}{c}{\textit{CIFAR-10 (UNet + LoRA)}} \\
+Clean & $24.3$ & -- \\
+WM range & $23.5$--$25.1$ & $0.966\times$--$1.032\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:quality} quantifies sample quality. Across all settings,
+the FID ratio between watermarked and clean models remains close to
+$1.0\times$. We note that in several configurations watermarked models
+achieve marginally lower FID than the corresponding clean baseline (e.g.,
+$6.9$ vs.\ $7.3$ at 10K steps). This is attributable to random training
+variation and finite-sample FID estimation noise. The key finding is that FID ratios remain
+tightly clustered around $1.0\times$, confirming that the watermark
+perturbation does not degrade sample quality. The generated samples are provided in Appendix~\ref{app:samples}.
+
+These results validate the design of the time-modulated perturbation:
+the zero-mean carrier provides a centered, demodulatable watermark
+signal, while the measured FID ratios show that this signal preserves
+sample quality in practice across datasets, architectures, and training
+durations.
+
 
 % ------------------------------------------------------------
 \subsection{Payload Scaling}
 \label{app:payload}
 
+We separate three questions rather than pooling rows from different
+codebooks. Within each question, payload length $L$ is the variable of
+interest; the base checkpoint, training objective and budget, watermark
+strength, query count, and quality-evaluation procedure are held fixed.
+The projection dimension $k$ and decoder are stated for each block.
+
+\paragraph{Short-payload feasibility across datasets.}
+Table~\ref{tab:app-payload} varies $L$ separately on CIFAR-10 and
+CelebA-64 at $k=32$. The 1-, 3-, and 5-bit rows use orthogonal
+codewords; the 8- and 12-bit rows use explicit normalized random
+codewords. Hence the table shows successful recovery on both datasets
+over the tested lengths, but its full 1--12-bit sequence is not a
+single-codebook payload comparison. Clean false-positive rates under
+the fixed-target rule also fall with message length, as expected when
+the message space grows; this is not by itself evidence of stronger
+watermark security.
+
 \begin{table}[t]
 \centering
 \caption{Payload-scaling runs for public RF-UNet checkpoints. Entries
-show mean $\pm$ standard deviation across messages at each payload size.
+show mean $\pm$ standard deviation across completed messages at each
+payload size (two messages at 1 bit; five at other displayed sizes).
+Clean FP uses the prespecified key and message; a uniformly decoded
+clean message would match with probability $2^{-L}$.
 CelebA-64 uses base-model reference samples for FID. The CelebA-64
 12-bit setting is omitted because only one of five messages had completed
 when the run was interrupted. Because all completed settings retain
@@ -1730,32 +1771,117 @@ the tested range but does not locate the capacity boundary.}
 \label{tab:app-payload}
 \small
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{llcccc}
+\begin{tabular}{llccc}
 \toprule
-Dataset & Bits & WM Acc ($\uparrow$) & Clean FP ($\downarrow$) & Sep ($\uparrow$) & FID ratio ($\downarrow$) \\
+Dataset & Bits & Exact recovery ($\uparrow$) & Clean FP ($\downarrow$) & FID ratio ($\downarrow$) \\
 \midrule
-CIFAR-10 & 1  & $100.0{\pm}0.0$\% & $50.0{\pm}30.0$\% & $50.0{\pm}7.7$ & $0.995{\pm}0.001$ \\
-CIFAR-10 & 3  & $100.0{\pm}0.0$\% & $6.0{\pm}4.9$\%   & $55.8{\pm}8.9$ & $1.021{\pm}0.022$ \\
-CIFAR-10 & 5  & $100.0{\pm}0.0$\% & $1.0{\pm}2.0$\%   & $55.6{\pm}8.7$ & $1.010{\pm}0.018$ \\
-CIFAR-10 & 8  & $100.0{\pm}0.0$\% & $1.0{\pm}2.0$\%   & $60.5{\pm}8.0$ & $1.015{\pm}0.020$ \\
-CIFAR-10 & 12 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\%   & $53.9{\pm}5.9$ & $1.032{\pm}0.019$ \\
+CIFAR-10 & 1  & $100.0{\pm}0.0$\% & $50.0{\pm}30.0$\% & $0.995{\pm}0.001$ \\
+CIFAR-10 & 3  & $100.0{\pm}0.0$\% & $6.0{\pm}4.9$\% & $1.021{\pm}0.022$ \\
+CIFAR-10 & 5  & $100.0{\pm}0.0$\% & $1.0{\pm}2.0$\% & $1.010{\pm}0.018$ \\
+CIFAR-10 & 8  & $100.0{\pm}0.0$\% & $1.0{\pm}2.0$\% & $1.015{\pm}0.020$ \\
+CIFAR-10 & 12 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.032{\pm}0.019$ \\
 \midrule
-CelebA-64 & 1 & $100.0{\pm}0.0$\% & $50.0{\pm}0.0$\%  & $57.4{\pm}10.3$ & $1.066{\pm}0.012$ \\
-CelebA-64 & 3 & $100.0{\pm}0.0$\% & $16.0{\pm}7.3$\%  & $55.1{\pm}7.7$  & $1.102{\pm}0.022$ \\
-CelebA-64 & 5 & $100.0{\pm}0.0$\% & $3.0{\pm}4.0$\%   & $56.8{\pm}5.8$  & $1.073{\pm}0.007$ \\
-CelebA-64 & 8 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\%   & $47.4{\pm}5.0$  & $1.088{\pm}0.017$ \\
+CelebA-64 & 1 & $100.0{\pm}0.0$\% & $50.0{\pm}0.0$\% & $1.066{\pm}0.012$ \\
+CelebA-64 & 3 & $100.0{\pm}0.0$\% & $16.0{\pm}7.3$\% & $1.102{\pm}0.022$ \\
+CelebA-64 & 5 & $100.0{\pm}0.0$\% & $3.0{\pm}4.0$\% & $1.073{\pm}0.007$ \\
+CelebA-64 & 8 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.088{\pm}0.017$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The 1-, 3-, and 5-bit rows use orthogonal codewords, whereas longer
-payloads use overcomplete normalized random codewords. Thus the table
-establishes feasibility over the tested range but does not isolate the
-effect of payload length across this change in codebook construction.
+\paragraph{Fixed-carrier payload sweeps.}
+The first block of Table~\ref{tab:app-capacity} holds $k=32$ and the
+explicit random-codeword decoder fixed while varying $L$ from 5 to 20.
+The nearest-competitor margin decreases from $0.478$ to $0.197$, while
+exact-message recovery remains at 100\% in the evaluated trials. This
+shows reduced separation, not an observed recovery boundary. Explicitly
+storing and searching $2^L$ random codewords becomes impractical at
+larger $L$, motivating a separate implicit
+hypercube codebook. With orthonormal projection axes
+$e_1,\ldots,e_L\in\mathbb{R}^k$ and $L\leq k$, it assigns message
+$m\in\{0,1\}^L$ the unit codeword
+$c_m=L^{-1/2}\sum_{j=1}^{L}(2m_j-1)e_j$.
+The detector reads each bit from the sign of the corresponding
+demodulated coordinate, without enumerating $2^L$ messages or applying
+error correction. The $k=32$, 32-bit row is a single feasibility point
+for this construction. The last block holds the hypercube code and
+$k=128$ fixed while varying $L$ from 64 to 128; only this last pair
+isolates payload length at the higher dimension. The constructions have
+different codeword geometries and margin scales, so their margins should
+not be compared numerically across blocks.
+
+\begin{table}[t]
+\centering
+\caption{CIFAR-10 payload sweep on the public RF-UNet. Mean $\pm$
+standard deviation over five independently trained messages per row;
+each message has 40 detection trials with $N=4096$ queries. Accuracy
+denotes exact-message recovery. Detection uses noise--image interpolation
+queries. Clean FP uses the prespecified key and target message. FID
+ratios use 500 generated and real-reference
+samples per run. Codebook construction and projection dimension $k$
+change between ruled groups.}
+\label{tab:app-capacity}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcccc}
+\toprule
+$k$ & Code & Bits & Exact recovery ($\uparrow$) & Clean FP ($\downarrow$) & FID ratio ($\downarrow$) \\
+\midrule
+32 & Random & 5  & $100.0{\pm}0.0$\% & $0.5{\pm}1.0$\% & $1.043{\pm}0.020$ \\
+32 & Random & 8  & $100.0{\pm}0.0$\% & $0.5{\pm}1.0$\% & $1.031{\pm}0.016$ \\
+32 & Random & 12 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.030{\pm}0.012$ \\
+32 & Random & 16 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.036{\pm}0.018$ \\
+32 & Random & 18 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.015{\pm}0.016$ \\
+32 & Random & 20 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $0.988{\pm}0.013$ \\
+\midrule
+32 & Hypercube & 32 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.032{\pm}0.021$ \\
+\midrule
+128 & Hypercube & 64  & $95.5{\pm}6.6$\% & $0.0{\pm}0.0$\% & $1.052{\pm}0.014$ \\
+128 & Hypercube & 128 & $1.5{\pm}3.0$\% & $0.0{\pm}0.0$\% & $1.044{\pm}0.009$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At fixed $k=128$ with the hypercube decoder, mean exact-message recovery
+falls from 95.5\% at 64 bits to 1.5\% at 128 bits, and the mean
+nearest-competitor margin changes sign. FID ratios remain between
+$1.044$ and $1.052$ on average, so this sweep finds a decoding limit
+under the evaluated interpolation-query protocol without a comparably
+large change in the reported sample-quality metric. Increasing $k$ from
+32 to 128 is a separate setting change; these data do not isolate its
+effect from the simultaneous increase in $L$. An observed 0\% clean FP
+at long payloads means no target matches in the finite trials, not that
+the underlying false-positive probability is zero; under uniform clean
+decoding, the fixed-target chance rate is $2^{-L}$.
+
+\paragraph{Measured velocity scale.}
+For the $k=128$ runs, we compare the trained watermarked model $v_w$
+with its shared base model $v_0$ on the same 4,096 held-out CIFAR-10
+noise--image interpolation points. Let $d=P c_m$ and
+$\alpha_i=\sin(2\pi t_i)$. We report the RMS model-change ratio
+$r_{\rm change}$ and its carrier-aligned component $r_{\rm carr}$:
+\begin{equation}
+r_{\rm change}=
+\sqrt{\frac{\sum_i\|v_w(x_i,t_i)-v_0(x_i,t_i)\|_2^2}
+{\sum_i\|v_0(x_i,t_i)\|_2^2}},\qquad
+r_{\rm carr}=
+\frac{\left|\sum_i\alpha_i\langle v_w(x_i,t_i)-v_0(x_i,t_i),d\rangle\right|}
+{\sqrt{\sum_i\alpha_i^2}\sqrt{\sum_i\|v_0(x_i,t_i)\|_2^2}}.
+\end{equation}
+Across five messages, $r_{\rm carr}$ is $1.873\pm0.023\%$ at 64 bits
+and $1.897\pm0.018\%$ at 128 bits, while $r_{\rm change}$ is
+$12.20\pm0.21\%$ and $11.99\pm0.29\%$, respectively. The latter
+includes all changes caused by fine-tuning and should not be identified
+with the watermark carrier alone. Relative to the base velocity's
+RMS along the keyed direction $d$, the carrier component is
+$1.066\pm0.019$ and $1.044\pm0.044$ times as large. Thus the carrier
+is small relative to the full velocity field but not relative to the
+single coordinate used for detection; similar aggregate strength at
+the two payload sizes does not imply equally reliable recovery of
+every bit.
 
 % ------------------------------------------------------------
-\subsection{Comparison to Existing Methods}
-\label{app:baseline}
+\section{Comparison with Existing Methods}\label{app:comparison}
 
 \begin{table}[t]
 \centering
@@ -1763,7 +1889,7 @@ effect of payload length across this change in codebook construction.
 methods. ``White-box'' indicates whether verification requires access to
 model weights. ``Keyed'' indicates independent secret keys. ``Multi-bit''
 indicates payloads beyond binary ownership.}
-\label{tab:app-baseline}
+\label{tab:comparison}
 \small
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{lcccccc}
@@ -1786,8 +1912,8 @@ BlackMarks~\cite{chen2019blackmarks}
 \end{tabular}
 \end{table}
 
-We report quantitative results for our method on the matched flow and
-diffusion backbones in Tables~\ref{tab:detection}--\ref{tab:quality}.
+We report quantitative results for our method on the tested backbones
+in Table~\ref{tab:main} and Appendix~\ref{app:payload}.
 We do not include partially reimplemented Tree-Ring or Stable Signature
 numbers in the same-base table because these methods watermark different
 objects: Tree-Ring modifies the sampling noise rather than the model, while
