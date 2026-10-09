@@ -538,7 +538,8 @@ def next_train_batch(train_loader, data_iter, cfg, args, device):
     return x1, y, data_iter
 
 
-def train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, out_dir):
+def train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, out_dir, stop_after=None):
+    """Optionally stop early while preserving the original LR schedule horizon."""
     c, h, w = cfg.dim
     opt_params = freeze_non_lora(model, args.train_extra)
     opt = torch.optim.AdamW(opt_params, lr=args.lr, weight_decay=args.weight_decay)
@@ -548,7 +549,8 @@ def train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, o
 
     data_iter = iter(train_loader) if train_loader is not None else None
     history = []
-    pbar = tqdm(range(args.steps), desc="LoRA watermark")
+    training_steps = args.steps if stop_after is None else min(args.steps, stop_after)
+    pbar = tqdm(range(training_steps), desc="LoRA watermark")
     for step in pbar:
         opt.zero_grad(set_to_none=True)
         total_loss = 0.0
