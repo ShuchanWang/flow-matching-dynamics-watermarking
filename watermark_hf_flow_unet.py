@@ -550,6 +550,7 @@ def train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, o
     data_iter = iter(train_loader) if train_loader is not None else None
     history = []
     training_steps = args.steps if stop_after is None else min(args.steps, stop_after)
+    started = time.perf_counter()
     pbar = tqdm(range(training_steps), desc="LoRA watermark")
     for step in pbar:
         opt.zero_grad(set_to_none=True)
@@ -608,6 +609,10 @@ def train_lora(model, base_model, train_loader, cfg, P, wm_code, args, device, o
             "wm_corr_norm": (total_corr / args.grad_accum) / (0.5 * args.wm_eps + 1e-8),
         }
         history.append(row)
+        if stop_after is not None:
+            if device.type == "cuda":
+                torch.cuda.synchronize(device)
+            row["elapsed_seconds"] = time.perf_counter() - started
         if step % 10 == 0:
             pbar.set_postfix(
                 data=f"{row['data_mse']:.4f}",

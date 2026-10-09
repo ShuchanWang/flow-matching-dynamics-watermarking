@@ -3,6 +3,7 @@
 import argparse
 import json
 import numpy as np
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -15,8 +16,8 @@ def write_json(path, value):
     path.write_text(json.dumps(value, indent=2) + "\n")
 
 
-def refine_checkpoints(source_root, output_root, device):
-    """Replay the first 100 updates with the original 1,000-step LR schedule."""
+def refine_checkpoints(source_root, output_root, device, limit=100, save_every=10):
+    """Replay a training prefix with the original 1,000-step LR schedule."""
     for source in sorted(source_root.iterdir()):
         if not (source / "watermark_key.pt").exists():
             continue
@@ -25,7 +26,7 @@ def refine_checkpoints(source_root, output_root, device):
         key = torch.load(source / "watermark_key.pt", map_location="cpu", weights_only=False)
         args = SimpleNamespace(**key["config"])
         args.codebook_mode = getattr(args, "codebook_mode", "auto")
-        args.save_every = 10
+        args.save_every = save_every
         cfg = wm.DEFAULT_CONFIGS[args.dataset]
         wm.seed_everything(args.seed)
         checkpoint = wm.download_checkpoint(args.repo_id, args.checkpoint or cfg.filename)
@@ -42,17 +43,24 @@ def refine_checkpoints(source_root, output_root, device):
         loader, _ = wm.load_real_data(cfg, args, device)
         bits = tuple(int(b) for b in source.name)
         code = wm.hypercube_code(bits, codes) if args.codebook_mode == "hypercube" else codes[wm.message_index(bits)]
+        torch.cuda.synchronize()
+        started = time.perf_counter()
         history = wm.train_lora(model, base, loader, cfg, P, code, args, device,
-                                destination, stop_after=100)
+                                destination, stop_after=limit)
+        torch.cuda.synchronize()
+        training_seconds = time.perf_counter() - started
         torch.save(key, destination / "watermark_key.pt")
-        original = torch.load(source / "adapter_step_100.pt", map_location="cpu", weights_only=False)
-        replay = torch.load(destination / "adapter_step_100.pt", map_location="cpu", weights_only=False)
-        max_difference = max(float((original[k] - replay[k]).abs().max()) for k in original)
+        max_difference = None
+        if limit >= 100 and save_every <= 100 and 100 % save_every == 0:
+            original = torch.load(source / "adapter_step_100.pt", map_location="cpu", weights_only=False)
+            replay = torch.load(destination / "adapter_step_100.pt", map_location="cpu", weights_only=False)
+            max_difference = max(float((original[k] - replay[k]).abs().max()) for k in original)
         write_json(destination / "replay.json", {
-            "source": str(source), "schedule_horizon": args.steps, "updates": 100,
+            "source": str(source), "schedule_horizon": args.steps, "updates": limit,
+            "training_seconds": training_seconds, "gpu": torch.cuda.get_device_name(device),
             "original_step_100_max_parameter_difference": max_difference, "history": history,
         })
-        print(f"Replay {source.name}: step-100 max parameter difference={max_difference:.8g}", flush=True)
+        print(f"Replay {source.name}: {limit} updates; step-100 difference={max_difference}", flush=True)
         del model, base, loader, P, codes
         torch.cuda.empty_cache()
 
@@ -63,6 +71,8 @@ def main():
     parser.add_argument("--output", type=Path, default=Path("table_runs/embedding_budget/cifar10"))
     parser.add_argument("--steps", default="100,200,300,400,500,600,700,800,900,1000")
     parser.add_argument("--refine", action="store_true", help="Replay the first 100 updates and test every 10")
+    parser.add_argument("--refine-limit", type=int, default=100)
+    parser.add_argument("--refine-save-every", type=int, default=10)
     cli = parser.parse_args()
     cli.output.mkdir(parents=True, exist_ok=True)
     messages = ["00000", "00111", "01010", "10101", "11001"]
@@ -71,9 +81,13 @@ def main():
         raise RuntimeError("CUDA is required for this experiment")
     if cli.refine:
         refined_source = cli.output / "checkpoints"
-        refine_checkpoints(cli.source, refined_source, device)
+        if not 0 < cli.refine_save_every <= cli.refine_limit <= 100:
+            raise ValueError("Require 0 < refine-save-every <= refine-limit <= 100")
+        refine_checkpoints(cli.source, refined_source, device, cli.refine_limit,
+                           cli.refine_save_every)
         cli.source = refined_source
-        cli.steps = "10,20,30,40,50,60,70,80,90,100"
+        cli.steps = ",".join(str(step) for step in range(cli.refine_save_every,
+                              cli.refine_limit + 1, cli.refine_save_every))
     rows = []
     earliest = None
     for step in sorted(set(int(s) for s in cli.steps.split(","))):
@@ -116,17 +130,28 @@ def main():
                   f"separation={metrics['sep_sigma']:.2f}", flush=True)
             del model, base, loader, P, codes
             torch.cuda.empty_cache()
-        if all(row["wm_acc"] == 100.0 for row in step_rows):
+            if cli.refine and metrics["wm_acc"] < 100.0:
+                # One failed message rules out this budget for all-message recovery.
+                break
+        if len(step_rows) == len(messages) and all(row["wm_acc"] == 100.0 for row in step_rows):
             earliest = step
             break
 
     quality = []
+    quality_reference = None
+    quality_clean_fid = None
+    quality_settings = None
     if earliest is not None:
         for message in messages:
             source = cli.source / message
             key = torch.load(source / "watermark_key.pt", map_location="cpu", weights_only=False)
             args = SimpleNamespace(**key["config"])
             args.num_workers = 0
+            settings = (args.dataset, args.repo_id, args.checkpoint, args.n_fid_samples,
+                        args.fid_feature, args.n_sample_steps, args.eval_class, args.seed)
+            if quality_settings is not None and settings != quality_settings:
+                raise ValueError("Quality settings differ between messages")
+            quality_settings = settings
             cfg = wm.DEFAULT_CONFIGS[args.dataset]
             wm.seed_everything(args.seed)
             checkpoint = wm.download_checkpoint(args.repo_id, args.checkpoint or cfg.filename)
@@ -140,12 +165,24 @@ def main():
             model.eval().requires_grad_(False)
             loader, real = wm.load_real_data(cfg, args, device)
             # Pair clean and watermarked sampling with the same random stream.
-            wm.seed_everything(args.seed + 20000)
-            clean = wm.sample_for_fid(base, cfg, args, device, args.n_fid_samples)
+            clean = None
+            if quality_clean_fid is None:
+                wm.seed_everything(args.seed + 20000)
+                clean = wm.sample_for_fid(base, cfg, args, device, args.n_fid_samples)
+                if args.fid_feature == "inception":
+                    quality_reference = wm.inception_features(real, device, args.fid_batch_size)
+                    clean_features = wm.inception_features(clean, device, args.fid_batch_size)
+                    quality_clean_fid = wm.compute_fid_from_features(quality_reference, clean_features)
+                else:
+                    quality_clean_fid = wm.compute_fid(real, clean, args, device)
             wm.seed_everything(args.seed + 20000)
             marked = wm.sample_for_fid(model, cfg, args, device, args.n_fid_samples)
-            clean_fid = wm.compute_fid(real, clean, args, device)
-            marked_fid = wm.compute_fid(real, marked, args, device)
+            clean_fid = quality_clean_fid
+            if args.fid_feature == "inception":
+                marked_features = wm.inception_features(marked, device, args.fid_batch_size)
+                marked_fid = wm.compute_fid_from_features(quality_reference, marked_features)
+            else:
+                marked_fid = wm.compute_fid(real, marked, args, device)
             quality.append({"step": earliest, "message": message,
                             "n_samples": args.n_fid_samples, "feature": args.fid_feature,
                             "sampling_steps": args.n_sample_steps,
