@@ -267,7 +267,8 @@ The key defines a codebook through a mapping
 \phi_K : \mathcal{M} \to \mathcal{H},
 \end{equation}
 where $\mathcal{H}$ is a function space over $(x,t)$. The codeword for
-message $m$ is $s_{K,m}(x,t) := \phi_K(m)$.
+message $m$ is $s_{K,m}(x,t) := \phi_K(m)$. We use the
+$L^2$ norm over the query distribution on $(x,t)$ for $\mathcal H$.
 
 The design of $s_{K,m}$ must balance three considerations: (i) detectability---the signal must be recoverable from noisy observations
 through a known detection procedure; (ii) quality preservation---the
@@ -287,10 +288,10 @@ all $x$,
 \begin{equation}
 \int_0^1 s_{K,m}(x,t) \, dt = 0.
 \end{equation}
-\item \textbf{Approximate orthogonality.} For any distinct
-$m, m' \in \mathcal{M}$,
+\item \textbf{Message separation.} Distinct messages have distinct
+codewords, with minimum distance
 \begin{equation}
-\langle s_{K,m}, s_{K,m'} \rangle \approx 0.
+\Delta_K:=\min_{m\ne m'}\|s_{K,m}-s_{K,m'}\|_{\mathcal H}>0.
 \end{equation}
 \item \textbf{Energy normalization.} There exists a constant $C > 0$
 such that for all $m \in \mathcal{M}$,
@@ -303,9 +304,11 @@ such that for all $m \in \mathcal{M}$,
 Condition~1 centers the temporal carrier: it removes the DC component of
 the watermark, avoids a persistent drift direction, and makes the
 detector recover the signal by demodulating with the known carrier.
-Condition~2 ensures that different messages are maximally separable at
-detection time. Condition~3 ensures that all messages are equally
-detectable. These conditions are design
+Condition~2 makes messages distinguishable without noise; its minimum
+distance influences finite-query decoding. Pairwise orthogonality is
+one stronger way to separate codewords, not a requirement for every
+code. Condition~3 gives all messages comparable signal energy. These
+conditions are design
 principles that guide our construction; they are neither necessary for
 watermarking in general nor sufficient to guarantee empirical success.
 We validate the practical performance of our construction in
@@ -313,10 +316,11 @@ Section~\ref{sec:experiments}.
 
 \subsection{Concrete Construction}\label{sec:concrete}
 
-We now present one construction satisfying
-Definition~\ref{def:admissible}, chosen for its simplicity and exact
-satisfaction of the orthogonality condition. Other choices are possible,
-as discussed in Remark~\ref{rem:alternatives} below.
+We first present the pairwise-orthogonal construction satisfying
+Definition~\ref{def:admissible}. Normalized random-vector and hypercube
+codebooks are other keyed realizations of the same random-coding
+framework, with different separation geometries; see
+Remark~\ref{rem:alternatives} and Appendix~\ref{app:payload}.
 
 The secret key consists of two components, $K = (P, C)$. Here
 $P \in \mathbb{R}^{D \times k}$ is a semi-orthogonal projection matrix
@@ -327,9 +331,12 @@ $C = \{c_m\}_{m \in \mathcal{M}}$ is a codebook of $|\mathcal{M}| = 2^L$
 unit vectors in $\mathbb{R}^k$ such that each message maps to a distinct
 codeword. When $2^L\leq k$, QR decomposition yields pairwise orthogonal
 codewords. For $2^L>k$, the explicit-codebook experiments use normalized
-random vectors, which are not pairwise orthogonal. The implicit
-hypercube construction used for longer payloads is specified in
-Appendix~\ref{app:payload}.
+independently sampled vectors, which are not pairwise orthogonal. The
+implicit hypercube uses $L$ orthonormal code-space axes whose ambient
+velocity directions $Pe_j$ are randomized by the same secret projection
+$P$. Thus all three constructions are keyed random codes, although
+their codeword geometries differ. The hypercube construction is
+specified in Appendix~\ref{app:payload}.
 
 Throughout the paper, let
 \begin{equation}
@@ -358,11 +365,11 @@ We verify each condition.
 \begin{enumerate}
 \item \textbf{Zero-mean over time:}
 $\int_0^1 s_{K,m}(x,t) dt = P c_m \int_0^1 \alpha(t) dt = 0$.
-\item \textbf{Orthogonality:}
-Since $P^T P = I_k$, we have $(P c_m)^\top (P c_{m'}) = c_m^\top c_{m'} =
-\delta_{m,m'}$. With the temporal term,
-$\langle s_{K,m}, s_{K,m'} \rangle = \mathbb{E}_t[\alpha(t)^2] \cdot
-\delta_{m,m'} = \frac{1}{2} \delta_{m,m'}$.
+\item \textbf{Message separation:}
+Since $P^T P=I_k$ and the codewords are orthonormal,
+$\|s_{K,m}-s_{K,m'}\|_{\mathcal H}^2
+=\mathbb E_t[\alpha(t)^2]\|P(c_m-c_{m'})\|_2^2=1$
+for distinct messages; hence $\Delta_K=1$.
 \item \textbf{Energy normalization:}
 $\|s_{K,m}\|^2 = \frac{1}{2} \|P c_m\|^2 = \frac{1}{2}$ for all $m$,
 since $P$ preserves norms and $\|c_m\| = 1$.
@@ -567,79 +574,66 @@ summary, $\mathbb{E}[\hat{s}] = \frac{\epsilon}{2} c_m$ for watermarked
 models and $\mathbb{E}[\hat{s}] = 0$ for clean models, with estimation
 error $O(1/\sqrt{N})$.
 
-\subsection{Information-Theoretic Capacity}
+\subsection{Information Carried by the Demodulated Channel}
 
-Our detection procedure can be analyzed as a communication channel.
+The projected velocity signature defines a noisy channel whose input is
+one of the chosen message codewords. A channel-capacity expression alone
+does not specify the performance of a particular finite codebook.
 
-\begin{theorem}[Capacity of the Demodulated Channel]
+\begin{theorem}[Finite-codebook information bound]
 \label{thm:capacity}
-Consider the watermarked model with effective watermark strength $\epsilon$,
-projection dimension $k$, and key $P$. After synchronous demodulation and
-averaging over $N$ independent queries, the extracted signature $\hat{s}$
-is approximately distributed according to the $k$-dimensional Gaussian
-channel
+Let $M$ be drawn from a finite message set and let $c_M\in\mathbb R^k$
+be its unit-norm codeword. Assume the demodulated signature is described
+by the additive Gaussian surrogate
 \begin{equation}
-\hat{s} = \frac{\epsilon}{2} c_m + \xi,
-\quad
-\xi \sim \mathcal{N}(0,\Sigma_N),
+\hat{s} = \frac{\epsilon}{2}c_M+\xi,\qquad
+\xi\sim\mathcal N(0,\Sigma/N),
 \end{equation}
-where $\Sigma_N = \Sigma/N$ and $\Sigma$ is the covariance of
-$\sin(2\pi t) P^T (v_\theta(x,t) + \eta_0(x,t))$ under the query
-distribution.
-
-Under the Gaussian approximation and invertibility of $\Sigma$, the
-channel capacity is
+with $\xi$ independent of $M$ and $\Sigma$ positive definite. Writing
+$Q=\operatorname{Cov}(c_M)$, the information conveyed by this codebook
+obeys, in nats,
 \begin{equation}
-\mathcal{C}
-=
-\frac{1}{2}
-\log
-\det\left(
-I_k + \frac{N\epsilon^2}{4}\Sigma^{-1}
-\right).
+I(M;\hat{s})\leq
+\min\!\left\{H(M),\;
+\frac12\log\det\!\left(I_k+
+\frac{N\epsilon^2}{4}\Sigma^{-1/2}Q\Sigma^{-1/2}\right)\right\}.
 \end{equation}
-
-For large query budgets $N$, the capacity scales as
-\begin{equation}
-\mathcal{C}
-=
-\frac{r_{\mathrm{eff}}}{2}\log N + O(1),
-\end{equation}
-where $r_{\mathrm{eff}}$ is the number of well-conditioned projected
-noise directions. In the idealized case that the projected channels are
-all usable, $r_{\mathrm{eff}}=k$; when velocity dimensions are strongly
-correlated, $r_{\mathrm{eff}}$ can be smaller than $k$.
+The Gaussian-input capacity under the same unit total-power constraint
+is obtained by maximizing the log-determinant over positive semidefinite
+input covariances $Q$ with $\operatorname{tr}Q\leq1$; it is an upper
+bound, not the achieved rate of the finite codebook.
 \end{theorem}
 
 \begin{proof}
 See Appendix~\ref{app:capacity_proof}.
 \end{proof}
 
-The distinction between projection dimension $k$ and effective rank
-$r_{\mathrm{eff}}$ matters for payload selection: adding projection
-coordinates need not add equally informative directions at a finite
-query budget. The spectrum of the measured projected-channel covariance,
-rather than $k$ alone, determines which directions can be distinguished
-from query noise. We do not estimate $r_{\mathrm{eff}}$ in the experiments,
-so the observed payload limit is empirical rather than an estimate of
-channel capacity. In contrast, if the same keyed construction is used
-to distribute independently trained model copies to different users, the
-corresponding channel observations are independent across copies and the
-aggregate evidence scales additively with the number of models. This is
-the setting in which near-linear scalability is most directly expected.
-The Gaussian approximation relies on large $N$ and independent queries; a
-rigorous finite-sample analysis is left to future work.
+The projection dimension $k$ specifies the available signaling space.
+The codebook determines how messages occupy that space, represented in
+the theorem by $Q=\operatorname{Cov}(c_M)$; the projected velocity noise
+enters through $\Sigma$. Their joint spectrum sets the Gaussian bound
+at a given query budget. For an explicit pairwise-orthogonal codebook,
+at most $k$ messages can occupy $\mathbb R^k$, corresponding to
+$\log_2 k$ bits. This is why the common $k=32$, five-bit experiment
+uses 32 orthogonal codewords. The longer-payload explicit-codebook
+runs in Table~\ref{tab:app-payload} place more codewords in the same
+space and therefore relax pairwise orthogonality.
 
-The capacity analysis applies to any codebook. Exact orthogonality in
-Definition~\ref{def:admissible}, condition~2, limits the construction to
-$k$ codewords, or $\log_2 k$ bits. The 5-bit orthogonal runs with $k=32$
-reach this geometric limit. The longer-payload runs in
-Table~\ref{tab:app-payload} instead use normalized random codewords in
-the same $k$-dimensional space, relaxing exact orthogonality.
-Table~\ref{tab:app-capacity} also reports a separate hypercube construction
-in which each bit occupies one projection axis. Neither construction
-makes the projected velocity coordinates statistically independent;
-reliability must be measured empirically.
+The hypercube instead assigns one orthonormal axis to each bit:
+$c_m=L^{-1/2}\sum_{j=1}^L(2m_j-1)e_j$, with $L\leq k$.
+It places $2^L$ distinct, generally nonorthogonal codewords on these
+$L$ axes. Under uniformly distributed messages,
+$Q=L^{-1}\sum_{j=1}^Le_je_j^T$. Thus increasing $L$ uses more of the
+available dimensions while dividing unit codeword energy among more
+bit coordinates. For isotropic noise $\Sigma=\sigma^2I_k$, the
+theorem gives the Gaussian bound
+$\frac L2\log(1+N\epsilon^2/(4L\sigma^2))$, capped by the message
+entropy $L\log2$. The bound connects $k$, code geometry, noise, and
+query budget; observed recovery additionally depends on the discrete
+constellation and decoder. Although $Q$ follows from each codebook,
+we do not estimate the projected noise covariance $\Sigma$ for the
+trained models; the payload sweeps therefore test this tradeoff
+empirically rather than fitting the bound.
 
 \subsection{Security Analysis}\label{sec:security_analysis}
 
@@ -790,7 +784,8 @@ in Appendix~\ref{app:hyperparams}.
 
 \begin{table}[t]
 \centering
-\caption{Five-bit watermark results across tested models. Entries are
+\caption{Five-bit, pairwise-orthogonal codeword results across tested
+models. Entries are
 mean $\pm$ standard deviation over five messages. Exact recovery uses
 20 trials per message. Clean FP is the fixed-target exact-match rate on
 an unwatermarked model (uniform-decoder baseline $1/32$). The RF-UNet
@@ -804,15 +799,15 @@ latent-model samples use the same pretrained decoder.}
 \small
 \setlength{\tabcolsep}{2pt}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{llclcccc}
+\begin{tabular}{llclccc}
 \toprule
-Model & Dataset & Params & Train & Bits & Exact recovery ($\uparrow$) & Clean FP ($\downarrow$) & FID ratio ($\downarrow$) \\
+Model & Dataset & Params & Train & Exact recovery ($\uparrow$) & Clean FP ($\downarrow$) & FID ratio ($\downarrow$) \\
 \midrule
-RF-UNet & MNIST          & 6.2M  & LoRA & 5 & $100.0{\pm}0.0$\% & $3.0{\pm}2.4$\% & $0.974{\pm}0.031$ \\
-RF-UNet & CIFAR-10       & 9.0M  & LoRA & 5 & $100.0{\pm}0.0$\% & $1.0{\pm}2.0$\% & $1.010{\pm}0.018$ \\
-RF-UNet & CelebA-64      & 83M   & LoRA & 5 & $100.0{\pm}0.0$\% & $3.0{\pm}4.0$\% & $1.073{\pm}0.007$ \\
-DiT (SD3.5 Med.) & SD3.5 latents & 2.25B & LoRA & 5 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $0.995{\pm}0.017$ \\
-MLP (1024) & MNIST          & 3.71M & Full training & 5 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.086{\pm}0.018$ \\
+RF-UNet & MNIST          & 6.2M  & LoRA & $100.0{\pm}0.0$\% & $3.0{\pm}2.4$\% & $0.974{\pm}0.031$ \\
+RF-UNet & CIFAR-10       & 9.0M  & LoRA & $100.0{\pm}0.0$\% & $1.0{\pm}2.0$\% & $1.010{\pm}0.018$ \\
+RF-UNet & CelebA-64      & 83M   & LoRA & $100.0{\pm}0.0$\% & $3.0{\pm}4.0$\% & $1.073{\pm}0.007$ \\
+DiT (SD3.5 Med.) & SD3.5 latents & 2.25B & LoRA & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $0.995{\pm}0.017$ \\
+MLP (1024) & MNIST          & 3.71M & Full training & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.086{\pm}0.018$ \\
 \bottomrule
 \end{tabular}
 }
@@ -828,16 +823,35 @@ Appendix~\ref{app:payload}.
 
 \subsection{Payload Scaling}
 
-On CIFAR-10, the explicit random-codeword sweep at fixed $k=32$
-recovers all tested 5--20-bit messages; its nearest-competitor margin
-decreases as payload length grows. The separate hypercube sweep at
-fixed $k=128$ falls from $95.5\pm6.6\%$ exact recovery at 64 bits
-to $1.5\pm3.0\%$ at 128 bits, while mean FID ratios remain
-$1.052$ and $1.044$, respectively. Thus the evaluated decoder reaches
-a recovery limit before the reported quality metric changes comparably.
-These are within-codebook comparisons; changing the codebook or $k$
-does not isolate payload length. Full results, including shorter
-cross-dataset runs, are in Appendix~\ref{app:payload}.
+\begin{table}[t]
+\centering
+\caption{Payload scaling for the keyed hypercube code on CIFAR-10 RF-UNet
+at fixed projection dimension $k=128$. Each row reports mean $\pm$
+standard deviation across five messages, with 40 detection trials of
+$N=4096$ interpolation queries per message. Clean FP is the
+prespecified-message match rate on the clean model; zero observed
+matches do not establish zero population false-positive probability.
+FID ratios use 500 generated samples and CIFAR-10 test images per run.}
+\label{tab:payload-main}
+\small
+\begin{tabular}{cccc}
+\toprule
+Bits & Exact recovery ($\uparrow$) & Clean FP ($\downarrow$) & FID ratio ($\downarrow$) \\
+\midrule
+64  & $95.5{\pm}6.6$\% & $0.0{\pm}0.0$\% & $1.052{\pm}0.014$ \\
+128 & $1.5{\pm}3.0$\%  & $0.0{\pm}0.0$\% & $1.044{\pm}0.009$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At fixed $k=128$, Table~\ref{tab:payload-main} shows a marked loss of
+exact-message recovery from 64 to 128 bits without a comparable change
+in the FID ratio. This identifies a limit of the tested hypercube
+embedding and decoder, not the channel capacity. The separate explicit
+codeword sweep at $k=32$ recovers all tested 5--20-bit messages, but its
+5-bit orthogonal and longer normalized-vector rows differ in codeword
+geometry. Full sweeps and velocity-scale measurements are reported in
+Appendix~\ref{app:payload}.
 
 \subsection{Security and Utility}
 
@@ -891,9 +905,10 @@ Code and experimental configurations are publicly available at:
 \section{Proof of Theorem~\ref{thm:capacity}}
 \label{app:capacity_proof}
 
-We derive the capacity formula in three steps: establishing the effective
-channel model, characterizing the noise covariance, and applying the vector
-Gaussian channel capacity result. We state all assumptions explicitly.
+We first state the approximation leading to the additive channel, then
+prove the information bound for an arbitrary finite codebook. The bound
+is conditional on the Gaussian surrogate, not a claim that trained
+watermarks realize an exactly additive channel.
 
 \subsection{Step 1: Approximate Effective Channel}
 
@@ -935,13 +950,10 @@ velocity field:
 \end{equation}
 \end{assumption}
 
-Assumption~\ref{ass:uncorrelated} is justified because the carrier
-$\sin(2\pi t)$ is a deterministic periodic function with zero mean over
-$[0,1]$, while the background velocity field $v_\theta + \eta_0$ is
-determined by the data distribution and training procedure, with no
-mechanism to correlate structurally with the carrier. Empirically, the
-near-zero clean-model scores in Table~\ref{tab:separation} support this
-assumption.
+The carrier's zero time average does not by itself imply this
+assumption, because the background velocity depends on $t$. The
+near-zero clean-model scores in Table~\ref{tab:separation} provide a
+limited empirical check for the evaluated query distribution.
 
 \begin{assumption}[Independent and identically distributed queries]\label{ass:iid}
 The query points $\{(x_i, t_i)\}_{i=1}^N$ are drawn i.i.d.~from a
@@ -981,15 +993,14 @@ For the query budgets $N$ used in practice, the distribution of $\xi$ is
 well-approximated by $\mathcal{N}(0, \Sigma/N)$.
 \end{assumption}
 
-Assumption~\ref{ass:gaussian} is the strongest assumption. While the CLT
-guarantees asymptotic normality, the accuracy at finite $N$ depends on the
-distribution of $z_i$. In practice, $N \ge 10^3$ typically suffices for
-$k \ll N$; our experiments use $N = 4096$ with $k = 32$. We do not
-formally verify the Gaussian approximation and leave a rigorous
-finite-sample analysis to future work.
+While the CLT guarantees asymptotic normality under the stated moment
+condition, its accuracy at finite $N$ depends on the distribution of
+$z_i$. We do not formally verify it for the evaluated query budgets.
 
-Combining the watermark and background terms, the effective channel for
-large $N$ is:
+The empirical average of $\sin^2(2\pi t_i)$ also fluctuates around
+$1/2$ at finite $N$. Neglecting this message-dependent fluctuation
+and approximating the background average by a Gaussian gives the
+surrogate channel used in Theorem~\ref{thm:capacity}:
 \begin{equation}\label{eq:channel_final}
 \boxed{\hat{s} = \frac{\epsilon}{2} c_m + \xi, \quad \xi \sim \mathcal{N}\!\left(0, \frac{\Sigma}{N}\right).}
 \end{equation}
@@ -1008,86 +1019,59 @@ Then:
 The projected covariance $\Sigma$ is invertible.
 \end{assumption}
 
-Since $\mathbb{E}[u u^T]$ is a $D \times D$ positive semidefinite matrix
-and $P \in \mathbb{R}^{D \times k}$ is a random semi-orthogonal matrix
-with $k \ll D$, $\Sigma$ is invertible with high probability. Intuitively,
-$P$ projects onto a random $k$-dimensional subspace, and the background
-velocity variation is sufficiently rich that its restriction to any such
-subspace has full rank. In our experiments, $k = 32$ and $D = 3072$
-(CIFAR-10) or $D = 784$ (MNIST), satisfying $k \ll D$.
+Invertibility does not follow solely from $k\ll D$ or from randomizing
+$P$: it also requires background variation along every projected
+direction. We use it as an assumption in the following bound.
 
-\subsection{Step 3: Vector Gaussian Channel Capacity}
+\subsection{Step 3: Finite-Codebook Information Bound}
 
-Equation~\eqref{eq:channel_final} describes a $k$-dimensional vector
-Gaussian channel with:
-\begin{itemize}
-\item Input: $c_m \in \mathbb{R}^k$, constrained to $\|c_m\|^2 = 1$ (unit-norm codeword),
-\item Channel gain: $\epsilon/2$,
-\item Additive noise: $\xi \sim \mathcal{N}(0, \Sigma/N)$.
-\end{itemize}
-
-Under the Gaussian approximation, this corresponds to an additive
-nonwhite Gaussian noise channel \cite{cover1999elements}. The
-capacity under an average power constraint $\mathbb{E}[\|X\|^2] \le P$ is:
-\begin{equation}
-\mathcal{C} = \max_{K_X : \text{tr}(K_X) \le P} \frac{1}{2} \log \det\left(I_k + K_X K_Z^{-1}\right),
-\end{equation}
-where $K_Z = \Sigma/N$ is the noise covariance and $K_X$ is the input
-covariance. The optimal $K_X$ is obtained via water-filling over the
-eigenvalues of $K_Z$.
-
-After scaling by $2/\epsilon$, the effective channel becomes
-\begin{equation}
-y = c_m + \xi',
-\qquad
-\xi' \sim \mathcal{N}\!\left(0,
-\frac{4}{\epsilon^2 N}\Sigma
-\right).
-\end{equation}
-
-Treating the watermark codewords as isotropically distributed unit-power
-inputs in $\mathbb{R}^k$, the corresponding Gaussian channel has effective
-capacity
-\begin{equation}
-\mathcal{C}
-=
-\frac12
-\log\det\left(
-I_k +
-\frac{N\epsilon^2}{4}\Sigma^{-1}
-\right).
-\end{equation}
-
-This completes the proof of Theorem~\ref{thm:capacity}.
+Let $a=\epsilon/2$, $Z\sim\mathcal N(0,\Sigma/N)$, and
+$Y=a c_M+Z$. For the finite message distribution, put
+$Q=\operatorname{Cov}(c_M)$. Since $Z$ is independent of $M$,
+$\operatorname{Cov}(Y)=a^2Q+\Sigma/N$. Gaussian vectors maximize
+differential entropy at fixed covariance~\cite{cover1999elements}; hence
+\begin{align}
+I(M;Y)
+&=h(Y)-h(Z)\\
+&\leq\frac12\log\frac{\det(a^2Q+\Sigma/N)}{\det(\Sigma/N)}\\
+&=\frac12\log\det\!\left(I_k+
+\frac{N\epsilon^2}{4}\Sigma^{-1/2}Q\Sigma^{-1/2}\right).
+\end{align}
+Also $I(M;Y)\leq H(M)$, proving the first claim. Since every
+codeword has unit norm,
+$\operatorname{tr}Q=1-\|\mathbb E[c_M]\|^2\leq1$.
+Maximizing the Gaussian expression over all positive semidefinite
+$Q$ with trace at most one gives the unit-power Gaussian relaxation;
+the fixed finite codebook need not attain that maximum.
 
 \subsection{Scaling Analysis}
 
-Let $\lambda_1,\ldots,\lambda_k$ denote the eigenvalues of $\Sigma$.
-For large $N$, the determinant can be written as
-\begin{align}
-\mathcal{C}
-&= \frac{1}{2}\sum_{j=1}^k
-\log\left(1+\frac{N\epsilon^2}{4\lambda_j}\right).
-\end{align}
-Thus only projected directions with finite, well-conditioned noise
-eigenvalues contribute useful capacity at a given query budget. If
-$r_{\mathrm{eff}}$ eigen-directions remain well conditioned as $N$ grows,
-then
-\begin{equation}
-\boxed{\mathcal{C} = \frac{r_{\mathrm{eff}}}{2}\log N + O(1).}
-\end{equation}
-The common linear-in-$k$ expression is the special case
-$r_{\mathrm{eff}}=k$, corresponding to $k$ usable projected directions.
-It should not be read as an independence assumption across raw velocity
-coordinates; correlations in the velocity field are precisely what
-$\Sigma$ represents. Independent scaling is more naturally obtained by
-aggregating evidence across independently trained model copies, where the
-per-model channels contribute additively.
+Let $\nu_1,\ldots,\nu_k$ be the eigenvalues of
+$\Sigma^{-1/2}Q\Sigma^{-1/2}$. The Gaussian upper bound is
+$\frac12\sum_j\log(1+N\epsilon^2\nu_j/4)$.
+For fixed positive definite $\Sigma$ and fixed $Q$, its large-$N$
+coefficient is $\operatorname{rank}(Q)/2$, the number of codebook
+directions carrying message variation. This is a property of the relaxed
+Gaussian expression: the finite-alphabet information $I(M;Y)$ is
+always capped by $H(M)$ and approaches that cap as the message
+distributions become distinguishable. At finite $N$, the nonzero
+$\nu_j$ govern how quickly the bound rises. Correlations in projected
+velocity affect these values, but covariance alone does not establish
+the reliability of a particular decoder.
+
+For uniform hypercube messages on $L$ orthonormal axes,
+$Q=L^{-1}\sum_{j=1}^Le_je_j^T$ and $H(M)=L\log 2$. If additionally
+$\Sigma=\sigma^2 I_k$, sign decoding has independent bit-error
+probability $\Phi(-\epsilon\sqrt{N}/(2\sigma\sqrt L))$ under the
+surrogate, where $\Phi$ is the standard-normal CDF. Exact-message
+recovery is then $(1-p_{\rm bit})^L$. This illustrative special case
+shows how exact recovery can decrease with $L$ even though the total
+codeword energy remains one; it is not fitted to the measured models.
 
 \subsection{Relationship to Experiments}
 
-The capacity result provides an upper bound on the number of bits that can
-be reliably transmitted through the watermark channel. In our experiments,
+The theorem bounds information in the assumed Gaussian surrogate; it
+does not give an achievable payload for the trained decoder. In our experiments,
 the message size is $L = 5$ bits with $k = 32$ and $N = 4096$. The
 observed statistical separation ($>8.4\sigma$, Table~\ref{tab:separation})
 indicates that the empirical SNR is far above the threshold for reliable
@@ -1791,13 +1775,15 @@ CelebA-64 & 8 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.088{\pm}0.017$ \\
 
 \paragraph{Fixed-carrier payload sweeps.}
 The first block of Table~\ref{tab:app-capacity} holds $k=32$ and the
-explicit random-codeword decoder fixed while varying $L$ from 5 to 20.
+explicit-codeword decoder fixed while varying $L$ from 5 to 20.
 The nearest-competitor margin decreases from $0.478$ to $0.197$, while
 exact-message recovery remains at 100\% in the evaluated trials. This
-shows reduced separation, not an observed recovery boundary. Explicitly
-storing and searching $2^L$ random codewords becomes impractical at
-larger $L$, motivating a separate implicit
-hypercube codebook. With orthonormal projection axes
+shows reduced separation, not an observed recovery boundary. The
+5-bit row uses QR-orthogonalized random codewords; the longer rows
+use independently sampled normalized vectors. Explicitly storing and
+searching $2^L$ codewords becomes impractical at larger $L$, motivating
+the implicit hypercube realization of the keyed random code. With
+orthonormal code-space axes
 $e_1,\ldots,e_L\in\mathbb{R}^k$ and $L\leq k$, it assigns message
 $m\in\{0,1\}^L$ the unit codeword
 $c_m=L^{-1/2}\sum_{j=1}^{L}(2m_j-1)e_j$.
@@ -1818,8 +1804,10 @@ each message has 40 detection trials with $N=4096$ queries. Accuracy
 denotes exact-message recovery. Detection uses noise--image interpolation
 queries. Clean FP uses the prespecified key and target message. FID
 ratios use 500 generated and real-reference
-samples per run. Codebook construction and projection dimension $k$
-change between ruled groups.}
+samples per run. Codeword geometry and projection dimension $k$
+change between ruled groups. Every row uses a random secret projection
+$P$; ``normalized vectors'' refers specifically to independently
+drawn explicit codewords.}
 \label{tab:app-capacity}
 \small
 \setlength{\tabcolsep}{4pt}
@@ -1827,12 +1815,12 @@ change between ruled groups.}
 \toprule
 $k$ & Code & Bits & Exact recovery ($\uparrow$) & Clean FP ($\downarrow$) & FID ratio ($\downarrow$) \\
 \midrule
-32 & Random & 5  & $100.0{\pm}0.0$\% & $0.5{\pm}1.0$\% & $1.043{\pm}0.020$ \\
-32 & Random & 8  & $100.0{\pm}0.0$\% & $0.5{\pm}1.0$\% & $1.031{\pm}0.016$ \\
-32 & Random & 12 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.030{\pm}0.012$ \\
-32 & Random & 16 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.036{\pm}0.018$ \\
-32 & Random & 18 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.015{\pm}0.016$ \\
-32 & Random & 20 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $0.988{\pm}0.013$ \\
+32 & Orthogonal & 5  & $100.0{\pm}0.0$\% & $0.5{\pm}1.0$\% & $1.043{\pm}0.020$ \\
+32 & Norm. vectors & 8  & $100.0{\pm}0.0$\% & $0.5{\pm}1.0$\% & $1.031{\pm}0.016$ \\
+32 & Norm. vectors & 12 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.030{\pm}0.012$ \\
+32 & Norm. vectors & 16 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.036{\pm}0.018$ \\
+32 & Norm. vectors & 18 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.015{\pm}0.016$ \\
+32 & Norm. vectors & 20 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $0.988{\pm}0.013$ \\
 \midrule
 32 & Hypercube & 32 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.032{\pm}0.021$ \\
 \midrule
