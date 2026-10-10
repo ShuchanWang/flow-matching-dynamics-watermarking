@@ -197,6 +197,49 @@ The original MNIST MLP is included with full-weight scratch training for
 feature-space quality diagnostic. Its budget and quality metric differ
 from the pretrained image models and must be labeled accordingly.
 
+### SD3.5 Hypercube Diagnostics
+
+Exact recovery and pooled target-score separation measure different things:
+a positive pooled score does not imply every hypercube bit has the correct
+sign. Diagnose a saved SD3.5 adapter without retraining:
+
+```bash
+python diagnose_sd35_hypercube.py \
+  --run-dir table_runs/main_architectures/sd35/hypercube32/MESSAGE \
+  --output table_runs/sd35_diagnostics/MESSAGE.json
+```
+
+The report records bit accuracy, signed coordinate margins, and raw clean
+and watermarked signatures. Paired base-subtracted recovery is a diagnostic
+requiring access to the unwatermarked base, not a replacement for the main
+black-box verifier. Four trials are a screening diagnostic, not a substitute
+for the full experimental protocol.
+
+`watermark_sd35.py` also accepts optional `--wm_proj_weight` and
+`--wm_bit_weight` for coordinatewise residual fitting and raw-velocity
+hypercube bit-margin training. Both default to zero to preserve the old
+objective. These are experimental remedies, not demonstrated improvements;
+evaluate recovery and FID in separate output directories before reporting
+them. Changing LoRA rank alone does not establish an effective payload limit.
+
+For a short continuation of a saved adapter, the diagnostic accepts
+`--repair-steps 50 --repair-proj-weight 10 --repair-bit-weight 1`.
+It saves a separate adapter beside the diagnostic JSON and does not modify
+the source run. `--adapter-path PATH` evaluates or continues an alternative
+adapter trained with the source run's original key. Repair output is
+explicitly quality-incomplete: no FID is evaluated by this diagnostic.
+
+Screening the first saved 32-bit SD3.5 message (four trials, 256 queries
+each) found 78.125% raw bit accuracy and zero exact recovery. Paired base
+subtraction raised bit accuracy to 93.75% but still failed exact recovery.
+A 50-update coordinate-fitting/bit-margin continuation at unchanged rank
+16 reached 100% base-subtracted recovery, but raw recovery remained zero.
+Fifty more updates with stronger bit-margin weight reached 89.0625% raw bit
+accuracy, still zero exact recovery, and 100% base-subtracted recovery.
+The latter screening used batch size eight instead of four; these are
+preliminary diagnostics, not matched full-protocol results or evidence of
+quality preservation. The raw-verifier failure is not solved by these probes.
+
 ### Audio Extension
 
 Install `requirements-audio.txt` in a suitable environment before preparing

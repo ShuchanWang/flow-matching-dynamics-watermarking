@@ -76,6 +76,10 @@ def build_jobs(root, families, schemes, audio_pools=None, stable_pools=None):
 def complete(command):
     if not has_completed_result(command):
         return False
+    if command[1] == "watermark_sd35.py":
+        root = Path(command[command.index("--output_dir") + 1])
+        config = json.loads((root / "sweep_results.json").read_text())["config"]
+        return sd_loss_matches(command, config)
     if command[1] == "flow_watermark_mnist_mlp.py":
         root = Path(command[command.index("--output_dir") + 1])
         result = json.loads((root / "results.json").read_text())
@@ -92,6 +96,15 @@ def complete(command):
                     for flag in ("--architecture", "--latents", "--n_detect_trials", "--n_fid_samples", "--n_sample_steps")))
 
 
+def sd_loss_matches(command, config):
+    for key in ("wm_proj_weight", "wm_bit_weight"):
+        flag = "--" + key
+        requested = float(command[command.index(flag) + 1]) if flag in command else 0.0
+        if float(config.get(key, 0.0)) != requested:
+            return False
+    return True
+
+
 def compatible_legacy_result(command, path):
     filename = "sweep_results.json" if command[1] == "watermark_sd35.py" else "results.json"
     try:
@@ -99,6 +112,8 @@ def compatible_legacy_result(command, path):
     except (OSError, ValueError):
         return False
     config = payload.get("config", {})
+    if command[1] == "watermark_sd35.py" and not sd_loss_matches(command, config):
+        return False
     metrics = payload.get("metrics") or payload.get("results")
     if not metrics:
         return False

@@ -45,6 +45,10 @@ parser.add_argument('--wm_lambda', type=float, default=0.5)
 parser.add_argument('--wm_tanh_scale', type=float, default=1.0,
                     help='Scale for tanh in bounded watermark loss')
 parser.add_argument('--resid_reg', type=float, default=0.0)
+parser.add_argument('--wm_proj_weight', type=float, default=0.0,
+                    help='Optional coordinatewise projected residual fitting; zero preserves the legacy objective')
+parser.add_argument('--wm_bit_weight', type=float, default=0.0,
+                    help='Optional raw-velocity hypercube bit-margin loss; zero preserves the legacy objective')
 
 parser.add_argument('--n_eval_seeds', type=int, default=5)
 parser.add_argument('--n_eval_steps', type=int, default=15)
@@ -64,7 +68,11 @@ parser.add_argument('--lora_targets', type=str, default='mlp',
                     choices=['mlp', 'attn', 'both'])
 
 args = parser.parse_args()
-from watermark_codebooks import make_key, message_code, decode_signature, target_score
+from watermark_codebooks import make_key, message_code, decode_signature, target_score, hypercube_margin_loss
+if args.wm_proj_weight < 0 or args.wm_bit_weight < 0:
+    parser.error('Projection and bit loss weights must be nonnegative')
+if args.wm_bit_weight and args.codebook_mode != 'hypercube':
+    parser.error('The bit-margin loss requires --codebook_mode hypercube')
 if not args.wm_message or any(bit not in '01' for bit in args.wm_message):
     parser.error('--wm_message must be a nonempty binary string')
 if args.codebook_mode == 'orthogonal' and 2 ** len(args.wm_message) > args.wm_K:
@@ -503,6 +511,14 @@ for run_idx, target_steps in enumerate(STEPS_LIST):
             loss_wm = -torch.tanh(wm_corr_norm * WM_TANH_SCALE)
 
             loss = loss_vel + WM_LAMBDA * loss_wm
+            if args.wm_proj_weight > 0:
+                projected_target = (WM_EPS * s_t * WM_CODE).unsqueeze(0).expand_as(proj)
+                loss = loss + args.wm_proj_weight * F.mse_loss(proj, projected_target)
+            if args.wm_bit_weight > 0:
+                raw_projection = v_theta.reshape(B, -1).float() @ P
+                carrier = torch.full((B,), s_t, device=P.device)
+                loss = loss + args.wm_bit_weight * hypercube_margin_loss(
+                    raw_projection, codes, WM_BITS, carrier, WM_EPS)
             if RESID_REG > 0:
                 loss = loss + RESID_REG * (residual.float() ** 2).mean()
 
@@ -558,19 +574,24 @@ for run_idx, target_steps in enumerate(STEPS_LIST):
         dists.append((x_w - x_c).norm().item() / (x_c.norm().item() + 1e-8))
     endpoint_mean = float(np.mean(dists))
 
-    wm_correct = 0; wm_scores_list = []
+    wm_correct = 0; wm_scores_list = []; wm_bit_hits = []
+    wm_signed_coordinates = []
     for _ in range(args.n_detect_seeds):
         decoded, scores, sig = detect(args.n_detect_queries, use_lora=True)
         if list(decoded) == WM_BITS:
             wm_correct += 1
         wm_scores_list.append(target_score(torch.from_numpy(scores), WM_BITS, args.codebook_mode))
+        wm_bit_hits.append([int(a == b) for a, b in zip(decoded, WM_BITS)])
+        if args.codebook_mode == 'hypercube':
+            wm_signed_coordinates.append(scores * np.asarray([2 * bit - 1 for bit in WM_BITS]))
 
-    clean_correct = 0; clean_scores_list = []
+    clean_correct = 0; clean_scores_list = []; clean_bit_hits = []
     for _ in range(args.n_detect_seeds):
         decoded, scores, sig = detect(args.n_detect_queries, use_lora=False)
         if list(decoded) == WM_BITS:
             clean_correct += 1
         clean_scores_list.append(target_score(torch.from_numpy(scores), WM_BITS, args.codebook_mode))
+        clean_bit_hits.append([int(a == b) for a, b in zip(decoded, WM_BITS)])
 
     wm_acc = 100.0 * wm_correct / args.n_detect_seeds
     clean_acc = 100.0 * clean_correct / args.n_detect_seeds
@@ -593,6 +614,9 @@ for run_idx, target_steps in enumerate(STEPS_LIST):
         'detection_accuracy_clean': clean_acc,
         'separation_sigma': float(sep),
         'score_margin': margin,
+        'clean_reference_score_gap': margin,
+        'bit_accuracy_wm': float(100 * np.mean(wm_bit_hits)),
+        'bit_accuracy_clean': float(100 * np.mean(clean_bit_hits)),
         'wm_score_mean': float(wm_mean),
         'wm_score_std': float(wm_std),
         'wm_score_var': wm_score_var,
@@ -604,6 +628,11 @@ for run_idx, target_steps in enumerate(STEPS_LIST):
         'final_resid_loss': float(np.mean(vel_history[-20:])),
         'final_resid_rms': float(np.mean(resid_history[-20:])),
     }
+    if wm_signed_coordinates:
+        signed = np.asarray(wm_signed_coordinates)
+        eval_metrics['wm_signed_coordinate_mean'] = signed.mean(axis=0).tolist()
+        eval_metrics['wm_bit_error_rates'] = (1 - np.asarray(wm_bit_hits).mean(axis=0)).tolist()
+        eval_metrics['wm_minimum_signed_coordinate_mean'] = float(signed.min(axis=1).mean())
 
     is_final = (run_idx == len(STEPS_LIST) - 1)
     if FID_ENABLED and is_final:
@@ -623,7 +652,8 @@ for run_idx, target_steps in enumerate(STEPS_LIST):
     print(f"    WM acc:           {eval_metrics['detection_accuracy_wm']:.1f}%")
     print(f"    Clean acc:        {eval_metrics['detection_accuracy_clean']:.1f}%")
     print(f"    Separation:       {eval_metrics['separation_sigma']:.2f} σ")
-    print(f"    Score margin:     {eval_metrics['score_margin']:.4f}")
+    print(f"    WM-clean gap:     {eval_metrics['clean_reference_score_gap']:.4f}")
+    print(f"    WM bit accuracy:  {eval_metrics['bit_accuracy_wm']:.2f}%")
     print(f"    WM score:         {eval_metrics['wm_score_mean']:.4f} ± {eval_metrics['wm_score_std']:.4f}")
     print(f"    Clean score:      {eval_metrics['clean_score_mean']:.4f} ± {eval_metrics['clean_score_std']:.4f}")
     print(f"    Endpoint dist:    {eval_metrics['paired_endpoint_distance_mean']:.4f}")

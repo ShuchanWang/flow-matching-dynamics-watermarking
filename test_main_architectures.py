@@ -15,12 +15,27 @@ from types import SimpleNamespace
 
 from collect_results import hf_rows, infer_group
 from prepare_audio_latents import audio_records
-from run_main_architectures import build_jobs, MESSAGES_32, compatible_legacy_result
+from run_main_architectures import build_jobs, MESSAGES_32, compatible_legacy_result, sd_loss_matches
 from watermark_audio_flow import AudioFlow, StableVelocity
-from watermark_codebooks import make_key, message_code, decode_signature, target_score
+from watermark_codebooks import make_key, message_code, decode_signature, target_score, hypercube_margin_loss
+from diagnose_sd35_hypercube import summarize
 
 
 class CodebookTests(unittest.TestCase):
+    def test_hypercube_bit_loss_penalizes_a_weak_bit_despite_strong_total_score(self):
+        axes = torch.eye(32)
+        carrier = torch.tensor([1.0, -1.0])
+        velocity = carrier[:, None] * torch.ones(2, 32)
+        self.assertEqual(float(hypercube_margin_loss(velocity, axes, "1" * 32, carrier, 1.5)), 0)
+        velocity[:, 0] *= -1
+        velocity.requires_grad_(True)
+        loss = hypercube_margin_loss(velocity, axes, "1" * 32, carrier, 1.5)
+        self.assertGreater(float(loss), 0)
+        loss.backward()
+        self.assertLess(float(velocity.grad[0, 0]), 0)
+        self.assertGreater(float(velocity.grad[1, 0]), 0)
+        self.assertEqual(float(velocity.grad[:, 1:].abs().sum()), 0)
+
     def test_orthogonal_all_messages(self):
         P, codes = make_key(64, 5, 32, "cpu", "orthogonal")
         torch.testing.assert_close(P.T @ P, torch.eye(32), atol=1e-5, rtol=1e-5)
@@ -56,6 +71,24 @@ class CodebookTests(unittest.TestCase):
 
 
 class RunnerTests(unittest.TestCase):
+    def test_sd_main_grid_does_not_reuse_changed_training_objectives(self):
+        command = ["python", "watermark_sd35.py"]
+        self.assertTrue(sd_loss_matches(command, {}))
+        self.assertFalse(sd_loss_matches(command, {"wm_bit_weight": 20}))
+        self.assertFalse(sd_loss_matches(command, {"wm_proj_weight": 10}))
+        self.assertTrue(sd_loss_matches(command + ["--wm_proj_weight", "10"], {"wm_proj_weight": 10}))
+
+    def test_sd_bit_diagnostics_distinguish_recovery_from_aggregate_score(self):
+        codes = torch.eye(32)
+        message = "1" * 32
+        signatures = torch.ones(2, 32)
+        signatures[:, 0] = -0.1
+        result = summarize(signatures, codes, message, "hypercube")
+        self.assertEqual(result["exact_recovery"], 0)
+        self.assertEqual(result["bit_accuracy"], 100 * 31 / 32)
+        self.assertEqual(result["wrong_bit_frequencies"][0], 1)
+        self.assertGreater(signatures.mean(), 0)
+
     def test_legacy_reuse_checks_protocol_and_normalizes_numeric_options(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

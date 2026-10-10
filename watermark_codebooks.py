@@ -45,3 +45,12 @@ def target_score(scores, message, mode):
     if mode == "hypercube":
         return float(scores @ scores.new_tensor([2 * int(b) - 1 for b in message]) / math.sqrt(len(message)))
     return float(scores[sum(int(bit) << i for i, bit in enumerate(message))])
+
+
+def hypercube_margin_loss(projected_velocity, axes, message, carrier, epsilon):
+    """Penalize incorrect raw-velocity bit signs rather than only a pooled target score."""
+    carrier = carrier.reshape(-1, 1)
+    signs = axes.new_tensor([2 * int(bit) - 1 for bit in message])
+    signed = carrier * (projected_velocity @ axes.T) * signs
+    margin = epsilon * carrier.square() / math.sqrt(len(message))
+    return torch.relu(margin - signed).mean()
