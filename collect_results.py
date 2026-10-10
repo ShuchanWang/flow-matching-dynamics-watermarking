@@ -25,6 +25,10 @@ from statistics import mean, pstdev
 
 
 METRICS = [
+    "wrong_key_acc",
+    "fd_clap_clean",
+    "fd_clap_wm",
+    "fd_clap_ratio",
     "detection_accuracy_wm",
     "detection_accuracy_clean",
     "separation_sigma",
@@ -90,6 +94,9 @@ def final_sd35_rows(path: Path) -> list[dict]:
         merged.setdefault("message", config.get("wm_message"))
         merged.setdefault("bits", len(str(config.get("wm_message", ""))))
         merged.setdefault("model_family", "sd35")
+        merged.setdefault("codebook_mode", config.get("codebook_mode", "auto"))
+        merged.setdefault("wm_K", config.get("wm_K", 32))
+        merged.setdefault("dataset", "sd35_latents")
         merged.setdefault("output_dir", str(path))
         rows.append(merged)
     return rows
@@ -102,7 +109,12 @@ def hf_rows(path: Path) -> list[dict]:
     def enrich(row: dict, config: dict, result_path: Path) -> dict:
         row.setdefault("message", config.get("wm_message"))
         row.setdefault("bits", len(str(config.get("wm_message", ""))))
-        row.setdefault("model_family", "hf_flow_unet")
+        row.setdefault("model_family", config.get("model_family", "hf_flow_unet"))
+        row.setdefault("codebook_mode", config.get("codebook_mode", "auto"))
+        row.setdefault("wm_K", config.get("wm_K", 32))
+        row.setdefault("architecture", config.get("architecture", "unet"))
+        row.setdefault("fid_real_clean", row.get("fid_clean"))
+        row.setdefault("fid_real_wm", row.get("fid_wm"))
         row.setdefault("dataset", config.get("dataset"))
         row.setdefault("steps", config.get("steps"))
         row.setdefault("post_ft_steps", config.get("post_ft_steps"))
@@ -142,6 +154,8 @@ def classic_rows(path: Path) -> list[dict]:
         row.setdefault("message", item.get("message"))
         row.setdefault("bits", config.get("wm_bits", len(str(item.get("message", "")))))
         row.setdefault("model_family", family)
+        row.setdefault("codebook_mode", config.get("codebook_mode", "orthogonal"))
+        row.setdefault("wm_K", config.get("wm_K", 32))
         row.setdefault("dataset", config.get("dataset"))
         row.setdefault("steps", config.get("steps", config.get("target_steps")))
         row.setdefault("lora_steps", config.get("lora_steps"))
@@ -153,6 +167,11 @@ def classic_rows(path: Path) -> list[dict]:
 
 
 def infer_group(job_name: str, row: dict) -> tuple[str, str]:
+    if job_name.startswith("main_") or row.get("model_family") == "audio_flow":
+        mode = row.get("codebook_mode", "unknown")
+        architecture = row.get("architecture", row.get("model_family", "unknown"))
+        setting = f"{architecture}:{row.get('dataset')}:{mode}:{row.get('bits')}bit:K{row.get('wm_K')}"
+        return "main_architectures", setting
     if row.get("model_family") == "classic_mlp":
         return "classic_mlp_main", str(row.get("dataset", "mnist"))
     if row.get("model_family") == "classic_unet":

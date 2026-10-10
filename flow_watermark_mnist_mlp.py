@@ -20,6 +20,7 @@ import os
 import argparse
 import json
 from pathlib import Path
+from watermark_codebooks import make_key, message_code, decode_signature, target_score
 
 
 def parse_args():
@@ -34,6 +35,7 @@ def parse_args():
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--wm_K", type=int, default=32)
     parser.add_argument("--wm_bits", type=int, default=5)
+    parser.add_argument("--codebook_mode", choices=["orthogonal", "hypercube"], default="orthogonal")
     parser.add_argument("--wm_eps", type=float, default=0.2)
     parser.add_argument("--wm_lambda", type=float, default=0.018)
     parser.add_argument("--n_queries", type=int, default=4096)
@@ -50,6 +52,10 @@ def parse_args():
 
 
 args = parse_args()
+if not 0 < args.wm_bits <= args.wm_K <= 784:
+    raise ValueError("Require 0 < wm_bits <= wm_K <= 784")
+if args.codebook_mode == "orthogonal" and args.wm_bits > int(math.log2(args.wm_K)):
+    raise ValueError("Orthogonal codebooks require 2**wm_bits <= wm_K")
 
 
 def parse_message(text):
@@ -129,21 +135,8 @@ print(f"Data preparation took {time.time() - t0:.1f}s")
 # ============================================================
 torch.manual_seed(12345)
 with torch.no_grad():
-    P_raw = torch.randn(D, K, device=device)
-    Q_p, _ = torch.linalg.qr(P_raw)
-    P = Q_p[:, :K]
-    
-    codes_raw = torch.randn(2**N_BITS, K, device=device)
-    Q_c, _ = torch.linalg.qr(codes_raw.T)
-    codes = Q_c.T
-    
-    codebook = {}
-    for k in range(2**N_BITS):
-        bits = tuple((k >> i) & 1 for i in range(N_BITS))
-        codebook[bits] = codes[k] / codes[k].norm()
-
-all_messages = list(codebook.keys())
-print(f"Messages: {len(all_messages)}, orthogonal codebook ready")
+    P, codebook = make_key(D, N_BITS, K, device, args.codebook_mode)
+print(f"Payload: {N_BITS} bits, {args.codebook_mode} codebook ready")
 
 # ============================================================
 # MODEL
@@ -218,10 +211,16 @@ def train_model(seed_offset, use_wm=False, wm_code=None):
 # TRAIN MODELS
 # ============================================================
 if args.wm_messages.strip().lower() == "random":
-    test_messages = random.sample(all_messages, TEST_MESSAGES)
+    test_messages = [tuple((index >> i) & 1 for i in range(N_BITS))
+                     for index in random.sample(range(2**N_BITS), TEST_MESSAGES)]
 else:
     test_messages = [parse_message(msg) for msg in args.wm_messages.split(",") if msg.strip()]
+if not test_messages or len(set(test_messages)) != len(test_messages):
+    raise ValueError("Specify at least one message, without duplicates")
 print(f"\nTest messages: {test_messages}")
+torch.save({"P": P.cpu(), "codes": codebook.cpu(), "codebook_mode": args.codebook_mode,
+            "wm_bits": N_BITS, "messages": [message_to_str(msg) for msg in test_messages]},
+           OUTPUT_DIR / "watermark_key.pt")
 
 print(f"\nTraining {N_CLEAN} clean models...")
 clean_models = []
@@ -229,6 +228,8 @@ for i in range(N_CLEAN):
     print(f"  Clean {i+1}/{N_CLEAN}:")
     t0 = time.time()
     clean_models.append(train_model(i, use_wm=False))
+    torch.save({key: value.cpu() for key, value in clean_models[-1].state_dict().items()},
+               OUTPUT_DIR / f"clean_model_{i}.pt")
     print(f"    Time: {time.time()-t0:.1f}s")
 
 print(f"\nTraining watermarked models...")
@@ -236,11 +237,13 @@ wm_models = {}
 for msg_idx, msg in enumerate(test_messages):
     print(f"  Message {msg_idx+1}: {msg}")
     wm_models[msg] = []
-    code = codebook[msg]
+    code = message_code(message_to_str(msg), codebook, args.codebook_mode)
     for i in range(N_WM):
         print(f"    Model {i+1}/{N_WM}:")
         t0 = time.time()
         wm_models[msg].append(train_model(msg_idx*100+i, use_wm=True, wm_code=code))
+        torch.save({key: value.cpu() for key, value in wm_models[msg][-1].state_dict().items()},
+                   OUTPUT_DIR / f"wm_model_{message_to_str(msg)}_{i}.pt")
         print(f"    Time: {time.time()-t0:.1f}s")
 
 # ============================================================
@@ -254,11 +257,8 @@ def decode_watermark(model, P, codebook, n_queries=N_QUERIES):
     proj = v @ P
     carrier = torch.sin(2 * math.pi * t_query)
     signature = (carrier * proj).mean(dim=0)
-    all_codes = torch.stack(list(codebook.values()))
-    all_scores = (signature.unsqueeze(0) * all_codes).sum(dim=1)
-    best_idx = all_scores.argmax().item()
-    msg_list = list(codebook.keys())
-    return msg_list[best_idx], all_scores[best_idx].item()
+    decoded, scores = decode_signature(signature, codebook, N_BITS, args.codebook_mode)
+    return decoded, target_score(scores, message_to_str(decoded), args.codebook_mode)
 
 # ============================================================
 # SIGNATURE STATISTICS (for paper tables)
@@ -266,7 +266,6 @@ def decode_watermark(model, P, codebook, n_queries=N_QUERIES):
 @torch.no_grad()
 def compute_signature_stats(model, P, codebook, true_msg, n_trials=50):
     """Compute overall signature norm and score statistics."""
-    code = codebook[true_msg]
     sig_norms = []
     true_scores = []
     other_scores = []
@@ -281,14 +280,19 @@ def compute_signature_stats(model, P, codebook, true_msg, n_trials=50):
         
         sig_norms.append(sig.norm().item())
         
-        all_codes = torch.stack(list(codebook.values()))
-        scores = (sig.unsqueeze(0) * all_codes).sum(dim=1)
-        true_idx = list(codebook.keys()).index(true_msg)
-        true_scores.append(scores[true_idx].item())
-        
-        mask = torch.ones(len(scores), dtype=torch.bool)
-        mask[true_idx] = False
-        other_scores.append(scores[mask].max().item())
+        decoded, scores = decode_signature(sig, codebook, N_BITS, args.codebook_mode)
+        true_scores.append(target_score(scores, message_to_str(true_msg), args.codebook_mode))
+        if args.codebook_mode == "hypercube":
+            best = scores.abs().sum().item() / math.sqrt(N_BITS)
+            # If the true message wins, flip the weakest bit for its nearest rival.
+            if decoded == true_msg:
+                best -= 2 * scores.abs().min().item() / math.sqrt(N_BITS)
+            other_scores.append(best)
+        else:
+            true_idx = sum(bit << i for i, bit in enumerate(true_msg))
+            mask = torch.ones(len(scores), dtype=torch.bool, device=scores.device)
+            mask[true_idx] = False
+            other_scores.append(scores[mask].max().item())
     
     return {
         'sig_norm_mean': np.mean(sig_norms), 'sig_norm_std': np.std(sig_norms),
@@ -456,7 +460,7 @@ for model in clean_models:
         if decoded in test_messages:
             clean_hits[decoded] += 1
 
-expected = len(test_messages) / 32 * 100
+expected = 100 / (2**N_BITS)
 for msg in test_messages:
     rate = clean_hits[msg] / (N_CLEAN * N_TRIALS) * 100
     print(f"  {msg}: {rate:.1f}% (expected ~{expected:.1f}%)")
@@ -466,7 +470,7 @@ print("\nStatistical separation:")
 per_message_metrics = {}
 for msg in test_messages:
     wm_scores = []
-    code = codebook[msg]
+    code = message_code(message_to_str(msg), codebook, args.codebook_mode)
     for model in wm_models[msg]:
         for _ in range(10):
             x_q = torch.randn(2048, D, device=device); t_q = torch.rand(2048, 1, device=device)
@@ -579,6 +583,7 @@ with open(OUTPUT_DIR / "results.json", "w") as f:
             "dataset": "mnist",
             "wm_messages": [message_to_str(msg) for msg in test_messages],
             "wm_bits": N_BITS,
+            "codebook_mode": args.codebook_mode,
             "wm_K": K,
             "steps": STEPS,
             "n_queries": N_QUERIES,

@@ -136,7 +136,7 @@ def parse_args():
     parser.add_argument("--wm_message", default="10101")
     parser.add_argument("--wm_K", type=int, default=32)
     parser.add_argument(
-        "--codebook_mode", choices=["auto", "random", "hypercube"], default="auto",
+        "--codebook_mode", choices=["auto", "orthogonal", "random", "hypercube"], default="auto",
         help="Use orthogonal codes when possible (auto), normalized random codes, or an implicit binary hypercube codebook.",
     )
     parser.add_argument("--wm_eps", type=float, default=0.5)
@@ -349,6 +349,12 @@ def message_index(bits):
 
 
 def make_codebook(D: int, n_bits: int, K: int, device: torch.device, mode: str = "auto"):
+    if n_bits < 1 or K < 1:
+        raise ValueError("Payload and projection dimension must be positive")
+    if mode == "orthogonal" and 2 ** n_bits > K:
+        raise ValueError("Orthogonal encoding requires 2**bits <= wm_K")
+    if mode != "hypercube" and n_bits > 20:
+        raise ValueError("Use an implicit hypercube above 20 bits")
     if K > D:
         raise ValueError(
             f"wm_K={K} exceeds flattened data dimension D={D}. "
@@ -365,7 +371,7 @@ def make_codebook(D: int, n_bits: int, K: int, device: torch.device, mode: str =
             return P, torch.eye(K, device=device, dtype=torch.float32)[:n_bits]
         n_messages = 2 ** n_bits
         codes_raw = torch.randn(n_messages, K, device=device, dtype=torch.float32)
-        if mode == "auto" and n_messages <= K:
+        if mode in ("auto", "orthogonal") and n_messages <= K:
             Q_c, _ = torch.linalg.qr(codes_raw.T)
             codes = Q_c.T
         else:

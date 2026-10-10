@@ -1,0 +1,6 @@
+-r requirements.txt
+music2latent
+librosa
+soundfile
+pandas
+stable-audio-tools

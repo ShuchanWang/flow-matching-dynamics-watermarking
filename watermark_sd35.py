@@ -39,6 +39,7 @@ parser.add_argument('--save_every', type=int, default=10000)
 
 parser.add_argument('--wm_message', type=str, default='10101')
 parser.add_argument('--wm_K', type=int, default=32)
+parser.add_argument('--codebook_mode', choices=['auto', 'orthogonal', 'hypercube'], default='auto')
 parser.add_argument('--wm_eps', type=float, default=1.5)
 parser.add_argument('--wm_lambda', type=float, default=0.5)
 parser.add_argument('--wm_tanh_scale', type=float, default=1.0,
@@ -63,6 +64,15 @@ parser.add_argument('--lora_targets', type=str, default='mlp',
                     choices=['mlp', 'attn', 'both'])
 
 args = parser.parse_args()
+from watermark_codebooks import make_key, message_code, decode_signature, target_score
+if not args.wm_message or any(bit not in '01' for bit in args.wm_message):
+    parser.error('--wm_message must be a nonempty binary string')
+if args.codebook_mode == 'orthogonal' and 2 ** len(args.wm_message) > args.wm_K:
+    parser.error('Orthogonal encoding requires 2**bits <= wm_K')
+if args.codebook_mode == 'hypercube' and len(args.wm_message) > args.wm_K:
+    parser.error('Hypercube encoding requires bits <= wm_K')
+if args.codebook_mode != 'hypercube' and len(args.wm_message) > 20:
+    parser.error('Use --codebook_mode hypercube above 20 bits')
 
 if args.quick:
     args.steps = '100'
@@ -178,31 +188,9 @@ if WM_K > D_latent:
     )
 torch.manual_seed(12345)
 with torch.no_grad():
-    P_raw = torch.randn(D_latent, WM_K, device='cuda', dtype=torch.float32)
-    Q_p, _ = torch.linalg.qr(P_raw)
-    P = Q_p[:, :WM_K]
-    codes_raw = torch.randn(N_MESSAGES, WM_K, device='cuda', dtype=torch.float32)
-    if N_MESSAGES <= WM_K:
-        Q_c, _ = torch.linalg.qr(codes_raw.T)
-        codes = Q_c.T
-    else:
-        print(
-            f"[codebook] Using overcomplete random codebook: "
-            f"{N_MESSAGES} messages in K={WM_K} dimensions.",
-            flush=True,
-        )
-        codes = codes_raw
-    codes = codes / codes.norm(dim=1, keepdim=True)
-
-codebook = {}
-for k in range(N_MESSAGES):
-    bits = tuple((k >> i) & 1 for i in range(WM_N_BITS))
-    codebook[bits] = codes[k]
-
-WM_CODE = codebook[tuple(WM_BITS)]
+    P, codes = make_key(D_latent, WM_N_BITS, WM_K, 'cuda', args.codebook_mode)
+WM_CODE = message_code(WM_BITS, codes, args.codebook_mode)
 Pc_target = (P @ WM_CODE).float()
-ALL_CODES = torch.stack([codebook[tuple((k >> i) & 1 for i in range(WM_N_BITS))]
-                         for k in range(N_MESSAGES)])
 
 print(f"P: {P.shape}, codes: {codes.shape}")
 
@@ -380,9 +368,7 @@ def detect(n_queries=256, use_lora=True):
         s = math.sin(2 * math.pi * t_val)
         signature += s * (v_flat @ P).squeeze(0)
     signature /= n_queries
-    scores = (signature.unsqueeze(0) * ALL_CODES).sum(dim=1)
-    best_idx = scores.argmax().item()
-    best_bits = tuple((best_idx >> i) & 1 for i in range(WM_N_BITS))
+    best_bits, scores = decode_signature(signature, codes, WM_N_BITS, args.codebook_mode)
     return best_bits, scores.cpu().numpy(), signature.cpu().numpy()
 
 
@@ -577,16 +563,14 @@ for run_idx, target_steps in enumerate(STEPS_LIST):
         decoded, scores, sig = detect(args.n_detect_queries, use_lora=True)
         if list(decoded) == WM_BITS:
             wm_correct += 1
-        true_idx = list(codebook.keys()).index(tuple(WM_BITS))
-        wm_scores_list.append(scores[true_idx])
+        wm_scores_list.append(target_score(torch.from_numpy(scores), WM_BITS, args.codebook_mode))
 
     clean_correct = 0; clean_scores_list = []
     for _ in range(args.n_detect_seeds):
         decoded, scores, sig = detect(args.n_detect_queries, use_lora=False)
         if list(decoded) == WM_BITS:
             clean_correct += 1
-        true_idx = list(codebook.keys()).index(tuple(WM_BITS))
-        clean_scores_list.append(scores[true_idx])
+        clean_scores_list.append(target_score(torch.from_numpy(scores), WM_BITS, args.codebook_mode))
 
     wm_acc = 100.0 * wm_correct / args.n_detect_seeds
     clean_acc = 100.0 * clean_correct / args.n_detect_seeds
@@ -601,6 +585,8 @@ for run_idx, target_steps in enumerate(STEPS_LIST):
         'steps': target_steps,
         'message': args.wm_message,
         'bits': WM_N_BITS,
+        'codebook_mode': args.codebook_mode,
+        'wm_K': WM_K,
         'n_detect_trials': args.n_detect_seeds,
         'n_detect_queries': args.n_detect_queries,
         'detection_accuracy_wm': wm_acc,
@@ -649,7 +635,8 @@ for run_idx, target_steps in enumerate(STEPS_LIST):
         print(f"    FID ratio:        {eval_metrics['fid_ratio']:.3f}")
 
 transformer.save_pretrained(os.path.join(args.output_dir, 'final'))
-torch.save({'P': P.cpu(), 'codes': codes.cpu(), 'codebook': codebook, 'WM_CODE': WM_CODE.cpu()},
+torch.save({'P': P.cpu(), 'codes': codes.cpu(), 'WM_CODE': WM_CODE.cpu(),
+            'message': args.wm_message, 'codebook_mode': args.codebook_mode},
            os.path.join(args.output_dir, 'codebook.pt'))
 
 
