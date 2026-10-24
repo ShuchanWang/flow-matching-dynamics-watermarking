@@ -1,0 +1,1030 @@
+{
+  "rows": [
+    {
+      "carrier": "sine",
+      "field": "clean",
+      "attack": "none",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 50.78125,
+        "fid": 189.71522587590485,
+        "fid_ratio_clean": 1.0,
+        "velocity_relative_mse": 0.0,
+        "gate_mean_norm": 0.009547263593193267,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "sine",
+      "field": "injected",
+      "attack": "marked",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 189.92832404613176,
+        "fid_ratio_clean": 1.001123252860929,
+        "velocity_relative_mse": 0.0003483068199106211,
+        "gate_mean_norm": 0.009547263593193267,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "sine",
+      "field": "injected",
+      "attack": "joint_spectrum",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 47.65625,
+        "fid": 189.33661880628816,
+        "fid_ratio_clean": 0.998004340095168,
+        "velocity_relative_mse": 0.0020121299508730262,
+        "gate_mean_norm": 0.009547263593193267,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "sine",
+      "field": "injected",
+      "attack": "time_svd_rank1",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 57.03125,
+        "fid": 189.49004460637715,
+        "fid_ratio_clean": 0.9988130564192302,
+        "velocity_relative_mse": 0.00017777399458548,
+        "gate_mean_norm": 0.009547263593193267,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "sine",
+      "field": "injected",
+      "attack": "time_svd_rank4",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 53.125,
+        "fid": 189.0992483875566,
+        "fid_ratio_clean": 0.9967531467993446,
+        "velocity_relative_mse": 0.0007132459171215554,
+        "gate_mean_norm": 0.009547263593193267,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "sine",
+      "field": "injected",
+      "attack": "input_ridge",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 47.65625,
+        "fid": 194.75354862387974,
+        "fid_ratio_clean": 1.0265572925141524,
+        "velocity_relative_mse": 0.06770880323145223,
+        "gate_mean_norm": 0.009547263593193267,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "sine",
+      "field": "trained",
+      "attack": "marked",
+      "metrics": {
+        "recovery_percent": 75.0,
+        "bit_accuracy_percent": 99.21875,
+        "fid": 195.87453859364607,
+        "fid_ratio_clean": 1.0324660959040266,
+        "velocity_relative_mse": 0.024568632762119694,
+        "gate_mean_norm": 0.009547263593193267,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "sine",
+      "field": "trained",
+      "attack": "joint_spectrum",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 46.09375,
+        "fid": 195.71642058681013,
+        "fid_ratio_clean": 1.0316326466850412,
+        "velocity_relative_mse": 0.012018441975801866,
+        "gate_mean_norm": 0.009547263593193267,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.28125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "sine",
+      "field": "trained",
+      "attack": "time_svd_rank1",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 53.90625,
+        "fid": 195.91468103807978,
+        "fid_ratio_clean": 1.032677689065558,
+        "velocity_relative_mse": 0.0110389661847319,
+        "gate_mean_norm": 0.009547263593193267,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "sine",
+      "field": "trained",
+      "attack": "time_svd_rank4",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 50.0,
+        "fid": 195.56425203798335,
+        "fid_ratio_clean": 1.0308305574055738,
+        "velocity_relative_mse": 0.010696584307231518,
+        "gate_mean_norm": 0.009547263593193267,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "sine",
+      "field": "trained",
+      "attack": "input_ridge",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 47.65625,
+        "fid": 199.30157350382382,
+        "fid_ratio_clean": 1.050530196422872,
+        "velocity_relative_mse": 0.07758429700014287,
+        "gate_mean_norm": 0.009547263593193267,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "multitone",
+      "field": "clean",
+      "attack": "none",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 53.90625,
+        "fid": 189.71522587590485,
+        "fid_ratio_clean": 1.0,
+        "velocity_relative_mse": 0.0,
+        "gate_mean_norm": 0.020495316915239516,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "multitone",
+      "field": "injected",
+      "attack": "marked",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 189.73581681043913,
+        "fid_ratio_clean": 1.0001085360146462,
+        "velocity_relative_mse": 0.0003504327238867498,
+        "gate_mean_norm": 0.020495316915239516,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "multitone",
+      "field": "injected",
+      "attack": "joint_spectrum",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 45.3125,
+        "fid": 189.3350136659025,
+        "fid_ratio_clean": 0.9979958793067507,
+        "velocity_relative_mse": 0.0020121325757694038,
+        "gate_mean_norm": 0.020495316915239516,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "multitone",
+      "field": "injected",
+      "attack": "time_svd_rank1",
+      "metrics": {
+        "recovery_percent": 25.0,
+        "bit_accuracy_percent": 96.875,
+        "fid": 189.69415114702687,
+        "fid_ratio_clean": 0.9998889138772037,
+        "velocity_relative_mse": 0.0001868710777396258,
+        "gate_mean_norm": 0.020495316915239516,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "multitone",
+      "field": "injected",
+      "attack": "time_svd_rank4",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 96.09375,
+        "fid": 189.10032945062085,
+        "fid_ratio_clean": 0.9967588451456911,
+        "velocity_relative_mse": 0.0007586467258653375,
+        "gate_mean_norm": 0.020495316915239516,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "multitone",
+      "field": "injected",
+      "attack": "input_ridge",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 43.75,
+        "fid": 194.76089219232867,
+        "fid_ratio_clean": 1.0265960008909578,
+        "velocity_relative_mse": 0.06770880207996335,
+        "gate_mean_norm": 0.020495316915239516,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "multitone",
+      "field": "trained",
+      "attack": "marked",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 86.71875,
+        "fid": 197.19063719172894,
+        "fid_ratio_clean": 1.0394033282321464,
+        "velocity_relative_mse": 0.007991929259081569,
+        "gate_mean_norm": 0.020495316915239516,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.8125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "multitone",
+      "field": "trained",
+      "attack": "joint_spectrum",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 43.75,
+        "fid": 197.2204268895806,
+        "fid_ratio_clean": 1.0395603514637513,
+        "velocity_relative_mse": 0.006520482201002871,
+        "gate_mean_norm": 0.020495316915239516,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "multitone",
+      "field": "trained",
+      "attack": "time_svd_rank1",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 59.375,
+        "fid": 197.07198681577557,
+        "fid_ratio_clean": 1.0387779151931795,
+        "velocity_relative_mse": 0.0057070473866270245,
+        "gate_mean_norm": 0.020495316915239516,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "multitone",
+      "field": "trained",
+      "attack": "time_svd_rank4",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 49.21875,
+        "fid": 197.2266802254562,
+        "fid_ratio_clean": 1.0395933131611939,
+        "velocity_relative_mse": 0.005192644735766521,
+        "gate_mean_norm": 0.020495316915239516,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "multitone",
+      "field": "trained",
+      "attack": "input_ridge",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 42.1875,
+        "fid": 201.6468074055542,
+        "fid_ratio_clean": 1.0628920608483683,
+        "velocity_relative_mse": 0.0721986480330184,
+        "gate_mean_norm": 0.020495316915239516,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "input",
+      "field": "clean",
+      "attack": "none",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 53.90625,
+        "fid": 189.71522587590485,
+        "fid_ratio_clean": 1.0,
+        "velocity_relative_mse": 0.0,
+        "gate_mean_norm": 0.14511975614625752,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "input",
+      "field": "injected",
+      "attack": "marked",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 189.69108106601539,
+        "fid_ratio_clean": 0.9998727313014651,
+        "velocity_relative_mse": 0.00034246700203657116,
+        "gate_mean_norm": 0.14511975614625752,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "input",
+      "field": "injected",
+      "attack": "joint_spectrum",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 189.3489505372442,
+        "fid_ratio_clean": 0.9980693413669379,
+        "velocity_relative_mse": 0.0023554603804957323,
+        "gate_mean_norm": 0.14511975614625752,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "input",
+      "field": "injected",
+      "attack": "time_svd_rank1",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 189.24302439364897,
+        "fid_ratio_clean": 0.9975109984974808,
+        "velocity_relative_mse": 0.0006043487831004168,
+        "gate_mean_norm": 0.14511975614625752,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "input",
+      "field": "injected",
+      "attack": "time_svd_rank4",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 189.1556277719576,
+        "fid_ratio_clean": 0.9970503258166886,
+        "velocity_relative_mse": 0.0010592081597976604,
+        "gate_mean_norm": 0.14511975614625752,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "input",
+      "field": "injected",
+      "attack": "input_ridge",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 194.76591307621666,
+        "fid_ratio_clean": 1.0266224662622256,
+        "velocity_relative_mse": 0.06801474448392994,
+        "gate_mean_norm": 0.14511975614625752,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "input",
+      "field": "trained",
+      "attack": "marked",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 61.71875,
+        "fid": 189.4828788643946,
+        "fid_ratio_clean": 0.9987752853760813,
+        "velocity_relative_mse": 0.0021066725256084777,
+        "gate_mean_norm": 0.14511975614625752,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "input",
+      "field": "trained",
+      "attack": "joint_spectrum",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 60.9375,
+        "fid": 189.1563187034187,
+        "fid_ratio_clean": 0.9970539677566431,
+        "velocity_relative_mse": 0.00405544217281817,
+        "gate_mean_norm": 0.14511975614625752,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "input",
+      "field": "trained",
+      "attack": "time_svd_rank1",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 61.71875,
+        "fid": 189.1304885341676,
+        "fid_ratio_clean": 0.9969178154307987,
+        "velocity_relative_mse": 0.0022255935928201308,
+        "gate_mean_norm": 0.14511975614625752,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "input",
+      "field": "trained",
+      "attack": "time_svd_rank4",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 61.71875,
+        "fid": 189.22216135968358,
+        "fid_ratio_clean": 0.9974010282308928,
+        "velocity_relative_mse": 0.0027507678851113036,
+        "gate_mean_norm": 0.14511975614625752,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          }
+        ]
+      }
+    },
+    {
+      "carrier": "input",
+      "field": "trained",
+      "attack": "input_ridge",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 57.03125,
+        "fid": 195.26932017718818,
+        "fid_ratio_clean": 1.0292759543976524,
+        "velocity_relative_mse": 0.069512961986916,
+        "gate_mean_norm": 0.14511975614625752,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          }
+        ]
+      }
+    }
+  ],
+  "state": "complete",
+  "expected_evaluations": 33,
+  "current": null
+}

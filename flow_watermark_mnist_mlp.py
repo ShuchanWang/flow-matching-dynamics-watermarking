@@ -38,6 +38,9 @@ def parse_args():
     parser.add_argument("--codebook_mode", choices=["orthogonal", "hypercube"], default="orthogonal")
     parser.add_argument("--wm_eps", type=float, default=0.2)
     parser.add_argument("--wm_lambda", type=float, default=0.018)
+    parser.add_argument("--wm_query_bit_weight", type=float, default=0.0,
+                        help="Hypercube bit-margin weight on the pure-noise verification distribution")
+    parser.add_argument("--wm_bit_margin", type=float, default=0.15)
     parser.add_argument("--n_queries", type=int, default=4096)
     parser.add_argument("--n_clean", type=int, default=1)
     parser.add_argument("--n_wm", type=int, default=1)
@@ -56,6 +59,10 @@ if not 0 < args.wm_bits <= args.wm_K <= 784:
     raise ValueError("Require 0 < wm_bits <= wm_K <= 784")
 if args.codebook_mode == "orthogonal" and args.wm_bits > int(math.log2(args.wm_K)):
     raise ValueError("Orthogonal codebooks require 2**wm_bits <= wm_K")
+if args.wm_query_bit_weight < 0 or args.wm_bit_margin <= 0:
+    raise ValueError("Bit-loss weight must be nonnegative and margin positive")
+if args.wm_query_bit_weight and args.codebook_mode != "hypercube":
+    raise ValueError("Query bit loss requires hypercube encoding")
 
 
 def parse_message(text):
@@ -102,7 +109,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 print(f"\n{'='*70}")
 print(f"FAST MNIST WATERMARK (with FID)")
 print(f"{'='*70}")
-print(f"Training samples: {N_TRAIN}, Steps: {STEPS}")
+print(f"Training samples: {N_TRAIN}, Epochs: {STEPS}, optimizer updates/model: {STEPS * (N_TRAIN // BATCH_SIZE)}")
 print(f"Model: MLP with {HIDDEN_DIM} hidden dims")
 
 # ============================================================
@@ -192,6 +199,12 @@ def train_model(seed_offset, use_wm=False, wm_code=None):
                 demod = torch.sin(2 * math.pi * t_val) * proj
                 wm_corr = (demod * wm_code.unsqueeze(0)).sum(dim=1).mean()
                 loss = vel_loss + WM_LOSS_WEIGHT * (-wm_corr)
+                if args.wm_query_bit_weight:
+                    query_pred = model(x0, t_val)
+                    signature = (modulation * (query_pred @ P)).mean(0)
+                    signs = (wm_code @ codebook.T).sign()
+                    signed = (signature @ codebook.T) * signs
+                    loss = loss + args.wm_query_bit_weight * F.relu(args.wm_bit_margin - signed).square().mean()
                 total_wm += wm_corr.item()
             
             opt.zero_grad(); loss.backward()
@@ -463,7 +476,8 @@ for model in clean_models:
 expected = 100 / (2**N_BITS)
 for msg in test_messages:
     rate = clean_hits[msg] / (N_CLEAN * N_TRIALS) * 100
-    print(f"  {msg}: {rate:.1f}% (expected ~{expected:.1f}%)")
+    print(f"  {msg}: {rate:.1f}% (uniform-decoder baseline ~{expected:.1f}%)")
+print("  A fixed clean model/key need not decode uniformly across repeated queries.")
 print(f"  Overall FP: {sum(clean_hits.values())/(N_CLEAN*N_TRIALS)*100:.1f}%")
 
 print("\nStatistical separation:")
@@ -586,6 +600,19 @@ with open(OUTPUT_DIR / "results.json", "w") as f:
             "codebook_mode": args.codebook_mode,
             "wm_K": K,
             "steps": STEPS,
+            "optimizer_updates_per_model": STEPS * (len(x1_pool) // BATCH_SIZE),
+            "wm_query_bit_weight": args.wm_query_bit_weight,
+            "wm_bit_margin": args.wm_bit_margin,
+            "wm_eps": EPSILON,
+            "wm_lambda": WM_LOSS_WEIGHT,
+            "batch_size": BATCH_SIZE,
+            "n_train": N_TRAIN,
+            "n_test": N_TEST,
+            "hidden_dim": HIDDEN_DIM,
+            "seed": SEED,
+            "lr": LR,
+            "n_detect_trials": N_TRIALS,
+            "detect_distribution": "pure_noise",
             "n_queries": N_QUERIES,
             "output_dir": str(OUTPUT_DIR),
         },
@@ -641,12 +668,8 @@ print(f"    Clean FP rate:   {sum(clean_hits.values())/(N_CLEAN*N_TRIALS)*100:.1
 print(f"  Sample Quality:")
 print(f"    Clean FID:       {clean_fid:.1f}")
 print(f"    WM FID:          {np.mean(list(wm_fids.values())):.1f} +/- {np.std(list(wm_fids.values())):.1f}")
-print(f"    Quality impact:  {max(wm_fids.values())/clean_fid:.3f}x (negligible)")
-print(f"  Verdict:")
-print(f"    Watermark is 100% detectable")
-print(f"    Zero false positives on clean models")
-print(f"    Sample quality is preserved")
-print(f"    Watermark is invisible without secret key")
+print(f"    Quality impact:  {max(wm_fids.values())/clean_fid:.3f}x")
+print("  Clean matching is raw decoding without an ownership rejection threshold.")
 print(f"{'='*70}")
 print("Done!")
 print(f"{'='*70}")

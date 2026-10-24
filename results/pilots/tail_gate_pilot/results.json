@@ -1,0 +1,2053 @@
+{
+  "rows": [
+    {
+      "gate": "tau2.5_slope2",
+      "field": "control",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 54.6875,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.03347267616009799
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625,
+            "effective_strength_raw": 0.03626608061039385
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625,
+            "effective_strength_raw": 0.03727718633239404
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.028962448070877608
+          }
+        ],
+        "ordinary_gate_mean": 0.03424923462432128,
+        "ordinary_gate_rms": 0.09425335270247882,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.023996027927463907,
+        "on_amplitude_excess": -0.0013954041308765187,
+        "off_amplitude_raw": 0.02791462265884304,
+        "off_amplitude_excess": -0.001289764719160219,
+        "leakage_ratio_excess": 1.0819059555180597,
+        "fid": 188.75190786423914,
+        "fid_ratio_clean": 0.9949222946802603
+      }
+    },
+    {
+      "gate": "tau2.5_slope2",
+      "field": "clean",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 54.6875,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.03496274218726746
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625,
+            "effective_strength_raw": 0.037889139790380055
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625,
+            "effective_strength_raw": 0.03876515323796357
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.030529884101708867
+          }
+        ],
+        "ordinary_gate_mean": 0.03424923462432128,
+        "ordinary_gate_rms": 0.09425335270247882,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.025391433370907747,
+        "on_amplitude_excess": 0.0,
+        "off_amplitude_raw": 0.029204381756437945,
+        "off_amplitude_excess": 0.0,
+        "leakage_ratio_excess": 0.0,
+        "fid": 189.71522587590485,
+        "fid_ratio_clean": 1.0,
+        "fid_ratio_control": 1.0051036199981542
+      }
+    },
+    {
+      "gate": "tau2.5_slope2",
+      "field": "injected",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.03496291119306
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0378892985834183
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0387653083682373
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.030530040820796
+          }
+        ],
+        "ordinary_gate_mean": 0.03424923462432128,
+        "ordinary_gate_rms": 0.09425335270247882,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.12597573654618754,
+        "on_amplitude_excess": 0.10058430066086047,
+        "off_amplitude_raw": 2.637025753413802,
+        "off_amplitude_excess": 2.6078213611895182,
+        "leakage_ratio_excess": 0.038570241872311554,
+        "fid": 189.75149766467464,
+        "fid_ratio_clean": 1.000191190710194,
+        "fid_ratio_control": 1.00529578647308
+      }
+    },
+    {
+      "gate": "tau2.5_slope2",
+      "field": "injected",
+      "condition": "ordinary_regression",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 2.898989957152339
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 2.8998782591137604
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 2.9029879094889086
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 2.894886563898973
+          }
+        ],
+        "ordinary_gate_mean": 0.03424923462432128,
+        "ordinary_gate_rms": 0.09425335270247882,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.007145862114914958,
+        "on_amplitude_excess": -0.01824556422518541,
+        "off_amplitude_raw": 2.51819588321652,
+        "off_amplitude_excess": 2.4889915004486616,
+        "leakage_ratio_excess": 0.007330504833743504,
+        "fid": 189.38718611269007,
+        "fid_ratio_clean": 0.9982708833110245,
+        "fid_ratio_control": 1.0033656785546659
+      }
+    },
+    {
+      "gate": "tau2.5_slope2",
+      "field": "injected",
+      "condition": "ood_random_regression",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 25.0,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.28125,
+            "effective_strength_raw": -0.2757426064958807
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.21875,
+            "effective_strength_raw": -0.2849234311406091
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.25,
+            "effective_strength_raw": -0.2606792694933168
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.25,
+            "effective_strength_raw": -0.27735826700492
+          }
+        ],
+        "ordinary_gate_mean": 0.03424923462432128,
+        "ordinary_gate_rms": 0.09425335270247882,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": -2.767047615223727,
+        "on_amplitude_excess": -2.7924390508274395,
+        "off_amplitude_raw": -0.2559976056377942,
+        "off_amplitude_excess": -0.2852019923474312,
+        "leakage_ratio_excess": 9.791092368757749,
+        "fid": 189.74369174658523,
+        "fid_ratio_clean": 1.0001500452615173,
+        "fid_ratio_control": 1.005254431033669
+      }
+    },
+    {
+      "gate": "tau2.5_slope2",
+      "field": "injected",
+      "condition": "ood_gradient_regression",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 14.0625,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.1875,
+            "effective_strength_raw": -0.3803571551495867
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.125,
+            "effective_strength_raw": -0.392656116092498
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.125,
+            "effective_strength_raw": -0.3714299790450507
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.125,
+            "effective_strength_raw": -0.38734063096913207
+          }
+        ],
+        "ordinary_gate_mean": 0.03424923462432128,
+        "ordinary_gate_rms": 0.09425335270247882,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": -2.8584730327569523,
+        "on_amplitude_excess": -2.883864462892295,
+        "off_amplitude_raw": -0.3474230109147318,
+        "off_amplitude_excess": -0.3766273984517005,
+        "leakage_ratio_excess": 7.657075599777768,
+        "fid": 189.55459791436394,
+        "fid_ratio_clean": 0.9991533206636457,
+        "fid_ratio_control": 1.004252619532207
+      }
+    },
+    {
+      "gate": "tau2.5_slope2",
+      "field": "trained",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 25.0,
+        "bit_accuracy_percent": 97.65625,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 0.8671264708624807
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8696745114171489
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8642124735282217
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8653597623713457
+          }
+        ],
+        "ordinary_gate_mean": 0.03424923462432128,
+        "ordinary_gate_rms": 0.09425335270247882,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.7209338030769145,
+        "on_amplitude_excess": 0.6955423738763461,
+        "off_amplitude_raw": 0.7560555828072069,
+        "off_amplitude_excess": 0.7268511908417293,
+        "leakage_ratio_excess": 0.9569254100978687,
+        "fid": 192.64960278153606,
+        "fid_ratio_clean": 1.0154672714964408,
+        "fid_ratio_control": 1.0206498305707212
+      }
+    },
+    {
+      "gate": "tau2.5_slope2",
+      "field": "trained",
+      "condition": "ordinary_regression",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 52.34375,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.05501754378093282
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.054140645901137055
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5,
+            "effective_strength_raw": 0.05657887925218055
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.05290310430058506
+          }
+        ],
+        "ordinary_gate_mean": 0.03424923462432128,
+        "ordinary_gate_rms": 0.09425335270247882,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.011358342180514507,
+        "on_amplitude_excess": -0.01403309077845579,
+        "off_amplitude_raw": 0.046480116454118585,
+        "off_amplitude_excess": 0.017275726560591616,
+        "leakage_ratio_excess": 0.8123010473242417,
+        "fid": 192.09291427425657,
+        "fid_ratio_clean": 1.0125329339665494,
+        "fid_ratio_control": 1.017700517297131
+      }
+    },
+    {
+      "gate": "tau2.5_slope2",
+      "field": "trained",
+      "condition": "ood_random_regression",
+      "metrics": {
+        "recovery_percent": 50.0,
+        "bit_accuracy_percent": 97.65625,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 0.8689228697234272
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375,
+            "effective_strength_raw": 0.8677723475720194
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 0.8655747128007613
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8652806630443793
+          }
+        ],
+        "ordinary_gate_mean": 0.03424923462432128,
+        "ordinary_gate_rms": 0.09425335270247882,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.7224364740550641,
+        "on_amplitude_excess": 0.6970450439770034,
+        "off_amplitude_raw": 0.7575582506587134,
+        "off_amplitude_excess": 0.7283538583218478,
+        "leakage_ratio_excess": 0.9570142809197427,
+        "fid": 192.45567112163002,
+        "fid_ratio_clean": 1.0144450464272052,
+        "fid_ratio_control": 1.0196223884531797
+      }
+    },
+    {
+      "gate": "tau2.5_slope2",
+      "field": "trained",
+      "condition": "ood_gradient_regression",
+      "metrics": {
+        "recovery_percent": 50.0,
+        "bit_accuracy_percent": 98.4375,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 0.8541634328509334
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8584249410190828
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 0.8541476138887956
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8528610734523036
+          }
+        ],
+        "ordinary_gate_mean": 0.03424923462432128,
+        "ordinary_gate_rms": 0.09425335270247882,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.7095690626643197,
+        "on_amplitude_excess": 0.6841776406941392,
+        "off_amplitude_raw": 0.7446908513984107,
+        "off_amplitude_excess": 0.7154864577427793,
+        "leakage_ratio_excess": 0.956241216434182,
+        "fid": 192.93304593494685,
+        "fid_ratio_clean": 1.0169613168589158,
+        "fid_ratio_control": 1.0221515009729862
+      }
+    },
+    {
+      "gate": "tau2.5_slope4",
+      "field": "control",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 54.6875,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.029539947424714677
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625,
+            "effective_strength_raw": 0.032080659626629086
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625,
+            "effective_strength_raw": 0.03128621508650537
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.026611363540414393
+          }
+        ],
+        "ordinary_gate_mean": 0.014747240411055447,
+        "ordinary_gate_rms": 0.08540891578459345,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.023996027927463907,
+        "on_amplitude_excess": -0.0013954041308765187,
+        "off_amplitude_raw": 0.02791462265884304,
+        "off_amplitude_excess": -0.001289764719160219,
+        "leakage_ratio_excess": 1.0819059555180597,
+        "fid": 188.75190786423914,
+        "fid_ratio_clean": 0.9949222946802603
+      }
+    },
+    {
+      "gate": "tau2.5_slope4",
+      "field": "clean",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 54.6875,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.030873336642334118
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625,
+            "effective_strength_raw": 0.033533265411466014
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625,
+            "effective_strength_raw": 0.03262935505579753
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.028019569751934155
+          }
+        ],
+        "ordinary_gate_mean": 0.014747240411055447,
+        "ordinary_gate_rms": 0.08540891578459345,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.025391433370907747,
+        "on_amplitude_excess": 0.0,
+        "off_amplitude_raw": 0.029204381756437945,
+        "off_amplitude_excess": 0.0,
+        "leakage_ratio_excess": 0.0,
+        "fid": 189.71522587590485,
+        "fid_ratio_clean": 1.0,
+        "fid_ratio_control": 1.0051036199981542
+      }
+    },
+    {
+      "gate": "tau2.5_slope4",
+      "field": "injected",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.030873500340542
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0335334321819394
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0326295142692716
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0280197211335715
+          }
+        ],
+        "ordinary_gate_mean": 0.014747240411055447,
+        "ordinary_gate_rms": 0.08540891578459345,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.06608471553305167,
+        "on_amplitude_excess": 0.040693287496775275,
+        "off_amplitude_raw": 2.9383534884964746,
+        "off_amplitude_excess": 2.90914910732561,
+        "leakage_ratio_excess": 0.013988037737324762,
+        "fid": 189.79435949679925,
+        "fid_ratio_clean": 1.000417117922555,
+        "fid_ratio_control": 1.0055228667320804
+      }
+    },
+    {
+      "gate": "tau2.5_slope4",
+      "field": "injected",
+      "condition": "ordinary_regression",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 2.9699634430951125
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 2.9711664031084
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 2.971652747082622
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 2.9671402772614983
+          }
+        ],
+        "ordinary_gate_mean": 0.014747240411055447,
+        "ordinary_gate_rms": 0.08540891578459345,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.006962305056198197,
+        "on_amplitude_excess": -0.018429122195392646,
+        "off_amplitude_raw": 2.8792310827904704,
+        "off_amplitude_excess": 2.8500266925387368,
+        "leakage_ratio_excess": 0.006466298102975456,
+        "fid": 189.41290379283632,
+        "fid_ratio_clean": 0.9984064427002486,
+        "fid_ratio_control": 1.0035019297874996
+      }
+    },
+    {
+      "gate": "tau2.5_slope4",
+      "field": "injected",
+      "condition": "ood_random_regression",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 72.65625,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.6875,
+            "effective_strength_raw": 0.21084133395020904
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.78125,
+            "effective_strength_raw": 0.21417641974242194
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.71875,
+            "effective_strength_raw": 0.21397140985619328
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.71875,
+            "effective_strength_raw": 0.2060788456341323
+          }
+        ],
+        "ordinary_gate_mean": 0.014747240411055447,
+        "ordinary_gate_rms": 0.08540891578459345,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": -2.6713473973913575,
+        "on_amplitude_excess": -2.696738829432221,
+        "off_amplitude_raw": 0.20092137866845663,
+        "off_amplitude_excess": 0.17171698999897927,
+        "leakage_ratio_excess": 15.704554508253674,
+        "fid": 189.58301632266486,
+        "fid_ratio_clean": 0.999303115748198,
+        "fid_ratio_control": 1.0044031791139483
+      }
+    },
+    {
+      "gate": "tau2.5_slope4",
+      "field": "injected",
+      "condition": "ood_gradient_regression",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 36.71875,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.375,
+            "effective_strength_raw": -0.1386521116438799
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125,
+            "effective_strength_raw": -0.139066787911962
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375,
+            "effective_strength_raw": -0.12941503222926537
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625,
+            "effective_strength_raw": -0.1445565189743097
+          }
+        ],
+        "ordinary_gate_mean": 0.014747240411055447,
+        "ordinary_gate_rms": 0.08540891578459345,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": -3.01054183377245,
+        "on_amplitude_excess": -3.0359332636634058,
+        "off_amplitude_raw": -0.1382730608222463,
+        "off_amplitude_excess": -0.1674774473421947,
+        "leakage_ratio_excess": 18.127415433197406,
+        "fid": 189.6194883809945,
+        "fid_ratio_clean": 0.9994953620909006,
+        "fid_ratio_control": 1.0045964066089301
+      }
+    },
+    {
+      "gate": "tau2.5_slope4",
+      "field": "trained",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 25.0,
+        "bit_accuracy_percent": 97.65625,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 0.8628953166579649
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8627900129892052
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8589665760413258
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8619744605885896
+          }
+        ],
+        "ordinary_gate_mean": 0.014747240411055447,
+        "ordinary_gate_rms": 0.08540891578459345,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.7984525339911283,
+        "on_amplitude_excess": 0.7730611026804081,
+        "off_amplitude_raw": 0.8367190209207963,
+        "off_amplitude_excess": 0.8075146301333264,
+        "leakage_ratio_excess": 0.957333865954565,
+        "fid": 193.38946880092777,
+        "fid_ratio_clean": 1.0193671483564861,
+        "fid_ratio_control": 1.0245696109202997
+      }
+    },
+    {
+      "gate": "tau2.5_slope4",
+      "field": "trained",
+      "condition": "ordinary_regression",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 53.125,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.05233200789190983
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625,
+            "effective_strength_raw": 0.05142291170809207
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5,
+            "effective_strength_raw": 0.05219285924542695
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.05178371580917758
+          }
+        ],
+        "ordinary_gate_mean": 0.014747240411055447,
+        "ordinary_gate_rms": 0.08540891578459345,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.011685832598094168,
+        "on_amplitude_excess": -0.0137056030505059,
+        "off_amplitude_raw": 0.04995231160178525,
+        "off_amplitude_excess": 0.020747925797104026,
+        "leakage_ratio_excess": 0.6605770227122614,
+        "fid": 193.16078763562663,
+        "fid_ratio_clean": 1.0181617566213457,
+        "fid_ratio_control": 1.023358067323794
+      }
+    },
+    {
+      "gate": "tau2.5_slope4",
+      "field": "trained",
+      "condition": "ood_random_regression",
+      "metrics": {
+        "recovery_percent": 25.0,
+        "bit_accuracy_percent": 97.65625,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 0.8586448887857977
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8580578732529845
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8535903411976868
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8573862631318502
+          }
+        ],
+        "ordinary_gate_mean": 0.014747240411055447,
+        "ordinary_gate_rms": 0.08540891578459345,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.794286592469573,
+        "on_amplitude_excess": 0.7688951694333903,
+        "off_amplitude_raw": 0.8325530844412373,
+        "off_amplitude_excess": 0.803348698784305,
+        "leakage_ratio_excess": 0.9571126095018854,
+        "fid": 193.2626062995532,
+        "fid_ratio_clean": 1.018698448726349,
+        "fid_ratio_control": 1.0238974985013576
+      }
+    },
+    {
+      "gate": "tau2.5_slope4",
+      "field": "trained",
+      "condition": "ood_gradient_regression",
+      "metrics": {
+        "recovery_percent": 25.0,
+        "bit_accuracy_percent": 97.65625,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 0.8951941392028415
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8956013338084354
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8921366696856153
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8956462072584712
+          }
+        ],
+        "ordinary_gate_mean": 0.014747240411055447,
+        "ordinary_gate_rms": 0.08540891578459345,
+        "ordinary_activation_rate": 0.010498046875,
+        "on_amplitude_raw": 0.8297941408416954,
+        "on_amplitude_excess": 0.8044027059619304,
+        "off_amplitude_raw": 0.8680606193898615,
+        "off_amplitude_excess": 0.8388562351421097,
+        "leakage_ratio_excess": 0.9589279691360433,
+        "fid": 193.54831070623018,
+        "fid_ratio_clean": 1.0202044132864307,
+        "fid_ratio_control": 1.0254111489322846
+      }
+    },
+    {
+      "gate": "tau4_slope2",
+      "field": "control",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 53.90625,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.036327343319605535
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.03966421281027775
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5,
+            "effective_strength_raw": 0.040404006207978134
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375,
+            "effective_strength_raw": 0.03451734281251289
+          }
+        ],
+        "ordinary_gate_mean": 0.0028899810660947545,
+        "ordinary_gate_rms": 0.01975012450281077,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.023966332281929483,
+        "on_amplitude_excess": -0.0014250948003739555,
+        "off_amplitude_raw": 0.030446483120940865,
+        "off_amplitude_excess": -0.0012480971288811162,
+        "leakage_ratio_excess": 1.1418140202369609,
+        "fid": 188.74405260519376,
+        "fid_ratio_clean": 0.9948808891525325
+      }
+    },
+    {
+      "gate": "tau4_slope2",
+      "field": "clean",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 53.90625,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.037769144984076776
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.04123735386432078
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5,
+            "effective_strength_raw": 0.04184644792278441
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375,
+            "effective_strength_raw": 0.03604644700464768
+          }
+        ],
+        "ordinary_gate_mean": 0.0028899810660947545,
+        "ordinary_gate_rms": 0.01975012450281077,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.025391433370907747,
+        "on_amplitude_excess": 0.0,
+        "off_amplitude_raw": 0.031694580552728925,
+        "off_amplitude_excess": 0.0,
+        "leakage_ratio_excess": 0.0,
+        "fid": 189.71522587590485,
+        "fid_ratio_clean": 1.0,
+        "fid_ratio_control": 1.0051454509814015
+      }
+    },
+    {
+      "gate": "tau4_slope2",
+      "field": "injected",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.037769302603314
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.041237524436546
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.041846606305883
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0360466169434663
+          }
+        ],
+        "ordinary_gate_mean": 0.0028899810660947545,
+        "ordinary_gate_rms": 0.01975012450281077,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.03326559463207452,
+        "on_amplitude_excess": 0.007874165517381428,
+        "off_amplitude_raw": 2.639516004152561,
+        "off_amplitude_excess": 2.6078214264799704,
+        "leakage_ratio_excess": 0.003019441989940988,
+        "fid": 189.71823750026823,
+        "fid_ratio_clean": 1.0000158744473433,
+        "fid_ratio_control": 1.0051614071099355
+      }
+    },
+    {
+      "gate": "tau4_slope2",
+      "field": "injected",
+      "condition": "ordinary_regression",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.00841067367526
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0101137572035763
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0122573669461508
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0069962251071773
+          }
+        ],
+        "ordinary_gate_mean": 0.0028899810660947545,
+        "ordinary_gate_rms": 0.01975012450281077,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.007598767284728325,
+        "on_amplitude_excess": -0.017792666436969685,
+        "off_amplitude_raw": 2.6138491780252138,
+        "off_amplitude_excess": 2.5821545887276054,
+        "leakage_ratio_excess": 0.006890627894489184,
+        "fid": 189.33730723477157,
+        "fid_ratio_clean": 0.9980079688417814,
+        "fid_ratio_control": 1.0031431699245048
+      }
+    },
+    {
+      "gate": "tau4_slope2",
+      "field": "injected",
+      "condition": "ood_random_regression",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 47.65625,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875,
+            "effective_strength_raw": -0.01400333123658518
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875,
+            "effective_strength_raw": -0.02259048580028022
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875,
+            "effective_strength_raw": -0.007972995808906615
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5,
+            "effective_strength_raw": -0.024577971563902914
+          }
+        ],
+        "ordinary_gate_mean": 0.0028899810660947545,
+        "ordinary_gate_rms": 0.01975012450281077,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": -2.6337714669665395,
+        "on_amplitude_excess": -2.6591628922039425,
+        "off_amplitude_raw": -0.027521046215417615,
+        "off_amplitude_excess": -0.059215632873508395,
+        "leakage_ratio_excess": 44.90643370956162,
+        "fid": 189.64108770195614,
+        "fid_ratio_clean": 0.9996092133691094,
+        "fid_ratio_control": 1.0047526535770575
+      }
+    },
+    {
+      "gate": "tau4_slope2",
+      "field": "injected",
+      "condition": "ood_gradient_regression",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 25.78125,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125,
+            "effective_strength_raw": -0.3769067050298694
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.21875,
+            "effective_strength_raw": -0.3898604669994149
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.28125,
+            "effective_strength_raw": -0.3708254878194036
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.21875,
+            "effective_strength_raw": -0.38288218894959075
+          }
+        ],
+        "ordinary_gate_mean": 0.0028899810660947545,
+        "ordinary_gate_rms": 0.01975012450281077,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": -2.9505887319971618,
+        "on_amplitude_excess": -2.975980157971395,
+        "off_amplitude_raw": -0.34433831644449003,
+        "off_amplitude_excess": -0.37603290029892406,
+        "leakage_ratio_excess": 7.914148351396023,
+        "fid": 189.64307378078365,
+        "fid_ratio_clean": 0.9996196821062301,
+        "fid_ratio_control": 1.004763176180552
+      }
+    },
+    {
+      "gate": "tau4_slope2",
+      "field": "trained",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 94.53125,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375,
+            "effective_strength_raw": 0.8587764597841662
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375,
+            "effective_strength_raw": 0.8615476298985028
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.855718902817529
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375,
+            "effective_strength_raw": 0.8606821650244995
+          }
+        ],
+        "ordinary_gate_mean": 0.0028899810660947545,
+        "ordinary_gate_rms": 0.01975012450281077,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.6818028952673362,
+        "on_amplitude_excess": 0.6564114696656917,
+        "off_amplitude_raw": 0.74877139626154,
+        "off_amplitude_excess": 0.717076813418708,
+        "leakage_ratio_excess": 0.9153991000437032,
+        "fid": 192.65945516219932,
+        "fid_ratio_clean": 1.0155192039684802,
+        "fid_ratio_control": 1.0207445082531719
+      }
+    },
+    {
+      "gate": "tau4_slope2",
+      "field": "trained",
+      "condition": "ordinary_regression",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 53.125,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.09146723356163278
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.09030974353027223
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.09235960315017665
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.09303085754653226
+          }
+        ],
+        "ordinary_gate_mean": 0.0028899810660947545,
+        "ordinary_gate_rms": 0.01975012450281077,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.011374938359484854,
+        "on_amplitude_excess": -0.014016487397556766,
+        "off_amplitude_raw": 0.07834343326371648,
+        "off_amplitude_excess": 0.04664885366600978,
+        "leakage_ratio_excess": 0.300467992159253,
+        "fid": 191.71792392277138,
+        "fid_ratio_clean": 1.0105563379935383,
+        "fid_ratio_control": 1.0157561060946287
+      }
+    },
+    {
+      "gate": "tau4_slope2",
+      "field": "trained",
+      "condition": "ood_random_regression",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 95.3125,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8862073807943706
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375,
+            "effective_strength_raw": 0.8852904062510758
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8824146425329975
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375,
+            "effective_strength_raw": 0.8868524698806821
+          }
+        ],
+        "ordinary_gate_mean": 0.0028899810660947545,
+        "ordinary_gate_rms": 0.01975012450281077,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.7058029940049018,
+        "on_amplitude_excess": 0.6804115675894458,
+        "off_amplitude_raw": 0.7727714890760654,
+        "off_amplitude_excess": 0.7410769101311576,
+        "leakage_ratio_excess": 0.918138938465948,
+        "fid": 192.7385498120097,
+        "fid_ratio_clean": 1.0159361164721825,
+        "fid_ratio_control": 1.0211635659597256
+      }
+    },
+    {
+      "gate": "tau4_slope2",
+      "field": "trained",
+      "condition": "ood_gradient_regression",
+      "metrics": {
+        "recovery_percent": 50.0,
+        "bit_accuracy_percent": 96.875,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 0.8725311589141317
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375,
+            "effective_strength_raw": 0.8761726577362935
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 0.8697297698436187
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375,
+            "effective_strength_raw": 0.8735776905316436
+          }
+        ],
+        "ordinary_gate_mean": 0.0028899810660947545,
+        "ordinary_gate_rms": 0.01975012450281077,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.6938464005624045,
+        "on_amplitude_excess": 0.6684549711338059,
+        "off_amplitude_raw": 0.7608148953442717,
+        "off_amplitude_excess": 0.7291203102372285,
+        "leakage_ratio_excess": 0.9167965310365798,
+        "fid": 192.81632102709227,
+        "fid_ratio_clean": 1.01634605307439,
+        "fid_ratio_control": 1.0215756118706252
+      }
+    },
+    {
+      "gate": "tau4_slope4",
+      "field": "control",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 53.90625,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.032129113049281746
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.03514897594959293
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5,
+            "effective_strength_raw": 0.034107367277282266
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375,
+            "effective_strength_raw": 0.03159745984997544
+          }
+        ],
+        "ordinary_gate_mean": 0.0005197802797537478,
+        "ordinary_gate_rms": 0.017358301176217096,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.023966332281929483,
+        "on_amplitude_excess": -0.0014250948003739555,
+        "off_amplitude_raw": 0.030446483120940865,
+        "off_amplitude_excess": -0.0012480971288811162,
+        "leakage_ratio_excess": 1.1418140202369609,
+        "fid": 188.74405260519376,
+        "fid_ratio_clean": 0.9948808891525325
+      }
+    },
+    {
+      "gate": "tau4_slope4",
+      "field": "clean",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 53.90625,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.03341939176832259
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.036557075921867785
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5,
+            "effective_strength_raw": 0.035409411989246346
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375,
+            "effective_strength_raw": 0.03297095655754667
+          }
+        ],
+        "ordinary_gate_mean": 0.0005197802797537478,
+        "ordinary_gate_rms": 0.017358301176217096,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.025391433370907747,
+        "on_amplitude_excess": 0.0,
+        "off_amplitude_raw": 0.031694580552728925,
+        "off_amplitude_excess": 0.0,
+        "leakage_ratio_excess": 0.0,
+        "fid": 189.71522587590485,
+        "fid_ratio_clean": 1.0,
+        "fid_ratio_control": 1.0051454509814015
+      }
+    },
+    {
+      "gate": "tau4_slope4",
+      "field": "injected",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0334195493752225
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0365572353590564
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0354095724838737
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0329711167284037
+          }
+        ],
+        "ordinary_gate_mean": 0.0005197802797537478,
+        "ordinary_gate_rms": 0.017358301176217096,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.026355694334117302,
+        "on_amplitude_excess": 0.0009642618935627953,
+        "off_amplitude_raw": 2.9408437124069278,
+        "off_amplitude_excess": 2.909149135403867,
+        "leakage_ratio_excess": 0.000331458391674695,
+        "fid": 189.71681919226342,
+        "fid_ratio_clean": 1.0000083984632822,
+        "fid_ratio_control": 1.0051538926585648
+      }
+    },
+    {
+      "gate": "tau4_slope4",
+      "field": "injected",
+      "condition": "ordinary_regression",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0140752247897167
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0157715593941
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.015832145230642
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 3.0139357264381896
+          }
+        ],
+        "ordinary_gate_mean": 0.0005197802797537478,
+        "ordinary_gate_rms": 0.017358301176217096,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.0075821662334235995,
+        "on_amplitude_excess": -0.01780926638835997,
+        "off_amplitude_raw": 2.922070187953395,
+        "off_amplitude_excess": 2.8903756098105626,
+        "leakage_ratio_excess": 0.006161575100451115,
+        "fid": 189.33929705966563,
+        "fid_ratio_clean": 0.9980184573246371,
+        "fid_ratio_control": 1.003153712375335
+      }
+    },
+    {
+      "gate": "tau4_slope4",
+      "field": "injected",
+      "condition": "ood_random_regression",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 67.96875,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.625,
+            "effective_strength_raw": 0.23362330238360485
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.78125,
+            "effective_strength_raw": 0.23453746526907515
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625,
+            "effective_strength_raw": 0.23512864121468974
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6875,
+            "effective_strength_raw": 0.2307174493567782
+          }
+        ],
+        "ordinary_gate_mean": 0.0005197802797537478,
+        "ordinary_gate_rms": 0.017358301176217096,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": -2.6914780078210634,
+        "on_amplitude_excess": -2.716869429643715,
+        "off_amplitude_raw": 0.22301001738783618,
+        "off_amplitude_excess": 0.1913154386328993,
+        "leakage_ratio_excess": 14.200994175158597,
+        "fid": 189.6003127371497,
+        "fid_ratio_clean": 0.9993942861558707,
+        "fid_ratio_control": 1.0045366204663784
+      }
+    },
+    {
+      "gate": "tau4_slope4",
+      "field": "injected",
+      "condition": "ood_gradient_regression",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 40.625,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625,
+            "effective_strength_raw": -0.13451694493378288
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375,
+            "effective_strength_raw": -0.13344157753196917
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625,
+            "effective_strength_raw": -0.12487068152699017
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375,
+            "effective_strength_raw": -0.13494363707086596
+          }
+        ],
+        "ordinary_gate_mean": 0.0005197802797537478,
+        "ordinary_gate_rms": 0.017358301176217096,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": -3.0486970074255777,
+        "on_amplitude_excess": -3.0740884343226327,
+        "off_amplitude_raw": -0.1342089848817828,
+        "off_amplitude_excess": -0.16590356417559154,
+        "leakage_ratio_excess": 18.529369453865574,
+        "fid": 189.47722077987507,
+        "fid_ratio_clean": 0.9987454612831894,
+        "fid_ratio_control": 1.0038844570971193
+      }
+    },
+    {
+      "gate": "tau4_slope4",
+      "field": "trained",
+      "condition": "baseline",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 95.3125,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8717538495191797
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375,
+            "effective_strength_raw": 0.8717979569204886
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8676315209419161
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375,
+            "effective_strength_raw": 0.8740737122252215
+          }
+        ],
+        "ordinary_gate_mean": 0.0005197802797537478,
+        "ordinary_gate_rms": 0.017358301176217096,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.7730190246768116,
+        "on_amplitude_excess": 0.7476275985082589,
+        "off_amplitude_raw": 0.8453251105526766,
+        "off_amplitude_excess": 0.8136305280568865,
+        "leakage_ratio_excess": 0.9188784991803886,
+        "fid": 193.5606648607623,
+        "fid_ratio_clean": 1.0202695327541755,
+        "fid_ratio_control": 1.0255192796227794
+      }
+    },
+    {
+      "gate": "tau4_slope4",
+      "field": "trained",
+      "condition": "ordinary_regression",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 53.90625,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.08747851120158369
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625,
+            "effective_strength_raw": 0.0861241540750338
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.08677901295212033
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125,
+            "effective_strength_raw": 0.09019129902028318
+          }
+        ],
+        "ordinary_gate_mean": 0.0005197802797537478,
+        "ordinary_gate_rms": 0.017358301176217096,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.011771436014619243,
+        "on_amplitude_excess": -0.01361999500286227,
+        "off_amplitude_raw": 0.08407751272474843,
+        "off_amplitude_excess": 0.05238293259351913,
+        "leakage_ratio_excess": 0.26000825705102565,
+        "fid": 192.81290045632522,
+        "fid_ratio_clean": 1.016328023046746,
+        "fid_ratio_control": 1.0215574890703576
+      }
+    },
+    {
+      "gate": "tau4_slope4",
+      "field": "trained",
+      "condition": "ood_random_regression",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 95.3125,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8763406381908039
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375,
+            "effective_strength_raw": 0.8770715616207
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8712817793812491
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375,
+            "effective_strength_raw": 0.881300802029873
+          }
+        ],
+        "ordinary_gate_mean": 0.0005197802797537478,
+        "ordinary_gate_rms": 0.017358301176217096,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.7774492990689482,
+        "on_amplitude_excess": 0.7520578661495273,
+        "off_amplitude_raw": 0.849755375936451,
+        "off_amplitude_excess": 0.8180607938207686,
+        "leakage_ratio_excess": 0.9193178206683474,
+        "fid": 193.52515516759297,
+        "fid_ratio_clean": 1.0200823590942576,
+        "fid_ratio_control": 1.0253311428699696
+      }
+    },
+    {
+      "gate": "tau4_slope4",
+      "field": "trained",
+      "condition": "ood_gradient_regression",
+      "metrics": {
+        "recovery_percent": 50.0,
+        "bit_accuracy_percent": 97.65625,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 0.8829455432471148
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375,
+            "effective_strength_raw": 0.8816958617842942
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0,
+            "effective_strength_raw": 0.8815414712853055
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875,
+            "effective_strength_raw": 0.8837427105080402
+          }
+        ],
+        "ordinary_gate_mean": 0.0005197802797537478,
+        "ordinary_gate_rms": 0.017358301176217096,
+        "ordinary_activation_rate": 0.000244140625,
+        "on_amplitude_raw": 0.7838709179522474,
+        "on_amplitude_excess": 0.7584794912659706,
+        "off_amplitude_raw": 0.8561770063246624,
+        "off_amplitude_excess": 0.82448241948633,
+        "leakage_ratio_excess": 0.9199462272810126,
+        "fid": 193.85072170570993,
+        "fid_ratio_clean": 1.0217984392697619,
+        "fid_ratio_control": 1.027056053051897
+      }
+    }
+  ],
+  "probes": [
+    {
+      "gate": "tau2.5_slope2",
+      "field": "injected",
+      "attack": "random",
+      "marked": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 0.0031241613905876875,
+        "mean_score": 0.0006470114458352327,
+        "gradient_access": false,
+        "selected_gate_mean": 0.9632924199104309,
+        "selected_activation_rate": 0.99609375
+      },
+      "control": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 2.542948251971211e-08,
+        "mean_score": 9.61111190633801e-09,
+        "gradient_access": false,
+        "selected_gate_mean": 0.13662317395210266,
+        "selected_activation_rate": 0.109375
+      }
+    },
+    {
+      "gate": "tau2.5_slope2",
+      "field": "injected",
+      "attack": "gradient",
+      "marked": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 0.003123003523796797,
+        "mean_score": 0.000868570466991514,
+        "gradient_access": true,
+        "selected_gate_mean": 0.987359881401062,
+        "selected_activation_rate": 1.0
+      },
+      "control": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 1.495030659270924e-07,
+        "mean_score": 2.3479838517914686e-08,
+        "gradient_access": true,
+        "selected_gate_mean": 0.16324888169765472,
+        "selected_activation_rate": 0.1328125
+      }
+    },
+    {
+      "gate": "tau2.5_slope2",
+      "field": "trained",
+      "attack": "random",
+      "marked": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 4.123146979395642e-08,
+        "mean_score": 1.192832943530675e-08,
+        "gradient_access": false,
+        "selected_gate_mean": 0.10470941662788391,
+        "selected_activation_rate": 0.07421875
+      },
+      "control": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 2.542948251971211e-08,
+        "mean_score": 9.61111190633801e-09,
+        "gradient_access": false,
+        "selected_gate_mean": 0.13662317395210266,
+        "selected_activation_rate": 0.109375
+      }
+    },
+    {
+      "gate": "tau2.5_slope2",
+      "field": "trained",
+      "attack": "gradient",
+      "marked": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 3.6407436709851027e-07,
+        "mean_score": 4.7202032504856106e-08,
+        "gradient_access": true,
+        "selected_gate_mean": 0.16386693716049194,
+        "selected_activation_rate": 0.140625
+      },
+      "control": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 1.495030659270924e-07,
+        "mean_score": 2.3479838517914686e-08,
+        "gradient_access": true,
+        "selected_gate_mean": 0.16324888169765472,
+        "selected_activation_rate": 0.1328125
+      }
+    },
+    {
+      "gate": "tau2.5_slope4",
+      "field": "injected",
+      "attack": "random",
+      "marked": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 0.0036431297194212675,
+        "mean_score": 0.0006979116005823016,
+        "gradient_access": false,
+        "selected_gate_mean": 0.9081772565841675,
+        "selected_activation_rate": 0.91015625
+      },
+      "control": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 2.542948251971211e-08,
+        "mean_score": 9.61111190633801e-09,
+        "gradient_access": false,
+        "selected_gate_mean": 0.1180504783987999,
+        "selected_activation_rate": 0.109375
+      }
+    },
+    {
+      "gate": "tau2.5_slope4",
+      "field": "injected",
+      "attack": "gradient",
+      "marked": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 0.003592585911974311,
+        "mean_score": 0.001233064802363515,
+        "gradient_access": true,
+        "selected_gate_mean": 0.9942854046821594,
+        "selected_activation_rate": 0.99609375
+      },
+      "control": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 1.503473754382867e-07,
+        "mean_score": 2.425268874617359e-08,
+        "gradient_access": true,
+        "selected_gate_mean": 0.1160808727145195,
+        "selected_activation_rate": 0.1171875
+      }
+    },
+    {
+      "gate": "tau2.5_slope4",
+      "field": "trained",
+      "attack": "random",
+      "marked": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 4.3442824448902684e-08,
+        "mean_score": 1.2479310029789303e-08,
+        "gradient_access": false,
+        "selected_gate_mean": 0.11882597208023071,
+        "selected_activation_rate": 0.11328125
+      },
+      "control": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 2.542948251971211e-08,
+        "mean_score": 9.61111190633801e-09,
+        "gradient_access": false,
+        "selected_gate_mean": 0.1180504783987999,
+        "selected_activation_rate": 0.109375
+      }
+    },
+    {
+      "gate": "tau2.5_slope4",
+      "field": "trained",
+      "attack": "gradient",
+      "marked": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 5.129247142576787e-07,
+        "mean_score": 5.292255167432813e-08,
+        "gradient_access": true,
+        "selected_gate_mean": 0.11929909884929657,
+        "selected_activation_rate": 0.10546875
+      },
+      "control": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 1.503473754382867e-07,
+        "mean_score": 2.425268874617359e-08,
+        "gradient_access": true,
+        "selected_gate_mean": 0.1160808727145195,
+        "selected_activation_rate": 0.1171875
+      }
+    },
+    {
+      "gate": "tau4_slope2",
+      "field": "injected",
+      "attack": "random",
+      "marked": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 0.0034063607454299927,
+        "mean_score": 0.00039777273195795715,
+        "gradient_access": false,
+        "selected_gate_mean": 0.8934568166732788,
+        "selected_activation_rate": 0.91796875
+      },
+      "control": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 2.2563430235322812e-08,
+        "mean_score": 9.506998743802342e-09,
+        "gradient_access": false,
+        "selected_gate_mean": 0.0415082722902298,
+        "selected_activation_rate": 0.015625
+      }
+    },
+    {
+      "gate": "tau4_slope2",
+      "field": "injected",
+      "attack": "gradient",
+      "marked": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 0.0033909182529896498,
+        "mean_score": 0.0006578851025551558,
+        "gradient_access": true,
+        "selected_gate_mean": 0.9797611832618713,
+        "selected_activation_rate": 0.98046875
+      },
+      "control": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 1.4704036743751203e-07,
+        "mean_score": 2.345148431004418e-08,
+        "gradient_access": true,
+        "selected_gate_mean": 0.025423604995012283,
+        "selected_activation_rate": 0.015625
+      }
+    },
+    {
+      "gate": "tau4_slope2",
+      "field": "trained",
+      "attack": "random",
+      "marked": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 4.3371350955112575e-08,
+        "mean_score": 1.2165893181759202e-08,
+        "gradient_access": false,
+        "selected_gate_mean": 0.01766185835003853,
+        "selected_activation_rate": 0.0
+      },
+      "control": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 2.2563430235322812e-08,
+        "mean_score": 9.506998743802342e-09,
+        "gradient_access": false,
+        "selected_gate_mean": 0.0415082722902298,
+        "selected_activation_rate": 0.015625
+      }
+    },
+    {
+      "gate": "tau4_slope2",
+      "field": "trained",
+      "attack": "gradient",
+      "marked": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 2.5224650812560867e-07,
+        "mean_score": 4.59717597323106e-08,
+        "gradient_access": true,
+        "selected_gate_mean": 0.021059950813651085,
+        "selected_activation_rate": 0.0
+      },
+      "control": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 1.4704036743751203e-07,
+        "mean_score": 2.345148431004418e-08,
+        "gradient_access": true,
+        "selected_gate_mean": 0.025423604995012283,
+        "selected_activation_rate": 0.015625
+      }
+    },
+    {
+      "gate": "tau4_slope4",
+      "field": "injected",
+      "attack": "random",
+      "marked": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 0.004100865684449673,
+        "mean_score": 0.00041006586980074644,
+        "gradient_access": false,
+        "selected_gate_mean": 0.9069406986236572,
+        "selected_activation_rate": 0.91796875
+      },
+      "control": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 2.2563430235322812e-08,
+        "mean_score": 9.506998743802342e-09,
+        "gradient_access": false,
+        "selected_gate_mean": 0.02615087851881981,
+        "selected_activation_rate": 0.015625
+      }
+    },
+    {
+      "gate": "tau4_slope4",
+      "field": "injected",
+      "attack": "gradient",
+      "marked": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 0.0036657394375652075,
+        "mean_score": 0.0006236916524358094,
+        "gradient_access": true,
+        "selected_gate_mean": 0.9975330829620361,
+        "selected_activation_rate": 1.0
+      },
+      "control": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 1.3609010807158484e-07,
+        "mean_score": 2.4438797652237554e-08,
+        "gradient_access": true,
+        "selected_gate_mean": 0.024259623140096664,
+        "selected_activation_rate": 0.01953125
+      }
+    },
+    {
+      "gate": "tau4_slope4",
+      "field": "trained",
+      "attack": "random",
+      "marked": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 4.666966546551521e-08,
+        "mean_score": 1.2637549673399917e-08,
+        "gradient_access": false,
+        "selected_gate_mean": 0.010954714380204678,
+        "selected_activation_rate": 0.0
+      },
+      "control": {
+        "forward_evaluations": 2048,
+        "backward_evaluations": 0,
+        "maximum_score": 2.2563430235322812e-08,
+        "mean_score": 9.506998743802342e-09,
+        "gradient_access": false,
+        "selected_gate_mean": 0.02615087851881981,
+        "selected_activation_rate": 0.015625
+      }
+    },
+    {
+      "gate": "tau4_slope4",
+      "field": "trained",
+      "attack": "gradient",
+      "marked": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 4.128181103624229e-07,
+        "mean_score": 5.218843313059551e-08,
+        "gradient_access": true,
+        "selected_gate_mean": 0.011621082201600075,
+        "selected_activation_rate": 0.0
+      },
+      "control": {
+        "forward_evaluations": 22528,
+        "backward_evaluations": 5120,
+        "maximum_score": 1.3609010807158484e-07,
+        "mean_score": 2.4438797652237554e-08,
+        "gradient_access": true,
+        "selected_gate_mean": 0.024259623140096664,
+        "selected_activation_rate": 0.01953125
+      }
+    }
+  ],
+  "state": "complete",
+  "expected_screen_evaluations": 40,
+  "current": null
+}

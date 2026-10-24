@@ -1,0 +1,29 @@
+{
+  "state": "complete",
+  "pid": 2018426,
+  "samples": 500,
+  "feature_extractor": "torchvision_inception_v3_imagenet_prelogits",
+  "reference": "MNIST test images",
+  "sampling_steps": 200,
+  "training": false,
+  "per_setting": [
+    {
+      "scheme": "orthogonal5",
+      "ratio_mean": 1.0368106271391027,
+      "ratio_std": 0.006499750295831656,
+      "source": "table_runs/mlp_inception_quality/orthogonal5.json"
+    },
+    {
+      "scheme": "hypercube5",
+      "ratio_mean": 1.040161052450736,
+      "ratio_std": 0.00984049116048735,
+      "source": "table_runs/mlp_inception_quality/hypercube5.json"
+    },
+    {
+      "scheme": "hypercube32",
+      "ratio_mean": 1.0412035389318517,
+      "ratio_std": 0.021846185135282258,
+      "source": "table_runs/mlp_inception_quality/hypercube32.json"
+    }
+  ]
+}

@@ -1,0 +1,7555 @@
+{
+  "state": "complete",
+  "rows": [
+    {
+      "scheme": "H32",
+      "message": "00110101011110010100111101110101",
+      "condition": "marked",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 119.34642545145199,
+        "fid_ratio_clean": 1.0321962689266593,
+        "fid_ratio_teacher": 1.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "00110101011110010100111101110101",
+      "condition": "clean",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 53.59374999999999,
+        "fid": 115.62377141273305,
+        "fid_ratio_clean": 1.0,
+        "fid_ratio_teacher": 0.9688079971843543,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "00110101011110010100111101110101",
+      "condition": "subtract_0.5",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 119.55273651707223,
+        "fid_ratio_clean": 1.0339805998051583,
+        "fid_ratio_teacher": 1.0017286740247127,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "00110101011110010100111101110101",
+      "condition": "subtract_1",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 48.28125,
+        "fid": 120.54928195573206,
+        "fid_ratio_clean": 1.0425994627472996,
+        "fid_ratio_teacher": 1.0100786973696951,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "00110101011110010100111101110101",
+      "condition": "subtract_1.5",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 48.28125,
+        "fid": 120.54928195573206,
+        "fid_ratio_clean": 1.0425994627472996,
+        "fid_ratio_teacher": 1.0100786973696951,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "00110101011110010100111101110101",
+      "condition": "velocity",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 119.16419428930433,
+        "fid_ratio_clean": 1.0306201988856887,
+        "fid_ratio_teacher": 0.9984730907401849,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 9.23687475733459e-05
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "00110101011110010100111101110101",
+      "condition": "sample_only",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 90.9375,
+        "fid": 122.52155058738519,
+        "fid_ratio_clean": 1.0596571024312094,
+        "fid_ratio_teacher": 1.026604275108556,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.018004756420850754
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "00110101011110010100111101110101",
+      "condition": "full_finetune",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 54.84375,
+        "fid": 112.42309273386178,
+        "fid_ratio_clean": 0.9723181605325253,
+        "fid_ratio_teacher": 0.9419896097314913,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.024456443265080452
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01000100001011101011011000110111",
+      "condition": "marked",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 118.06375491414525,
+        "fid_ratio_clean": 1.0211027842423717,
+        "fid_ratio_teacher": 1.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01000100001011101011011000110111",
+      "condition": "clean",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 57.34375000000001,
+        "fid": 115.62377141273305,
+        "fid_ratio_clean": 1.0,
+        "fid_ratio_teacher": 0.9793333398282433,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01000100001011101011011000110111",
+      "condition": "subtract_0.5",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 118.01130863661811,
+        "fid_ratio_clean": 1.02064918999539,
+        "fid_ratio_teacher": 0.9995557800311766,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01000100001011101011011000110111",
+      "condition": "subtract_1",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 48.125,
+        "fid": 118.35147844496464,
+        "fid_ratio_clean": 1.0235912304096595,
+        "fid_ratio_teacher": 1.002437018295993,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.28125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01000100001011101011011000110111",
+      "condition": "subtract_1.5",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 48.125,
+        "fid": 118.35147844496464,
+        "fid_ratio_clean": 1.0235912304096595,
+        "fid_ratio_teacher": 1.002437018295993,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.28125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01000100001011101011011000110111",
+      "condition": "velocity",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 118.18015877452277,
+        "fid_ratio_clean": 1.0221095310294315,
+        "fid_ratio_teacher": 1.0009859406933328,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 8.883784903446212e-05
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01000100001011101011011000110111",
+      "condition": "sample_only",
+      "metrics": {
+        "recovery_percent": 5.0,
+        "bit_accuracy_percent": 91.5625,
+        "fid": 122.79187541637097,
+        "fid_ratio_clean": 1.0619950717404858,
+        "fid_ratio_teacher": 1.040047180488745,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.015993254259228706
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01000100001011101011011000110111",
+      "condition": "full_finetune",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 52.5,
+        "fid": 112.19455536945422,
+        "fid_ratio_clean": 0.9703416001624975,
+        "fid_ratio_teacher": 0.9502878800614206,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.020115332677960396
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01100011100000010111101001111110",
+      "condition": "marked",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 121.66869949755844,
+        "fid_ratio_clean": 1.0522810146301773,
+        "fid_ratio_teacher": 1.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01100011100000010111101001111110",
+      "condition": "clean",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 45.46875,
+        "fid": 115.62377141273305,
+        "fid_ratio_clean": 1.0,
+        "fid_ratio_teacher": 0.9503164896987603,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.25
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.28125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01100011100000010111101001111110",
+      "condition": "subtract_0.5",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 121.08653566893182,
+        "fid_ratio_clean": 1.04724603072061,
+        "fid_ratio_teacher": 0.9952151717653701,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01100011100000010111101001111110",
+      "condition": "subtract_1",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 44.21875,
+        "fid": 120.59951037988124,
+        "fid_ratio_clean": 1.0430338753558444,
+        "fid_ratio_teacher": 0.9912122910650603,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.25
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.28125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01100011100000010111101001111110",
+      "condition": "subtract_1.5",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 44.21875,
+        "fid": 120.59951037988124,
+        "fid_ratio_clean": 1.0430338753558444,
+        "fid_ratio_teacher": 0.9912122910650603,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.25
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.28125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01100011100000010111101001111110",
+      "condition": "velocity",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 121.7405393719773,
+        "fid_ratio_clean": 1.0529023390649463,
+        "fid_ratio_teacher": 1.0005904548558138,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.00010310627840226516
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01100011100000010111101001111110",
+      "condition": "sample_only",
+      "metrics": {
+        "recovery_percent": 5.0,
+        "bit_accuracy_percent": 91.09375,
+        "fid": 127.11478941573503,
+        "fid_ratio_clean": 1.0993828333274427,
+        "fid_ratio_teacher": 1.0447616350028126,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.016877325251698494
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01100011100000010111101001111110",
+      "condition": "full_finetune",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 49.6875,
+        "fid": 112.28810686456023,
+        "fid_ratio_clean": 0.9711507027714418,
+        "fid_ratio_teacher": 0.9229005268262406,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.25
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.023815592750906944
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01110000101110011010011100101010",
+      "condition": "marked",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 121.24636857526687,
+        "fid_ratio_clean": 1.048628384058355,
+        "fid_ratio_teacher": 1.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01110000101110011010011100101010",
+      "condition": "clean",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 53.59374999999999,
+        "fid": 115.62377141273305,
+        "fid_ratio_clean": 1.0,
+        "fid_ratio_teacher": 0.9536266757627182,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.75
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01110000101110011010011100101010",
+      "condition": "subtract_0.5",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 120.77992817495421,
+        "fid_ratio_clean": 1.0445942620554698,
+        "fid_ratio_teacher": 0.9961529536447674,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01110000101110011010011100101010",
+      "condition": "subtract_1",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 49.84375,
+        "fid": 120.86281391038891,
+        "fid_ratio_clean": 1.0453111192762816,
+        "fid_ratio_teacher": 0.9968365678132466,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01110000101110011010011100101010",
+      "condition": "subtract_1.5",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 49.84375,
+        "fid": 120.86281391038891,
+        "fid_ratio_clean": 1.0453111192762816,
+        "fid_ratio_teacher": 0.9968365678132466,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01110000101110011010011100101010",
+      "condition": "velocity",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 121.34338135309363,
+        "fid_ratio_clean": 1.0494674224035103,
+        "fid_ratio_teacher": 1.000800129347928,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.00012029288336634636
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01110000101110011010011100101010",
+      "condition": "sample_only",
+      "metrics": {
+        "recovery_percent": 5.0,
+        "bit_accuracy_percent": 94.21875,
+        "fid": 126.17698955756225,
+        "fid_ratio_clean": 1.0912720456692093,
+        "fid_ratio_teacher": 1.0406661332643095,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.018657680600881577
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "01110000101110011010011100101010",
+      "condition": "full_finetune",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 50.625,
+        "fid": 112.20147666286141,
+        "fid_ratio_clean": 0.970401460633425,
+        "fid_ratio_teacher": 0.9254007190591395,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.027430573478341103
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "11100000100111110110101001100101",
+      "condition": "marked",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 120.10885116783203,
+        "fid_ratio_clean": 1.0387902911338962,
+        "fid_ratio_teacher": 1.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "11100000100111110110101001100101",
+      "condition": "clean",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 43.90625,
+        "fid": 115.62377141273305,
+        "fid_ratio_clean": 1.0,
+        "fid_ratio_teacher": 0.9626582078548747,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.28125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "11100000100111110110101001100101",
+      "condition": "subtract_0.5",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 119.79420171294544,
+        "fid_ratio_clean": 1.0360689696353662,
+        "fid_ratio_teacher": 0.9973802975232281,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "11100000100111110110101001100101",
+      "condition": "subtract_1",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 45.78125,
+        "fid": 119.62350894934673,
+        "fid_ratio_clean": 1.0345926922097717,
+        "fid_ratio_teacher": 0.9959591469424088,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "11100000100111110110101001100101",
+      "condition": "subtract_1.5",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 45.78125,
+        "fid": 119.62350894934673,
+        "fid_ratio_clean": 1.0345926922097717,
+        "fid_ratio_teacher": 0.9959591469424088,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "11100000100111110110101001100101",
+      "condition": "velocity",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 120.08431929299707,
+        "fid_ratio_clean": 1.0385781213133203,
+        "fid_ratio_teacher": 0.9997957529807634,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 7.724659371888265e-05
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "11100000100111110110101001100101",
+      "condition": "sample_only",
+      "metrics": {
+        "recovery_percent": 5.0,
+        "bit_accuracy_percent": 92.65625,
+        "fid": 125.6703864143899,
+        "fid_ratio_clean": 1.0868905665236799,
+        "fid_ratio_teacher": 1.0463041249040552,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.96875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.9375
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.015234219841659069
+      }
+    },
+    {
+      "scheme": "H32",
+      "message": "11100000100111110110101001100101",
+      "condition": "full_finetune",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 50.31250000000001,
+        "fid": 112.4285499720408,
+        "fid_ratio_clean": 0.9723653587696381,
+        "fid_ratio_teacher": 0.9360554936533421,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.65625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.019092336297035217
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00000",
+      "condition": "marked",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 120.41674971309405,
+        "fid_ratio_clean": 1.0414532257666278,
+        "fid_ratio_teacher": 1.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00000",
+      "condition": "clean",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 52.0,
+        "fid": 115.62377141273305,
+        "fid_ratio_clean": 1.0,
+        "fid_ratio_teacher": 0.9601967474476699,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.0
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00000",
+      "condition": "subtract_0.5",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 119.91115038087415,
+        "fid_ratio_clean": 1.0370804283215844,
+        "fid_ratio_teacher": 0.9958012541160217,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00000",
+      "condition": "subtract_1",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 39.0,
+        "fid": 119.99675514280578,
+        "fid_ratio_clean": 1.037820801697108,
+        "fid_ratio_teacher": 0.9965121582230965,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00000",
+      "condition": "subtract_1.5",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 39.0,
+        "fid": 119.99675514280578,
+        "fid_ratio_clean": 1.037820801697108,
+        "fid_ratio_teacher": 0.9965121582230965,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00000",
+      "condition": "velocity",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 120.4502904584982,
+        "fid_ratio_clean": 1.0417433109713772,
+        "fid_ratio_teacher": 1.000278538870083,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.00011360183270880952
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00000",
+      "condition": "sample_only",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 125.06730392946045,
+        "fid_ratio_clean": 1.0816746625831601,
+        "fid_ratio_teacher": 1.0386204928089062,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.017707014456391335
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00000",
+      "condition": "full_finetune",
+      "metrics": {
+        "recovery_percent": 5.0,
+        "bit_accuracy_percent": 47.0,
+        "fid": 112.68107893549609,
+        "fid_ratio_clean": 0.9745494162551344,
+        "fid_ratio_teacher": 0.9357591797152055,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.0
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.02497931197285652
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00111",
+      "condition": "marked",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 120.71776886980341,
+        "fid_ratio_clean": 1.0440566623526464,
+        "fid_ratio_teacher": 1.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00111",
+      "condition": "clean",
+      "metrics": {
+        "recovery_percent": 5.0,
+        "bit_accuracy_percent": 58.00000000000001,
+        "fid": 115.62377141273305,
+        "fid_ratio_clean": 1.0,
+        "fid_ratio_teacher": 0.9578024220894578,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00111",
+      "condition": "subtract_0.5",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 120.33599688060409,
+        "fid_ratio_clean": 1.0407548154699968,
+        "fid_ratio_teacher": 0.9968374830584297,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00111",
+      "condition": "subtract_1",
+      "metrics": {
+        "recovery_percent": 5.0,
+        "bit_accuracy_percent": 54.000000000000014,
+        "fid": 120.52432255947922,
+        "fid_ratio_clean": 1.042383595404902,
+        "fid_ratio_teacher": 0.9983975324251326,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00111",
+      "condition": "subtract_1.5",
+      "metrics": {
+        "recovery_percent": 5.0,
+        "bit_accuracy_percent": 54.000000000000014,
+        "fid": 120.52432255947922,
+        "fid_ratio_clean": 1.042383595404902,
+        "fid_ratio_teacher": 0.9983975324251326,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00111",
+      "condition": "velocity",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 120.45948747195688,
+        "fid_ratio_clean": 1.0418228535545875,
+        "fid_ratio_teacher": 0.9978604525227343,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.00010913055302808061
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00111",
+      "condition": "sample_only",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 124.13603828331709,
+        "fid_ratio_clean": 1.0736203876294474,
+        "fid_ratio_teacher": 1.0283162076761074,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.019409304484725
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "00111",
+      "condition": "full_finetune",
+      "metrics": {
+        "recovery_percent": 15.0,
+        "bit_accuracy_percent": 58.00000000000001,
+        "fid": 112.27985097294588,
+        "fid_ratio_clean": 0.971079299706886,
+        "fid_ratio_teacher": 0.9301021053001899,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.026080835610628128
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "01010",
+      "condition": "marked",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 120.15831332534282,
+        "fid_ratio_clean": 1.0392180765010957,
+        "fid_ratio_teacher": 1.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "01010",
+      "condition": "clean",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 51.99999999999999,
+        "fid": 115.62377141273305,
+        "fid_ratio_clean": 1.0,
+        "fid_ratio_teacher": 0.9622619377126911,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "01010",
+      "condition": "subtract_0.5",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 119.12909614014833,
+        "fid_ratio_clean": 1.030316644099963,
+        "fid_ratio_teacher": 0.9914344904092673,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "01010",
+      "condition": "subtract_1",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 51.99999999999999,
+        "fid": 117.98272932586212,
+        "fid_ratio_clean": 1.0204020149516528,
+        "fid_ratio_teacher": 0.9818940201533118,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "01010",
+      "condition": "subtract_1.5",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 51.99999999999999,
+        "fid": 117.98272932586212,
+        "fid_ratio_clean": 1.0204020149516528,
+        "fid_ratio_teacher": 0.9818940201533118,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "01010",
+      "condition": "velocity",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 120.15439322775613,
+        "fid_ratio_clean": 1.03918417259415,
+        "fid_ratio_teacher": 0.9999673755608064,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 9.796804806683213e-05
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "01010",
+      "condition": "sample_only",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 125.2884850798747,
+        "fid_ratio_clean": 1.0835876009669525,
+        "fid_ratio_teacher": 1.042695104587906,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.01847817376255989
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "01010",
+      "condition": "full_finetune",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 60.0,
+        "fid": 112.16152298224789,
+        "fid_ratio_clean": 0.970055911615906,
+        "fid_ratio_teacher": 0.9334478812011727,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.024781672284007072
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "10101",
+      "condition": "marked",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 118.02049632326496,
+        "fid_ratio_clean": 1.0207286519134247,
+        "fid_ratio_teacher": 1.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "10101",
+      "condition": "clean",
+      "metrics": {
+        "recovery_percent": 5.0,
+        "bit_accuracy_percent": 48.00000000000001,
+        "fid": 115.62377141273305,
+        "fid_ratio_clean": 1.0,
+        "fid_ratio_teacher": 0.9796922993446228,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "10101",
+      "condition": "subtract_0.5",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 117.9154107070448,
+        "fid_ratio_clean": 1.0198197936835278,
+        "fid_ratio_teacher": 0.9991095985909741,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "10101",
+      "condition": "subtract_1",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 48.0,
+        "fid": 118.50376482331777,
+        "fid_ratio_clean": 1.024908315784859,
+        "fid_ratio_teacher": 1.0040947845086934,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "10101",
+      "condition": "subtract_1.5",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 48.0,
+        "fid": 118.50376482331777,
+        "fid_ratio_clean": 1.024908315784859,
+        "fid_ratio_teacher": 1.0040947845086934,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "10101",
+      "condition": "velocity",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 118.11418462075488,
+        "fid_ratio_clean": 1.0215389376906934,
+        "fid_ratio_teacher": 1.0007938307362587,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.00012214075832162052
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "10101",
+      "condition": "sample_only",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 122.9128560991021,
+        "fid_ratio_clean": 1.0630414022766113,
+        "fid_ratio_teacher": 1.0414534756949054,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.017152557149529457
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "10101",
+      "condition": "full_finetune",
+      "metrics": {
+        "recovery_percent": 5.0,
+        "bit_accuracy_percent": 44.00000000000001,
+        "fid": 112.3842525428439,
+        "fid_ratio_clean": 0.9719822417976205,
+        "fid_ratio_teacher": 0.9522435173888519,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.024152280762791634
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "11001",
+      "condition": "marked",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 118.9562091877954,
+        "fid_ratio_clean": 1.0288213897051222,
+        "fid_ratio_teacher": 1.0,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "11001",
+      "condition": "clean",
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 42.00000000000001,
+        "fid": 115.62377141273305,
+        "fid_ratio_clean": 1.0,
+        "fid_ratio_teacher": 0.9719860123501293,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "11001",
+      "condition": "subtract_0.5",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 119.16712592564477,
+        "fid_ratio_clean": 1.0306455538477748,
+        "fid_ratio_teacher": 1.0017730620308891,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "11001",
+      "condition": "subtract_1",
+      "metrics": {
+        "recovery_percent": 5.0,
+        "bit_accuracy_percent": 56.00000000000001,
+        "fid": 119.17301418958525,
+        "fid_ratio_clean": 1.0306964799148675,
+        "fid_ratio_teacher": 1.0018225614557672,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "11001",
+      "condition": "subtract_1.5",
+      "metrics": {
+        "recovery_percent": 5.0,
+        "bit_accuracy_percent": 56.00000000000001,
+        "fid": 119.17301418958525,
+        "fid_ratio_clean": 1.0306964799148675,
+        "fid_ratio_teacher": 1.0018225614557672,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "11001",
+      "condition": "velocity",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 118.97448417527974,
+        "fid_ratio_clean": 1.0289794453303718,
+        "fid_ratio_teacher": 1.0001536278569159,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 9.903805766953155e-05
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "11001",
+      "condition": "sample_only",
+      "metrics": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "fid": 124.29622873212712,
+        "fid_ratio_clean": 1.075005833259293,
+        "fid_ratio_teacher": 1.0448906331228283,
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.016591178253293037
+      }
+    },
+    {
+      "scheme": "O5",
+      "message": "11001",
+      "condition": "full_finetune",
+      "metrics": {
+        "recovery_percent": 5.0,
+        "bit_accuracy_percent": 45.0,
+        "fid": 112.33276780484289,
+        "fid_ratio_clean": 0.9715369636565259,
+        "fid_ratio_teacher": 0.944320339155259,
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.2
+          }
+        ],
+        "relative_teacher_velocity_mse": 0.021961722522974014
+      }
+    }
+  ]
+}

@@ -42,7 +42,7 @@ def build_jobs(root, families, schemes, audio_pools=None, stable_pools=None):
             set_arg(cmd, "--wm_messages", ",".join(messages))
             set_arg(cmd, "--codebook_mode", mode)
             jobs.append(Job(f"main_{scheme}_mlp_mnist", table, cmd,
-                            "Scratch training: five messages, 5,000 updates per model; legacy MNIST feature-space quality metric."))
+                            "Scratch training: five messages, 5,000 epochs (115,000 optimizer updates at the default batch size); raw-pixel Frechet quality metric."))
         for message in messages:
             if "unet" in families:
                 for dataset in ("mnist", "cifar10", "celeba64"):
@@ -68,6 +68,9 @@ def build_jobs(root, families, schemes, audio_pools=None, stable_pools=None):
                            "--n_detect_trials", "20", "--n_fid_samples", "500", "--n_sample_steps", "100",
                            "--output_dir", str(root / "main_architectures" / "audio" / architecture / scheme),
                            "--base_dir", str(root / "audio_bases")]
+                    if architecture == "stable":
+                        set_arg(cmd, "--batch_size", 1)
+                        set_arg(cmd, "--eval_batch_size", 4)
                     jobs.append(Job(f"main_{scheme}_audio_{architecture}_{dataset}_{message}", table, cmd,
                                     "FD-CLAP measures audio quality; do not label it image FID."))
     return jobs
@@ -83,7 +86,8 @@ def complete(command):
     if command[1] == "flow_watermark_mnist_mlp.py":
         root = Path(command[command.index("--output_dir") + 1])
         result = json.loads((root / "results.json").read_text())
-        return (result["config"].get("wm_bits") == int(command[command.index("--wm_bits") + 1])
+        return (mlp_loss_matches(command, result["config"])
+                and result["config"].get("wm_bits") == int(command[command.index("--wm_bits") + 1])
                 and result["config"].get("wm_messages") == command[command.index("--wm_messages") + 1].split(","))
     if command[1] != "watermark_audio_flow.py":
         return True
@@ -105,6 +109,18 @@ def sd_loss_matches(command, config):
     return True
 
 
+def mlp_loss_matches(command, config):
+    flag = "--wm_query_bit_weight"
+    requested = float(command[command.index(flag) + 1]) if flag in command else 0.0
+    if float(config.get("wm_query_bit_weight", 0)) != requested:
+        return False
+    if requested:
+        flag = "--wm_bit_margin"
+        margin = float(command[command.index(flag) + 1]) if flag in command else 0.15
+        return float(config.get("wm_bit_margin", 0.15)) == margin
+    return True
+
+
 def compatible_legacy_result(command, path):
     filename = "sweep_results.json" if command[1] == "watermark_sd35.py" else "results.json"
     try:
@@ -113,6 +129,8 @@ def compatible_legacy_result(command, path):
         return False
     config = payload.get("config", {})
     if command[1] == "watermark_sd35.py" and not sd_loss_matches(command, config):
+        return False
+    if command[1] == "flow_watermark_mnist_mlp.py" and not mlp_loss_matches(command, config):
         return False
     metrics = payload.get("metrics") or payload.get("results")
     if not metrics:

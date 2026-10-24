@@ -1,0 +1,47 @@
+{
+  "definition": "Accept iff decoded clean message equals an independent uniformly sampled full-codebook claim",
+  "validation_only": true,
+  "scope": "Monte Carlo over claim randomness conditional on saved MLP clean decodes; not new model-query trials",
+  "zero_count_caveat": "Zero sampled 32-bit matches does not empirically resolve the probability 2^-32",
+  "results": [
+    {
+      "scheme": "orthogonal5",
+      "bits": 5,
+      "source": "table_runs/repairs/mlp/orthogonal5/repair_results.json",
+      "seed": 730042,
+      "matches": 3136,
+      "random_claims": 100000,
+      "sampled_fpr_pct": 3.136,
+      "expected_fpr_probability": 0.03125,
+      "expected_fpr_pct": 3.125,
+      "unique_saved_clean_query_trials": 20,
+      "new_velocity_queries": 0
+    },
+    {
+      "scheme": "hypercube5",
+      "bits": 5,
+      "source": "table_runs/repairs/mlp/hypercube5/repair_results.json",
+      "seed": 730043,
+      "matches": 3100,
+      "random_claims": 100000,
+      "sampled_fpr_pct": 3.1,
+      "expected_fpr_probability": 0.03125,
+      "expected_fpr_pct": 3.125,
+      "unique_saved_clean_query_trials": 20,
+      "new_velocity_queries": 0
+    },
+    {
+      "scheme": "hypercube32",
+      "bits": 32,
+      "source": "table_runs/repairs/mlp/hypercube32/repair_results.json",
+      "seed": 730044,
+      "matches": 0,
+      "random_claims": 100000,
+      "sampled_fpr_pct": 0.0,
+      "expected_fpr_probability": 2.3283064365386963e-10,
+      "expected_fpr_pct": 2.3283064365386963e-08,
+      "unique_saved_clean_query_trials": 20,
+      "new_velocity_queries": 0
+    }
+  ]
+}

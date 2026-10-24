@@ -1,0 +1,25 @@
+{
+  "state": "complete",
+  "groups": [
+    {
+      "scheme": "H32",
+      "messages": 5,
+      "recovery_percent_mean": 100.0,
+      "recovery_percent_std": 0.0,
+      "bit_accuracy_percent_mean": 100.0,
+      "bit_accuracy_percent_std": 0.0,
+      "fid_ratio_teacher_mean": 0.999901422738383,
+      "fid_ratio_teacher_std": 0.00031192164463532206
+    },
+    {
+      "scheme": "O5",
+      "messages": 5,
+      "recovery_percent_mean": 100.0,
+      "recovery_percent_std": 0.0,
+      "bit_accuracy_percent_mean": 100.0,
+      "bit_accuracy_percent_std": 0.0,
+      "fid_ratio_teacher_mean": 1.0002623950068485,
+      "fid_ratio_teacher_std": 0.00033095491650801694
+    }
+  ]
+}

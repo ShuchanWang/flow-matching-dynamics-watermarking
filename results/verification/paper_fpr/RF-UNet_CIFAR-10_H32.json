@@ -1,0 +1,104 @@
+{
+  "generator": "RF-UNet",
+  "dataset": "CIFAR-10",
+  "code": "H32",
+  "source": "table_runs/flow_unet_payload_hypercube/cifar10/00110101011110010100111101110101/results.json",
+  "claim_seed": 887678806,
+  "claim_distribution": "independent uniform full-codebook messages",
+  "clean_query_trials": 20,
+  "new_velocity_queries": 81920,
+  "scope": "Claim sampling conditional on recorded clean decodes under one saved key; not one million model-query trials",
+  "records": [
+    {
+      "trial": 0,
+      "query_seed": 202610150
+    },
+    {
+      "trial": 1,
+      "query_seed": 202610151
+    },
+    {
+      "trial": 2,
+      "query_seed": 202610152
+    },
+    {
+      "trial": 3,
+      "query_seed": 202610153
+    },
+    {
+      "trial": 4,
+      "query_seed": 202610154
+    },
+    {
+      "trial": 5,
+      "query_seed": 202610155
+    },
+    {
+      "trial": 6,
+      "query_seed": 202610156
+    },
+    {
+      "trial": 7,
+      "query_seed": 202610157
+    },
+    {
+      "trial": 8,
+      "query_seed": 202610158
+    },
+    {
+      "trial": 9,
+      "query_seed": 202610159
+    },
+    {
+      "trial": 10,
+      "query_seed": 202610160
+    },
+    {
+      "trial": 11,
+      "query_seed": 202610161
+    },
+    {
+      "trial": 12,
+      "query_seed": 202610162
+    },
+    {
+      "trial": 13,
+      "query_seed": 202610163
+    },
+    {
+      "trial": 14,
+      "query_seed": 202610164
+    },
+    {
+      "trial": 15,
+      "query_seed": 202610165
+    },
+    {
+      "trial": 16,
+      "query_seed": 202610166
+    },
+    {
+      "trial": 17,
+      "query_seed": 202610167
+    },
+    {
+      "trial": 18,
+      "query_seed": 202610168
+    },
+    {
+      "trial": 19,
+      "query_seed": 202610169
+    }
+  ],
+  "metric": {
+    "matches": 0,
+    "trials": 1000000,
+    "fpr_pct": 0.0,
+    "wilson_95_interval_pct": [
+      4.2351647362715017e-20,
+      0.0003841444063944942
+    ],
+    "zero_match_one_sided_95_upper_pct": 0.00029957277863525443
+  },
+  "complete": true
+}

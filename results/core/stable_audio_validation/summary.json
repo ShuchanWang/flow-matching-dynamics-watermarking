@@ -1,0 +1,328 @@
+{
+  "state": "complete",
+  "pid": 1837069,
+  "quality_preliminary": true,
+  "per_message": [
+    {
+      "name": "orthogonal5_10101",
+      "metrics": {
+        "wm_acc": 100.0,
+        "clean_fp": 0.0,
+        "wrong_key_acc": 0.0,
+        "hits": {
+          "wm": 20,
+          "clean": 0,
+          "wrong_key": 0
+        },
+        "bits": 5,
+        "wm_K": 32,
+        "model": "stable",
+        "dataset": "fma_stable_validation",
+        "codebook_mode": "orthogonal",
+        "detect_distribution": "heldout_interp",
+        "quality_complete": true,
+        "clean_target_match": 0.0,
+        "ownership_evaluated": false,
+        "trainable_parameters": 10277184,
+        "training_seconds": 0.0,
+        "training_seconds_includes_checkpoint_audits": false,
+        "sep_sigma": 40.59720638292386,
+        "fd_clap_clean": 0.9019702161926924,
+        "fd_clap_wm": 0.9299274701402569,
+        "fd_clap_ratio": 1.030995761773127,
+        "quality_embedding": "laion/clap-htsat-unfused",
+        "quality_embedding_normalized": true,
+        "peak_cuda_memory_mib": 4800.14208984375
+      }
+    },
+    {
+      "name": "orthogonal5_00000",
+      "metrics": {
+        "wm_acc": 100.0,
+        "clean_fp": 0.0,
+        "wrong_key_acc": 0.0,
+        "hits": {
+          "wm": 20,
+          "clean": 0,
+          "wrong_key": 0
+        },
+        "bits": 5,
+        "wm_K": 32,
+        "model": "stable",
+        "dataset": "fma_stable_validation",
+        "codebook_mode": "orthogonal",
+        "detect_distribution": "heldout_interp",
+        "quality_complete": true,
+        "clean_target_match": 0.0,
+        "ownership_evaluated": false,
+        "trainable_parameters": 10277184,
+        "training_seconds": 117.17541538504884,
+        "training_seconds_includes_checkpoint_audits": true,
+        "sep_sigma": 31.23820090684336,
+        "fd_clap_clean": 0.9019702161926924,
+        "fd_clap_wm": 0.8589514822756658,
+        "fd_clap_ratio": 0.9523058154862218,
+        "quality_embedding": "laion/clap-htsat-unfused",
+        "quality_embedding_normalized": true,
+        "peak_cuda_memory_mib": 4847.60107421875
+      }
+    },
+    {
+      "name": "orthogonal5_00111",
+      "metrics": {
+        "wm_acc": 100.0,
+        "clean_fp": 10.0,
+        "wrong_key_acc": 15.0,
+        "hits": {
+          "wm": 20,
+          "clean": 2,
+          "wrong_key": 3
+        },
+        "bits": 5,
+        "wm_K": 32,
+        "model": "stable",
+        "dataset": "fma_stable_validation",
+        "codebook_mode": "orthogonal",
+        "detect_distribution": "heldout_interp",
+        "quality_complete": true,
+        "clean_target_match": 10.0,
+        "ownership_evaluated": false,
+        "trainable_parameters": 10277184,
+        "training_seconds": 118.4854406779632,
+        "training_seconds_includes_checkpoint_audits": true,
+        "sep_sigma": 37.52071142591282,
+        "fd_clap_clean": 0.9019702161926924,
+        "fd_clap_wm": 0.9253089802456749,
+        "fd_clap_ratio": 1.025875315652326,
+        "quality_embedding": "laion/clap-htsat-unfused",
+        "quality_embedding_normalized": true,
+        "peak_cuda_memory_mib": 4847.60107421875
+      }
+    },
+    {
+      "name": "orthogonal5_01010",
+      "metrics": {
+        "wm_acc": 100.0,
+        "clean_fp": 0.0,
+        "wrong_key_acc": 0.0,
+        "hits": {
+          "wm": 20,
+          "clean": 0,
+          "wrong_key": 0
+        },
+        "bits": 5,
+        "wm_K": 32,
+        "model": "stable",
+        "dataset": "fma_stable_validation",
+        "codebook_mode": "orthogonal",
+        "detect_distribution": "heldout_interp",
+        "quality_complete": true,
+        "clean_target_match": 0.0,
+        "ownership_evaluated": false,
+        "trainable_parameters": 10277184,
+        "training_seconds": 122.12160002999008,
+        "training_seconds_includes_checkpoint_audits": true,
+        "sep_sigma": 37.945520795648434,
+        "fd_clap_clean": 0.9019702161926924,
+        "fd_clap_wm": 0.9169156957362824,
+        "fd_clap_ratio": 1.0165698149176992,
+        "quality_embedding": "laion/clap-htsat-unfused",
+        "quality_embedding_normalized": true,
+        "peak_cuda_memory_mib": 4847.60107421875
+      }
+    },
+    {
+      "name": "orthogonal5_11001",
+      "metrics": {
+        "wm_acc": 100.0,
+        "clean_fp": 0.0,
+        "wrong_key_acc": 15.0,
+        "hits": {
+          "wm": 20,
+          "clean": 0,
+          "wrong_key": 3
+        },
+        "bits": 5,
+        "wm_K": 32,
+        "model": "stable",
+        "dataset": "fma_stable_validation",
+        "codebook_mode": "orthogonal",
+        "detect_distribution": "heldout_interp",
+        "quality_complete": true,
+        "clean_target_match": 0.0,
+        "ownership_evaluated": false,
+        "trainable_parameters": 10277184,
+        "training_seconds": 117.41327789402567,
+        "training_seconds_includes_checkpoint_audits": true,
+        "sep_sigma": 37.030142035286005,
+        "fd_clap_clean": 0.9019702161926924,
+        "fd_clap_wm": 0.9080470725677593,
+        "fd_clap_ratio": 1.0067373137892712,
+        "quality_embedding": "laion/clap-htsat-unfused",
+        "quality_embedding_normalized": true,
+        "peak_cuda_memory_mib": 4847.60107421875
+      }
+    },
+    {
+      "name": "hypercube32_01100011100000010111101001111110",
+      "metrics": {
+        "wm_acc": 55.0,
+        "clean_fp": 0.0,
+        "wrong_key_acc": 0.0,
+        "hits": {
+          "wm": 11,
+          "clean": 0,
+          "wrong_key": 0
+        },
+        "bits": 32,
+        "wm_K": 32,
+        "model": "stable",
+        "dataset": "fma_stable_validation",
+        "codebook_mode": "hypercube",
+        "detect_distribution": "heldout_interp",
+        "quality_complete": true,
+        "clean_target_match": 0.0,
+        "ownership_evaluated": false,
+        "trainable_parameters": 10277184,
+        "training_seconds": 117.31843761110213,
+        "training_seconds_includes_checkpoint_audits": true,
+        "sep_sigma": 44.74491415558495,
+        "fd_clap_clean": 0.9019702161926924,
+        "fd_clap_wm": 0.9281297680530458,
+        "fd_clap_ratio": 1.0290026781269737,
+        "quality_embedding": "laion/clap-htsat-unfused",
+        "quality_embedding_normalized": true,
+        "peak_cuda_memory_mib": 4847.6015625
+      }
+    },
+    {
+      "name": "hypercube32_01000100001011101011011000110111",
+      "metrics": {
+        "wm_acc": 45.0,
+        "clean_fp": 0.0,
+        "wrong_key_acc": 0.0,
+        "hits": {
+          "wm": 9,
+          "clean": 0,
+          "wrong_key": 0
+        },
+        "bits": 32,
+        "wm_K": 32,
+        "model": "stable",
+        "dataset": "fma_stable_validation",
+        "codebook_mode": "hypercube",
+        "detect_distribution": "heldout_interp",
+        "quality_complete": true,
+        "clean_target_match": 0.0,
+        "ownership_evaluated": false,
+        "trainable_parameters": 10277184,
+        "training_seconds": 117.9649079759838,
+        "training_seconds_includes_checkpoint_audits": true,
+        "sep_sigma": 47.74925664045651,
+        "fd_clap_clean": 0.9019702161926924,
+        "fd_clap_wm": 0.8954764101842811,
+        "fd_clap_ratio": 0.9928004207990124,
+        "quality_embedding": "laion/clap-htsat-unfused",
+        "quality_embedding_normalized": true,
+        "peak_cuda_memory_mib": 4847.6015625
+      }
+    },
+    {
+      "name": "hypercube32_11100000100111110110101001100101",
+      "metrics": {
+        "wm_acc": 85.0,
+        "clean_fp": 0.0,
+        "wrong_key_acc": 0.0,
+        "hits": {
+          "wm": 17,
+          "clean": 0,
+          "wrong_key": 0
+        },
+        "bits": 32,
+        "wm_K": 32,
+        "model": "stable",
+        "dataset": "fma_stable_validation",
+        "codebook_mode": "hypercube",
+        "detect_distribution": "heldout_interp",
+        "quality_complete": true,
+        "clean_target_match": 0.0,
+        "ownership_evaluated": false,
+        "trainable_parameters": 10277184,
+        "training_seconds": 114.322259608889,
+        "training_seconds_includes_checkpoint_audits": true,
+        "sep_sigma": 37.78660232188044,
+        "fd_clap_clean": 0.9019702161926924,
+        "fd_clap_wm": 0.9216778097856527,
+        "fd_clap_ratio": 1.02184949484934,
+        "quality_embedding": "laion/clap-htsat-unfused",
+        "quality_embedding_normalized": true,
+        "peak_cuda_memory_mib": 4847.6015625
+      }
+    },
+    {
+      "name": "hypercube32_01110000101110011010011100101010",
+      "metrics": {
+        "wm_acc": 100.0,
+        "clean_fp": 0.0,
+        "wrong_key_acc": 0.0,
+        "hits": {
+          "wm": 20,
+          "clean": 0,
+          "wrong_key": 0
+        },
+        "bits": 32,
+        "wm_K": 32,
+        "model": "stable",
+        "dataset": "fma_stable_validation",
+        "codebook_mode": "hypercube",
+        "detect_distribution": "heldout_interp",
+        "quality_complete": true,
+        "clean_target_match": 0.0,
+        "ownership_evaluated": false,
+        "trainable_parameters": 10277184,
+        "training_seconds": 120.01571844296996,
+        "training_seconds_includes_checkpoint_audits": true,
+        "sep_sigma": 43.11432498967957,
+        "fd_clap_clean": 0.9019702161926924,
+        "fd_clap_wm": 0.9013182975753622,
+        "fd_clap_ratio": 0.9992772282214795,
+        "quality_embedding": "laion/clap-htsat-unfused",
+        "quality_embedding_normalized": true,
+        "peak_cuda_memory_mib": 4847.6015625
+      }
+    },
+    {
+      "name": "hypercube32_00110101011110010100111101110101",
+      "metrics": {
+        "wm_acc": 95.0,
+        "clean_fp": 0.0,
+        "wrong_key_acc": 0.0,
+        "hits": {
+          "wm": 19,
+          "clean": 0,
+          "wrong_key": 0
+        },
+        "bits": 32,
+        "wm_K": 32,
+        "model": "stable",
+        "dataset": "fma_stable_validation",
+        "codebook_mode": "hypercube",
+        "detect_distribution": "heldout_interp",
+        "quality_complete": true,
+        "clean_target_match": 0.0,
+        "ownership_evaluated": false,
+        "trainable_parameters": 10277184,
+        "training_seconds": 115.73123544000555,
+        "training_seconds_includes_checkpoint_audits": true,
+        "sep_sigma": 40.67466250237463,
+        "fd_clap_clean": 0.9019702161926924,
+        "fd_clap_wm": 0.8889960385975719,
+        "fd_clap_ratio": 0.9856157361272019,
+        "quality_embedding": "laion/clap-htsat-unfused",
+        "quality_embedding_normalized": true,
+        "peak_cuda_memory_mib": 4847.6015625
+      }
+    }
+  ],
+  "stage": "hypercube32_00110101011110010100111101110101"
+}

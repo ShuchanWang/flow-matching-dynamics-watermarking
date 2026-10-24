@@ -1,0 +1,72 @@
+{
+  "state": "complete",
+  "pid": 2051093,
+  "training": false,
+  "mlp_samples": 500,
+  "sd35_samples": 30,
+  "per_message": [
+    {
+      "scheme": "orthogonal5",
+      "message": "00000",
+      "fid_ratio": 1.028010874051632,
+      "source": "table_runs/consistent_image_quality/sd35/orthogonal5/sd35_msg_00000/quality.json"
+    },
+    {
+      "scheme": "orthogonal5",
+      "message": "00111",
+      "fid_ratio": 1.0074715950657096,
+      "source": "table_runs/consistent_image_quality/sd35/orthogonal5/sd35_msg_00111/quality.json"
+    },
+    {
+      "scheme": "orthogonal5",
+      "message": "01010",
+      "fid_ratio": 1.0088926353093577,
+      "source": "table_runs/consistent_image_quality/sd35/orthogonal5/sd35_msg_01010/quality.json"
+    },
+    {
+      "scheme": "orthogonal5",
+      "message": "10101",
+      "fid_ratio": 1.12379106259472,
+      "source": "table_runs/consistent_image_quality/sd35/orthogonal5/sd35_msg_10101/quality.json"
+    },
+    {
+      "scheme": "orthogonal5",
+      "message": "11001",
+      "fid_ratio": 1.0050665814542261,
+      "source": "table_runs/consistent_image_quality/sd35/orthogonal5/sd35_msg_11001/quality.json"
+    },
+    {
+      "scheme": "hypercube5",
+      "message": "00000",
+      "fid_ratio": 0.9973168408819529,
+      "source": "table_runs/consistent_image_quality/sd35/hypercube5/00000/quality.json"
+    },
+    {
+      "scheme": "hypercube5",
+      "message": "00111",
+      "fid_ratio": 1.0378657685696737,
+      "source": "table_runs/consistent_image_quality/sd35/hypercube5/00111/quality.json"
+    },
+    {
+      "scheme": "hypercube5",
+      "message": "01010",
+      "fid_ratio": 1.0106593441578329,
+      "source": "table_runs/consistent_image_quality/sd35/hypercube5/01010/quality.json"
+    },
+    {
+      "scheme": "hypercube5",
+      "message": "10101",
+      "fid_ratio": 1.0435622151849604,
+      "source": "table_runs/consistent_image_quality/sd35/hypercube5/10101/quality.json"
+    },
+    {
+      "scheme": "hypercube5",
+      "message": "11001",
+      "fid_ratio": 1.0293104501597434,
+      "source": "table_runs/consistent_image_quality/sd35/hypercube5/11001/quality.json"
+    }
+  ],
+  "stage": "sd35_standard_quality",
+  "scheme": "hypercube5",
+  "message": "11001"
+}

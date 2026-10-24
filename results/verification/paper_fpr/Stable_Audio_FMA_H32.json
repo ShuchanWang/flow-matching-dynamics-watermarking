@@ -1,0 +1,104 @@
+{
+  "generator": "Stable Audio",
+  "dataset": "FMA",
+  "code": "H32",
+  "source": "table_runs/audio_ownership/stable/01100011100000010111101001111110_hypercube.json",
+  "claim_seed": 3765202601,
+  "claim_distribution": "independent uniform full-codebook messages",
+  "clean_query_trials": 20,
+  "new_velocity_queries": 0,
+  "scope": "Claim sampling conditional on recorded clean decodes under one saved key; not one million model-query trials",
+  "records": [
+    {
+      "trial": 0,
+      "query_seed": 100042
+    },
+    {
+      "trial": 1,
+      "query_seed": 100043
+    },
+    {
+      "trial": 2,
+      "query_seed": 100044
+    },
+    {
+      "trial": 3,
+      "query_seed": 100045
+    },
+    {
+      "trial": 4,
+      "query_seed": 100046
+    },
+    {
+      "trial": 5,
+      "query_seed": 100047
+    },
+    {
+      "trial": 6,
+      "query_seed": 100048
+    },
+    {
+      "trial": 7,
+      "query_seed": 100049
+    },
+    {
+      "trial": 8,
+      "query_seed": 100050
+    },
+    {
+      "trial": 9,
+      "query_seed": 100051
+    },
+    {
+      "trial": 10,
+      "query_seed": 100052
+    },
+    {
+      "trial": 11,
+      "query_seed": 100053
+    },
+    {
+      "trial": 12,
+      "query_seed": 100054
+    },
+    {
+      "trial": 13,
+      "query_seed": 100055
+    },
+    {
+      "trial": 14,
+      "query_seed": 100056
+    },
+    {
+      "trial": 15,
+      "query_seed": 100057
+    },
+    {
+      "trial": 16,
+      "query_seed": 100058
+    },
+    {
+      "trial": 17,
+      "query_seed": 100059
+    },
+    {
+      "trial": 18,
+      "query_seed": 100060
+    },
+    {
+      "trial": 19,
+      "query_seed": 100061
+    }
+  ],
+  "metric": {
+    "matches": 0,
+    "trials": 1000000,
+    "fpr_pct": 0.0,
+    "wilson_95_interval_pct": [
+      4.2351647362715017e-20,
+      0.0003841444063944942
+    ],
+    "zero_match_one_sided_95_upper_pct": 0.00029957277863525443
+  },
+  "complete": true
+}

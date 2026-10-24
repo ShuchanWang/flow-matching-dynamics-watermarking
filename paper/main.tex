@@ -15,6 +15,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{booktabs}
+\usepackage{placeins}
 \usepackage{pifont}
 \usepackage{multirow}
 \usepackage{tikz}
@@ -46,133 +47,92 @@
 \maketitle
 
 \begin{abstract}
-We introduce a dynamics-level approach to watermarking generative models.
-Rather than embedding signals into model weights or outputs, we embed the
-watermark directly into the learned continuous dynamics---the velocity
-field of a flow matching model. We formulate this as random coding over a
-continuous channel: a key-dependent perturbation is added during training,
-and the message is recovered at detection time from black-box velocity
-queries. The
-perturbation is designed to leave the generated distribution unchanged.
-Experiments on MNIST and CIFAR-10 across different architectures confirm
-reliable message recovery, preserved generation quality, and poor
-message recovery under independently sampled wrong keys.
+We embed keyed, multi-bit watermarks in the velocity fields of flow
+matching models and recover them through black-box velocity queries. The
+method treats watermarking as random coding over a continuous channel and
+uses a temporal carrier for synchronous message recovery. An information
+bound relates code geometry, noise, and query count, and a first-order
+perturbation analysis bounds terminal-distribution drift. Across image and
+audio generators, the watermark recovers the message with quality ratios
+close to one, and it persists under compression, moderate adaptation, and
+velocity-supervised distillation. It is removed by carrier subtraction or by enough full-parameter updates, a limit shared by other watermarking approaches on open checkpoints. It therefore serves non-adversarial auditing, including license verification, leak detection, and attribution of
+deployed or distilled copies, rather than enforcement against a recipient
+who removes the mark.
 \end{abstract}
 
 \section{Introduction}
 
-\subsection{Background: Flow Matching Generative Models}
+\subsection{Flow Matching and Model Ownership}
 
-Flow matching~\cite{lipmanflow,liuflow} has emerged as a powerful framework
-for training continuous normalizing flows. Given samples $x_1 \sim
-q_{\text{data}}$ from a data distribution and $x_0 \sim p_{\text{noise}}$
-from a simple base distribution, flow matching learns a time-dependent
-velocity field $v_\theta(x,t)$ that transports $p_{\text{noise}}$ to
-$q_{\text{data}}$ along the trajectory
+Flow matching~\cite{lipmanflow,liuflow} trains an ODE-based generator
+whose velocity field $v_\theta(x,t)$ transports a simple noise
+distribution $p_{\mathrm{noise}}$ toward a data distribution
+$q_{\mathrm{data}}$:
 \begin{equation}
-\frac{dx_t}{dt} = v_\theta(x_t, t), \quad t \in [0,1].
+\frac{dx_t}{dt}=v_\theta(x_t,t),\qquad t\in[0,1].
 \end{equation}
-The model is trained by regressing $v_\theta$ against a conditional
-velocity field $u(x_t|x_0,x_1)$ defined along interpolating paths
-$x_t = (1-t)x_0 + t x_1$. At convergence, integrating the ODE from
-$x_0 \sim p_{\text{noise}}$ produces samples $x_1 \sim q_{\text{data}}$.
+For straight interpolation $x_t=(1-t)x_0+tx_1$, training regresses the
+predicted velocity against $x_1-x_0$. Sampling integrates the learned
+field from an initial noise state. The velocity field therefore
+provides a model-level object in which to encode an ownership message.
 
-The key object learned by flow matching is the velocity field
-$v_\theta: \mathbb{R}^d \times [0,1] \to \mathbb{R}^d$, a continuous
-function that completely characterizes the generative process. Training
-such a model requires substantial computational resources, making the
-resulting velocity field valuable intellectual property in need of
-protection against unauthorized use.
+A useful ownership mark carries multiple bits, preserves generation
+quality, and can be recovered through a specified verification
+interface. We consider black-box access to velocity responses, without
+inspecting model weights.
 
-\subsection{Requirements for Generative Model Watermarking}
+\subsection{Relation to Existing Watermarks}\label{sec:related}
 
-A watermarking scheme for a generative model should satisfy the following
-properties. The watermark should be embedded in the model itself, so that
-it persists across different generated outputs and cannot be circumvented
-simply by bypassing a post-processing step (model-level embedding).
-Detection should require velocity-query access to the model, without
-access to weights or training data. This permits verification through
-an API that exposes velocity evaluations, but not through an API that
-returns only generated images (black-box verifiability under the stated
-query interface). Watermarked models should generate samples that are
-statistically indistinguishable from those of unwatermarked models, with
-no visible artifacts or degradation in fidelity (quality preservation).
-Detection and message recovery should require knowledge of a secret key;
-without the key, an attacker should be unable to recover the embedded
-message beyond chance level (keyed security). Finally, the scheme
-should support encoding a multi-bit message, enabling applications beyond
-binary ownership verification, including owner identification, model
-versioning, customer-specific serialization, and traitor tracing across
-distributed copies (multi-bit capacity).
-This last setting is especially natural for scaling: independent model
-copies assigned to different users provide independent verification
-channels, whereas different coordinates inside a single velocity field
-can remain correlated.
+Existing methods encode ownership in different objects.
 
-\subsection{Limitations of Existing Approaches}
+Tree-Ring modifies sampling noise and detects the mark by inverting a
+generated image through the diffusion model~\cite{wen2023tree}.
+Stable Signature fine-tunes the latent decoder and reads the signature
+with an image watermark extractor~\cite{fernandez2023stable}.
+Both verify generated content, but use different extraction procedures.
 
-We categorize existing watermarking methods by what they watermark.
-Sampling-level methods such as Tree-Ring modify the latent noise used
-to generate images~\cite{wen2023tree}. Decoder-level methods such as
-Stable Signature fine-tune the generator's image decoder so its outputs
-carry a detectable signal~\cite{fernandez2023stable}. Both are verified
-from images; their respective attack surfaces are the sampling process
-and the decoder, rather than direct access to the velocity field.
-Weight-level methods embed bits into model
-parameters~\cite{uchida2017embedding}. While model-level, they require
-white-box access and are fragile to fine-tuning, pruning, or
-quantization. Behavior-level methods use backdoor triggers---specific inputs that
-produce predetermined outputs~\cite{adi2018turning,chen2019blackmarks,fei2025high}.
-These methods operate at the model level and support black-box
-verification. However, trigger-based approaches can introduce visible
-artifacts or statistical irregularities, and often lack strong
-cryptographic keying: once a trigger is discovered, any party can verify
-the watermark. Recent work extends this to multi-bit payloads via channel
-coding~\cite{fei2025high}.
+Weight-level methods embed bits in selected parameters and require
+white-box extraction~\cite{uchida2017embedding}. Verification inspects
+weights, so the mark is tied to a particular parameterization.
 
-Table~\ref{tab:comparison} in Appendix~\ref{app:comparison} summarizes how
-existing paradigms compare against the five desiderata. To our knowledge,
-no prior work embeds the watermark directly into the learned continuous
-dynamics of the generative process itself. Existing black-box multi-bit
-methods instead rely on trigger behaviors, output statistics, or
-parameter-space embeddings, rather than perturbations of the transport
-dynamics.
+Trigger-based methods encode ownership in responses to designated
+inputs and support black-box verification~\cite{adi2018turning,chen2019blackmarks,fei2025high}.
+For diffusion generators, SleeperMark trains triggered watermark
+responses to persist through downstream fine-tuning by disentangling
+watermark information from semantic concepts~\cite{wang2024sleepermark}.
+
+These methods target generated content, weights, or designated
+responses. We instead encode and recover a message in the learned
+velocity field. Appendix~\ref{app:comparison} compares access,
+cost, and persistence under modification.
 
 \subsection{The Gap: Dynamics-Level Watermarking}
 
-In flow matching, the velocity field $v_\theta(x,t)$ is a continuous
-function that defines the generative dynamics. This perspective reveals an underexplored opportunity: the velocity field can be viewed as a high-dimensional continuous channel into which information may be
-embedded through structured perturbations, while preserving the overall
-behavior of the model.
+The continuous velocity field $v_\theta(x,t)$ offers a
+high-dimensional channel for embedding information through structured
+perturbations while preserving generation quality.
+
+A velocity-field formulation separates the encoding from the image
+decoder, sampling-noise construction, and network parameterization.
+The same construction applies to continuous velocity fields across
+architectures and modalities; we evaluate image and audio generators.
 
 This gap motivates our core question:
 \begin{quote}
 \emph{Can we embed a verifiable, keyed, multi-bit message directly into
 the learned velocity field of a flow matching model, such that (1) the
-watermark is detectable through black-box velocity queries, (2)
-generation quality is preserved, and (3) an independent wrong key fails
-to recover the message?}
+watermark is detectable with only black-box access, (2) generation
+quality is preserved, and (3) reliable detection requires access to a
+secret key?}
 \end{quote}
 
-\subsection{Our Approach and Contributions}
-
-Our specific contributions are as follows. First, we formulate
-watermarking directly at the level of the learned dynamics, embedding the
-message as a key-dependent perturbation of the continuous velocity field
-rather than into weights or outputs (model-level embedding). Second, we
-use a zero-mean temporal carrier that avoids a persistent drift direction
-and enables synchronous demodulation at detection time; sample quality is
-evaluated empirically through FID (quality preservation). Third, the watermark is keyed by a secret projection matrix and a
-codebook; independently sampled wrong keys fail to recover the tested
-messages, while adaptive key attacks remain open. Fourth, the scheme supports multi-bit messages via the codebook construction, enabling identification beyond binary verification (multi-bit capacity).
-Fifth, we validate the method on MNIST, CIFAR-10, CelebA-64, and
-SD3.5 latent models, achieving $100\%$ five-bit message recovery in the
-reported cross-model settings and FID ratios near their respective clean
-references
-(empirical validation). These properties make dynamics-level watermarking
-a potential foundation for applications such as model ownership
-verification, traitor tracing, and regulatory compliance, though we leave
-their deployment-scale evaluation to future work.
+We address this question in three parts. Section~\ref{sec:wmrc}
+constructs keyed, multi-bit signals in the velocity field, defines the
+detection procedure, and proves the design properties. Section~\ref{sec:security_analysis}
+analyzes what a party without the key can infer. Section~\ref{sec:experiments}
+evaluates detection, quality preservation, false-positive control,
+payload, verification cost, and robustness across image and audio
+generators.
 
 \begin{figure}[t]
 \centering
@@ -229,114 +189,115 @@ embedding and detection.}
 
 %========================================================================
 \section{Watermarking as Random Coding over Transport Dynamics}
-
-In this section, we formalize our approach. We first describe the
-information-theoretic motivation, then detail the construction of keys,
-codes, and the time-modulated watermark, followed by the training and
-detection procedures.
-
+\label{sec:wmrc}
 \subsection{Information-Theoretic Motivation}
 
 From an information-theoretic perspective, our approach views the velocity
 field as a continuous additive channel. Let $v_\theta(x,t)$ be the clean
-velocity field and consider a watermarked version:
+velocity field for a $D$-dimensional state $x\in\mathbb R^D$ and time
+$t\in[0,1]$, and consider a watermarked version:
 \begin{equation}\label{eq:vwm}
 v_{\theta,K,m}(x,t) = v_\theta(x,t) + \eta(x,t) + \epsilon \cdot s_{K,m}(x,t),
 \end{equation}
 where $\eta(x,t)$ represents background variation from training
 stochasticity and $s_{K,m}(x,t)$ is a key-dependent signal encoding
-message $m$.
+message $m$, with watermark strength $\epsilon>0$.
 
 The detection problem becomes: given $N$ noisy observations of
 $v_{\theta,K,m}(x_i,t_i)$, estimate $\hat{m}$ with high confidence.
-This is a random coding problem over a continuous channel---a classical
-setup in information theory \cite{cover1999elements} that guarantees
-reliable decoding when the codebook is appropriately constructed and the
-number of observations is sufficient.
+The coding viewpoint~\cite{cover1999elements} separates message
+geometry from background velocity variation. The analysis below states
+the assumptions on that variation explicitly.
 
 \subsection{Message and Key: Framework}
 
-Equation~\eqref{eq:vwm} reduces the watermarking problem to the
-construction of the signal $s_{K,m}(x,t)$. We first give a general
-formulation.
+We specify messages through keyed signals $s_{K,m}(x,t)$ in
+\eqref{eq:vwm}.
 
 Let $m \in \mathcal{M}$ be a message from a set of
-$|\mathcal{M}| := 2^L$ possible messages, and let $K$ be a secret key.
+$|\mathcal{M}| := 2^L$ possible messages, where $L$ is the payload length
+in bits, and let $K$ be a secret key.
 The key defines a codebook through a mapping
 \begin{equation}
 \phi_K : \mathcal{M} \to \mathcal{H},
 \end{equation}
 where $\mathcal{H}$ is a function space over $(x,t)$. The codeword for
 message $m$ is $s_{K,m}(x,t) := \phi_K(m)$. We use the
-$L^2$ norm over the query distribution on $(x,t)$ for $\mathcal H$.
+$L^2$ norm over the query distribution $p_q(x,t)$ for $\mathcal H$:
+\[
+\|s\|_{\mathcal H}^2:=\mathbb E_{(x,t)\sim p_q}\|s(x,t)\|_2^2.
+\]
 
-The design of $s_{K,m}$ must balance three considerations: (i) detectability---the signal must be recoverable from noisy observations
-through a known detection procedure; (ii) quality preservation---the
-signal should avoid a persistent velocity bias and should not measurably
-degrade the generated distribution; and (iii) security---without
-knowledge of the key $K$, the watermark must be unrecoverable beyond chance level.
 
-These considerations are formalized as the following three requirements
-on the codebook.
+To quantify distributional distortion, let $\rho(x,t)$ be the clean-flow
+density and $\|f\|_{\TV}:=\int_{\mathbb R^D}|f(x)|\,dx$ the
+total-variation norm of a signed density. Write $\rho^w_{K,m}$ for the
+density induced by $v_\theta+\epsilon s_{K,m}$ from the same initial
+distribution as the clean flow.
 
 \begin{definition}[Admissible codebook]\label{def:admissible}
-A codebook $\{s_{K,m}\}_{m\in\mathcal{M}}$ is called \textbf{admissible}
-if it satisfies the following conditions.
+A codebook $\{s_{K,m}\}_{m\in\mathcal{M}}$ is \textbf{admissible}
+at strength $\epsilon$ and prescribed terminal-distortion budget
+$\delta_{\mathrm{dist}}>0$, relative to the clean flow, if it satisfies
+the following conditions.
 \begin{enumerate}
-\item \textbf{Zero-mean over time.} For all $m \in \mathcal{M}$ and
-all $x$,
-\begin{equation}
-\int_0^1 s_{K,m}(x,t) \, dt = 0.
+\item \textbf{Bounded distributional drift.} For every $m\in\mathcal M$,
+\begin{equation}\label{eq:admissible-drift}
+\bigl\|\rho^w_{K,m}(\cdot,1)-\rho(\cdot,1)\bigr\|_{\TV}
+\le\delta_{\mathrm{dist}}.
 \end{equation}
 \item \textbf{Message separation.} Distinct messages have distinct
 codewords, with minimum distance
 \begin{equation}
 \Delta_K:=\min_{m\ne m'}\|s_{K,m}-s_{K,m'}\|_{\mathcal H}>0.
 \end{equation}
-\item \textbf{Energy normalization.} There exists a constant $C > 0$
+\item \textbf{Energy normalization.} There exists a constant $E_s > 0$
 such that for all $m \in \mathcal{M}$,
 \begin{equation}
-\|s_{K,m}\|^2 \approx C.
+\|s_{K,m}\|_{\mathcal H}^2 = E_s.
 \end{equation}
 \end{enumerate}
 \end{definition}
 
-Condition~1 centers the temporal carrier: it removes the DC component of
-the watermark, avoids a persistent drift direction, and makes the
-detector recover the signal by demodulating with the known carrier.
-Condition~2 makes messages distinguishable without noise; its minimum
-distance influences finite-query decoding. Pairwise orthogonality is
-one stronger way to separate codewords, not a requirement for every
-code. Condition~3 gives all messages comparable signal energy. These
-conditions are design
-principles that guide our construction; they are neither necessary for
-watermarking in general nor sufficient to guarantee empirical success.
-We validate the practical performance of our construction in
-Section~\ref{sec:experiments}.
+The first condition specifies the desired distributional preservation
+directly. Theorem~\ref{thm:drift-main} gives a sufficient small-strength
+regime using the drift bound proved in Appendix~\ref{app:preservation},
+Theorem~\ref{thm:drift}. The experiments assess quality preservation in
+image and audio feature space. Message separation requires different
+signals for different messages, while energy normalization gives every
+message the same signal energy.
 
 \subsection{Concrete Construction}\label{sec:concrete}
 
-We first present the pairwise-orthogonal construction satisfying
-Definition~\ref{def:admissible}. Normalized random-vector and hypercube
-codebooks are other keyed realizations of the same random-coding
-framework, with different separation geometries; see
-Remark~\ref{rem:alternatives} and Appendix~\ref{app:payload}.
-
-The secret key consists of two components, $K = (P, C)$. Here
+We construct hypercube and orthogonal codebooks. Both map a message to
+a unit codeword, then apply a secret projection and a temporal carrier
+to obtain the watermark signal.
+The secret key is $K = (P, C)$, where $C$ specifies this mapping and
 $P \in \mathbb{R}^{D \times k}$ is a semi-orthogonal projection matrix
 satisfying $P^T P = I_k$, generated by QR decomposition of a random matrix
-seeded by $K$. This maps from the $D$-dimensional velocity space to a
-$k$-dimensional latent code space. The component
-$C = \{c_m\}_{m \in \mathcal{M}}$ is a codebook of $|\mathcal{M}| = 2^L$
-unit vectors in $\mathbb{R}^k$ such that each message maps to a distinct
-codeword. When $2^L\leq k$, QR decomposition yields pairwise orthogonal
-codewords. For $2^L>k$, the explicit-codebook experiments use normalized
-independently sampled vectors, which are not pairwise orthogonal. The
-implicit hypercube uses $L$ orthonormal code-space axes whose ambient
-velocity directions $Pe_j$ are randomized by the same secret projection
-$P$. Thus all three constructions are keyed random codes, although
-their codeword geometries differ. The hypercube construction is
-specified in Appendix~\ref{app:payload}.
+seeded by the key. It maps a codeword $c_m\in\mathbb R^k$ to the
+$D$-dimensional velocity direction $Pc_m$ without changing its norm.
+
+The hypercube encoding assigns each bit to a signed coordinate.
+For an $L$-bit message $m=(m_1,\ldots,m_L)$ with $L\leq k$, let
+$e_1,\ldots,e_L$ be the first $L$ standard basis vectors in
+$\mathbb R^k$ and set
+\begin{equation}\label{eq:hypercube-codeword}
+c_m=\frac{1}{\sqrt L}\sum_{j=1}^L(2m_j-1)e_j.
+\end{equation}
+Each bit selects the sign of one coordinate; the factor $1/\sqrt L$
+gives unit energy. The $2^L$ codewords are represented implicitly by
+these axes, and decoding reads the signs of the demodulated coordinates.
+The ambient directions $Pe_j$ are secret-key dependent. This encoding
+supports $L$ bits whenever $L\leq k$, without storing or searching
+$2^L$ codewords.
+
+The orthogonal encoding instead assigns a separate direction to each
+message. When $2^L\leq k$, QR decomposition of $2^L$ Gaussian-sampled vectors
+in $\mathbb R^k$ produces unit codewords with
+$\langle c_m,c_{m'}\rangle=0$ for $m\ne m'$. Each message is assigned
+one of these codewords and decoded by maximum correlation.
+This encoding supports at most $\lfloor\log_2 k\rfloor$ bits.
 
 Throughout the paper, let
 \begin{equation}
@@ -347,55 +308,93 @@ message $m$ as
 \begin{equation}\label{eq:watermark_signal}
 s_{K,m}(x,t) = \alpha(t) \cdot P c_m.
 \end{equation}
-The signal separates naturally into a spatial component $P c_m$, which
-embeds the codeword into the velocity space, and a temporal carrier
-$\alpha(t)$. The zero mean of $\alpha$ removes any constant velocity
-offset, while its known phase lets the detector use matched filtering
-through synchronous demodulation. It is therefore a detection-centering
-choice, not by itself a proof of distribution preservation. The following
-theorem verifies that this construction
-satisfies all requirements.
+The keyed direction $P c_m$ carries the message, while $\alpha(t)$
+enables synchronous demodulation.
 
-\begin{theorem}[Verification of design properties]\label{thm:properties}
-The construction~\eqref{eq:watermark_signal} satisfies the three conditions
-of Definition~\ref{def:admissible}.
-\end{theorem}
+\begin{proposition}[Signal energy and separation]\label{prop:energy-sep}
+For either encoding above, the signal in \eqref{eq:watermark_signal}
+has energy $E_s = 1/2$ and minimum separation
+\[
+\Delta_K = \begin{cases}
+1, & \text{orthogonal code},\\
+\sqrt{2/L}, & \text{hypercube code}.
+\end{cases}
+\]
+\end{proposition}
+
 \begin{proof}
-We verify each condition.
-\begin{enumerate}
-\item \textbf{Zero-mean over time:}
-$\int_0^1 s_{K,m}(x,t) dt = P c_m \int_0^1 \alpha(t) dt = 0$.
-\item \textbf{Message separation:}
-Since $P^T P=I_k$ and the codewords are orthonormal,
-$\|s_{K,m}-s_{K,m'}\|_{\mathcal H}^2
-=\mathbb E_t[\alpha(t)^2]\|P(c_m-c_{m'})\|_2^2=1$
-for distinct messages; hence $\Delta_K=1$.
-\item \textbf{Energy normalization:}
-$\|s_{K,m}\|^2 = \frac{1}{2} \|P c_m\|^2 = \frac{1}{2}$ for all $m$,
-since $P$ preserves norms and $\|c_m\| = 1$.
-\end{enumerate}
+Since $P^TP = I_k$ and $\mathbb{E}[\alpha^2] = 1/2$,
+$\|s_{K,m}\|^2 = \tfrac12\|Pc_m\|^2 = \tfrac12$, giving $E_s = 1/2$.
+For separation,
+$\|s_{K,m}-s_{K,m'}\|^2 = \tfrac12\|c_m-c_{m'}\|^2$.
+Orthogonal codewords give $\|c_m-c_{m'}\|^2 = 2$, hence signal
+distance $1$. For hypercube messages with Hamming distance $h$,
+$\|c_m-c_{m'}\|^2 = 4h/L$, hence signal distance $\sqrt{2h/L}$, whose
+minimum over $h\ge1$ is $\sqrt{2/L}$.
 \end{proof}
 
-\begin{remark}\label{rem:alternatives}
-This construction is one instance of a broader class. Alternative choices
-include different carrier functions (e.g., $\cos(2\pi t)$, $\sin(4\pi t)$,
-wavelet-based carriers), learned projections instead of random $P$, or
-sparse codes instead of orthogonal codes. Preliminary
-experiments with frequency- and time-division multiplexing did not improve
-capacity over the single-carrier design (see
-Appendix~\ref{app:multiplexing}); we leave a systematic investigation of
-multi-carrier schemes to future work.
-\end{remark}
+\subsection{Distributional Preservation}\label{sec:preservation}
+
+The remaining design property is bounded distributional drift, which
+requires the transport analysis below. Let
+$\mathcal{T}_{1\leftarrow r}f$ denote the terminal signed density
+obtained by transporting an integrable signed density $f$ from time
+$r$ to time $1$ under the clean field $v_\theta$, i.e., solving
+$\partial_t g_t+\nabla_x\!\cdot(g_t v_\theta)=0$ on $[r,1]$ with
+$g_r=f$. Its maximal amplification is assumed finite and defined by
+\begin{equation}\label{eq:transport-amplification}
+M_T:=\sup_{0\le r\le1}\sup_{f\ne0}
+\frac{\|\mathcal{T}_{1\leftarrow r}f\|_{\TV}}{\|f\|_{\TV}}<\infty.
+\end{equation}
+The constant $M_T$ is defined by the clean field $v_\theta$ and does
+not depend on the watermark strength $\epsilon$, the key, or the
+message.
+
+\begin{theorem}[Bounded distributional drift]\label{thm:drift-main}
+Assume uniform query time, either encoding of
+Section~\ref{sec:concrete}, and the regularity of
+Theorem~\ref{thm:drift} in Appendix~\ref{app:preservation}. For each
+message, the induced terminal density obeys
+\begin{equation}
+\bigl\|\rho^w_{K,m}(\cdot,1)-\rho(\cdot,1)\bigr\|_{\TV}
+\le\epsilon M_T\int_0^1
+\bigl\|\nabla\!\cdot(\rho(\cdot,r)s_{K,m}(\cdot,r))\bigr\|_{\TV}\,dr
++O(\epsilon^2),
+\end{equation}
+where the $O(\epsilon^2)$ term has TV norm bounded by a constant times
+$\epsilon^2$ as $\epsilon\to0$. If the forcing integrals are finite for
+all messages, then for any fixed $\delta_{\mathrm{dist}}>0$ the
+codebook is admissible for sufficiently small $\epsilon>0$.
+\end{theorem}
+
+\begin{proof}
+In Appendix~\ref{app:preservation}, the linearized continuity equation
+\eqref{eq:linearized-continuity} identifies
+$-\nabla\!\cdot(\rho s_{K,m})$ as the first-order density forcing.
+Transporting this forcing to time $1$ and applying the TV norm gives
+\eqref{eq:general-drift-bound} in Theorem~\ref{thm:drift}.
+The linear term in this bound and the higher-order $O(\epsilon^2)$ term
+both tend to zero as $\epsilon\to0$. Because the message set is finite
+and every forcing integral is finite, a common sufficiently small
+$\epsilon$ makes the full bound at most $\delta_{\mathrm{dist}}$ for
+every message, establishing \eqref{eq:admissible-drift}.
+\end{proof}
+
+The carrier $\alpha(t)=\sin(2\pi t)$ has zero mean, which cancels the
+time-invariant component of the transported density forcing
+(Corollary~\ref{cor:zero-mean-gap}). The time-varying component is
+bounded by the drift analysis in Appendix~\ref{app:preservation}.
 
 \subsection{Watermarked Training}
 
 We now describe how the watermark is embedded during flow matching
 training. Given a training pair $(x_0, x_1)$ and interpolated state
 $x_t = (1-t)x_0 + t x_1$, the standard flow matching target is
-$u = x_1 - x_0$. We modify this to include the watermark:
+$U=x_1-x_0$. The clean population velocity is
+$u(x,t)=\mathbb E[U\mid x_t=x,t]$. We modify the sampled target as
 \begin{equation}
-\tilde{v}(x_t, t) = u + \epsilon_0 \cdot s_{K,m}(x_t, t)
-= u + \epsilon_0 \sin(2\pi t) \cdot P c_m,
+\tilde{v} = U + \epsilon_0 \cdot s_{K,m}(x_t, t)
+= U + \epsilon_0 \sin(2\pi t) \cdot P c_m,
 \end{equation}
 where $\epsilon_0 > 0$ is the nominal perturbation amplitude applied
 during training. The effective watermark strength $\epsilon$ in \eqref{eq:vwm} may differ from $\epsilon_0$,
@@ -405,10 +404,10 @@ $\epsilon$.
 
 The watermarked model $v_\theta$ is optimized with a combined objective:
 \begin{equation}\label{eq:loss}
-\mathcal{L}(\theta) = \underbrace{\mathbb{E}_{x,t}\left[\|v_\theta(x,t)
-- \tilde{v}(x,t)\|^2\right]}_{\mathcal{L}_{\text{vel}}}
-+ \lambda \cdot \underbrace{\mathbb{E}_{x,t}\left[-\sin(2\pi t) \cdot
-\langle P^T v_\theta(x,t), c_m \rangle\right]}_{\mathcal{L}_{\text{wm}}},
+\mathcal{L}(\theta) = \underbrace{\mathbb{E}_{x_0,x_1,t}\left[\|v_\theta(x_t,t)
+- \tilde{v}\|^2\right]}_{\mathcal{L}_{\text{vel}}}
++ \lambda \cdot \underbrace{\mathbb{E}_{x_0,x_1,t}\left[-\sin(2\pi t) \cdot
+\langle P^T v_\theta(x_t,t), c_m \rangle\right]}_{\mathcal{L}_{\text{wm}}},
 \end{equation}
 where $\lambda > 0$ balances the two terms. The first term
 $\mathcal{L}_{\text{vel}}$ ensures the model learns the watermarked
@@ -416,7 +415,7 @@ velocity field. The second term $\mathcal{L}_{\text{wm}}$ directly rewards the m
 target codeword $c_m$ (see Section~\ref{sec:detection}). The following proposition shows how these two terms combine to
 determine the effective watermark strength.
 
-\begin{proposition}[Optimal predictor under the watermark objective]
+\begin{proposition}[Population minimizer of the watermark objective]
 \label{prop:optimal_predictor}
 Assume expectations are finite and optimization is performed over all
 square-integrable vector fields
@@ -433,69 +432,24 @@ u(x,t)
 \end{proposition}
 
 \begin{proof}
-Since the objective is separable over $(x,t)$, it suffices to minimize the
-pointwise integrand
+Condition on $x_t=x$ and $t$. For a deterministic predicted velocity
+$v$, the conditional expected objective differs by a constant from
 \begin{equation}
-\ell(v)
-=
-\|v-\tilde v\|^2
--
-\lambda \sin(2\pi t)\langle P^T v,c_m\rangle.
+\ell(v)=\|v-u(x,t)-\epsilon_0\alpha(t)Pc_m\|_2^2
+-\lambda\alpha(t)\langle v,Pc_m\rangle.
 \end{equation}
-
-Using the identity
-\[
-\langle P^T v,c_m\rangle
-=
-\langle v,Pc_m\rangle,
-\]
-the gradient with respect to $v$ is
-\begin{equation}
-\nabla_v \ell(v)
-=
-2(v-\tilde v)
--
-\lambda \sin(2\pi t)Pc_m.
-\end{equation}
-
-Setting the gradient to zero yields
-\begin{equation}
-v^\star
-=
-\tilde v
-+
-\frac{\lambda}{2}\sin(2\pi t)Pc_m.
-\end{equation}
-
-Substituting
-\[
-\tilde v
-=
-u+\epsilon_0 \sin(2\pi t)Pc_m
-\]
-gives
-\begin{align}
-v^\star(x,t)
-&=
-u(x,t)
-+
-\left(
-\epsilon_0+\frac{\lambda}{2}
-\right)
-\sin(2\pi t)Pc_m.
-\end{align}
-
-Strict convexity of the quadratic term implies uniqueness.
+Its gradient is
+$2(v-u-\epsilon_0\alpha(t)Pc_m)-\lambda\alpha(t)Pc_m$.
+Setting this gradient to zero gives the stated minimizer. The
+quadratic is strictly convex, so the minimizer is unique almost
+everywhere under the training distribution.
 \end{proof}
 
 \begin{remark}
-Proposition~\ref{prop:optimal_predictor} gives the population minimizer
-with effective watermark strength $\epsilon_0 + \lambda/2$. The empirical
-detection scores (Table~\ref{tab:separation}) exceed this predicted value,
-which is expected: the parametric model $v_\theta$ trained with finite data and stochastic optimization does not exactly recover the population
-optimum, and may allocate additional capacity to the watermark signal
-beyond the level predicted by the unconstrained population objective.
-Understanding this gap quantitatively is left to future work.
+The effective strength $\epsilon_0+\lambda/2$ in
+Proposition~\ref{prop:optimal_predictor} describes the unconstrained
+population minimizer. Finite data, model parameterization, and stochastic
+optimization can change the strength learned in practice.
 \end{remark}
 
 \begin{algorithm}[t]
@@ -504,10 +458,10 @@ Understanding this gap quantitatively is left to future work.
 \begin{algorithmic}[1]
 \State \textbf{Input:} Training pairs $(x_0, x_1)$, key $K = (P, C)$, message $m$, 
 \State \hspace{\algorithmicindent} watermark strength $\epsilon_0$, loss weight $\lambda$
-\State Sample interpolation $x_t = (1-t)x_0 + t x_1$ and ground-truth velocity $u = x_1 - x_0$
+\State Sample interpolation $x_t=(1-t)x_0+tx_1$ and conditional target $U=x_1-x_0$
 \State Retrieve codeword $c_m$ from codebook $C$
 \State Define time-modulated watermark: $s(x,t) \leftarrow \sin(2\pi t) \cdot P c_m$
-\State Define watermarked training target: $\tilde{v}(x_t,t) \leftarrow u + \epsilon_0 \, s(x_t,t)$
+\State Define watermarked training target: $\tilde{v}(x_t,t) \leftarrow U + \epsilon_0 \, s(x_t,t)$
 \State Initialize model $v_\theta$
 \For{each training step}
     \State Sample batch $\{(x_t^{(i)}, t^{(i)}, \tilde{v}^{(i)})\}_{i=1}^B$
@@ -531,165 +485,155 @@ black-box query access to $v$.
 
 We estimate the watermark signature via synchronous demodulation. Given
 $N$ random query points $(x_i, t_i)$, the signature is computed as
-\begin{equation}
+\begin{equation}\label{eq:detection}
 \hat{s} = \frac{1}{N}\sum_{i=1}^N \sin(2\pi t_i) \cdot P^T v(x_i, t_i).
 \end{equation}
 This estimator combines projection into the latent code space with
 synchronous demodulation of the temporal carrier. The multiplication by
 $\sin(2\pi t_i)$ extracts the time-coherent component while averaging out
-background variation uncorrelated with the carrier, since
-$\mathbb{E}[\sin(2\pi t)] = 0$.
+background variation when its demodulated projection has zero mean
+(Assumption~\ref{ass:uncorrelated}). The carrier's zero time average
+alone does not ensure this property for a time-dependent velocity field.
 
 The embedded message is recovered by maximum-correlation decoding:
 \begin{equation}
 \hat{m} = \arg\max_{m \in \mathcal{M}} \langle \hat{s}, c_m \rangle.
 \end{equation}
-This compares the extracted signature with every codeword. For
-$L>\log_2 k$, exact orthogonality is impossible; with an overcomplete
-codebook, the margin to the nearest competing message can shrink as $L$
-increases.
+For an explicit codebook, decoding compares all correlations. For the
+hypercube, the same maximization reduces to reading the sign along each
+bit axis, so no enumeration is needed. Codeword separation can shrink
+as payload grows even when the total signal energy is unchanged.
 
 \begin{algorithm}[t]
 \caption{Watermark Detection via Synchronous Demodulation}
 \label{alg:detection}
 \begin{algorithmic}[1]
-\State \textbf{Input:} Model $v$ to test, key $K = (P, C)$, number of queries $N$
-\State Sample $N$ random points: $(x_i, t_i) \sim \mathcal{N}(0, 4I_D) \times \text{Uniform}(0,1)$
+\State \textbf{Input:} Model $v$, key $K=(P,C)$, query count $N$, distribution $p_q(x,t)$
+\State Sample $(x_i,t_i)\sim p_q$ independently, with uniform marginal query time
 \State Query model: $y_i \leftarrow v(x_i, t_i)$ for $i = 1, \dots, N$
 \State Project to code space: $z_i \leftarrow P^T y_i \in \mathbb{R}^k$
 \State Demodulate with carrier: $d_i \leftarrow \sin(2\pi t_i) \cdot z_i$
 \State Compute signature: $\hat{s} \leftarrow \frac{1}{N}\sum_{i=1}^N d_i \in \mathbb{R}^k$
 \State Decode message: $\hat{m} \leftarrow \arg\max_{m \in \mathcal{M}} \langle \hat{s}, c_m \rangle$
-\State \textbf{Output:} Decoded message $\hat{m}$ and confidence score $\max_m \langle \hat{s}, c_m \rangle$
+\State \textbf{Output:} Decoded message $\hat{m}$ and correlation score $\max_m \langle \hat{s}, c_m \rangle$
 \end{algorithmic}
 \end{algorithm}
 
-The effectiveness of the detector follows from the structure of the
-watermark. Under a watermarked model, the demodulated signature
-concentrates around a scaled version of the embedded codeword; under a
-clean model, it remains near zero. A formal analysis of the expected
-response and convergence rate is provided in the proof of
-Theorem~\ref{thm:capacity} (Appendix~\ref{app:capacity_proof}). In
-summary, $\mathbb{E}[\hat{s}] = \frac{\epsilon}{2} c_m$ for watermarked
-models and $\mathbb{E}[\hat{s}] = 0$ for clean models, with estimation
-error $O(1/\sqrt{N})$.
+Under the additive-signal model, uniform query time, and the zero-mean
+background and finite-variance assumptions in
+Appendix~\ref{app:capacity_proof}, the signature has expectation
+$\mathbb{E}[\hat{s}]=\frac{\epsilon}{2}c_m$ for a watermarked model
+and zero for a clean model, with estimation error $O(1/\sqrt N)$.
+The appendix derives these conditional statements; trained models can
+have nonzero clean-background projections.
 
 \subsection{Information Carried by the Demodulated Channel}
 
 The projected velocity signature defines a noisy channel whose input is
-one of the chosen message codewords. A channel-capacity expression alone
-does not specify the performance of a particular finite codebook.
+one of the chosen message codewords. The nominal signaling space is the
+$k$-dimensional subspace $\mathrm{span}(P)$. Because the velocity field
+is produced by a nonlinear network, the response to training is not
+confined to $\mathrm{span}(P)$, and the dimension the network
+effectively uses can be smaller than $k$. The capacity below is for the
+nominal channel.
 
-\begin{theorem}[Finite-codebook information bound]
+The demodulated signature can be approximated by a $k$-dimensional
+Gaussian channel: the background average satisfies a central limit
+theorem, and the carrier average converges to $1/2$ by the law of large
+numbers. Appendix~\ref{app:capacity_proof} derives this approximation.
+
+\begin{theorem}[Capacity of the demodulated channel]
 \label{thm:capacity}
 Let $M$ be drawn from a finite message set and let $c_M\in\mathbb R^k$
-be its unit-norm codeword. Assume the demodulated signature is described
-by the additive Gaussian surrogate
+be its unit-norm codeword. The limiting Gaussian channel for the
+demodulated signature is
 \begin{equation}
 \hat{s} = \frac{\epsilon}{2}c_M+\xi,\qquad
 \xi\sim\mathcal N(0,\Sigma/N),
 \end{equation}
-with $\xi$ independent of $M$ and $\Sigma$ positive definite. Writing
-$Q=\operatorname{Cov}(c_M)$, the information conveyed by this codebook
-obeys, in nats,
+with $\xi$ independent of $M$ and $\Sigma$ a positive-definite noise
+covariance before averaging over $N$ queries. Maximizing over all codeword covariances $Q:=\operatorname{Cov}(c_M)$ under the average unit-power constraint
+$\operatorname{tr}Q\le 1$, the corresponding Gaussian channel has capacity
 \begin{equation}
-I(M;\hat{s})\leq
-\min\!\left\{H(M),\;
+\mathcal{C}
+=
+\max_{\substack{Q\succeq 0\\ \operatorname{tr}Q\le 1}}
 \frac12\log\det\!\left(I_k+
-\frac{N\epsilon^2}{4}\Sigma^{-1/2}Q\Sigma^{-1/2}\right)\right\}.
+\frac{N\epsilon^2}{4}\Sigma^{-1/2}Q\Sigma^{-1/2}\right).
 \end{equation}
-The Gaussian-input capacity under the same unit total-power constraint
-is obtained by maximizing the log-determinant over positive semidefinite
-input covariances $Q$ with $\operatorname{tr}Q\leq1$; it is an upper
-bound, not the achieved rate of the finite codebook.
 \end{theorem}
 
 \begin{proof}
 See Appendix~\ref{app:capacity_proof}.
 \end{proof}
 
-The projection dimension $k$ specifies the available signaling space.
-The codebook determines how messages occupy that space, represented in
-the theorem by $Q=\operatorname{Cov}(c_M)$; the projected velocity noise
-enters through $\Sigma$. Their joint spectrum sets the Gaussian bound
-at a given query budget. For an explicit pairwise-orthogonal codebook,
-at most $k$ messages can occupy $\mathbb R^k$, corresponding to
-$\log_2 k$ bits. This is why the common $k=32$, five-bit experiment
-uses 32 orthogonal codewords. The longer-payload explicit-codebook
-runs in Table~\ref{tab:app-payload} place more codewords in the same
-space and therefore relax pairwise orthogonality.
+The maximum over all input covariances $Q$ can be attained by water-filling over the
+eigenvalues of $\Sigma$~\cite{cover1999elements}. For uniform hypercube messages and isotropic noise
+$\Sigma=\sigma^2 I_k$, sign decoding gives exact-message recovery
+\begin{equation}\label{eq:hypercube-exact-recovery}
+P_{\mathrm{exact}}(L)
+=\left[\Phi\!\left(\frac{\epsilon\sqrt N}{2\sigma\sqrt L}\right)\right]^L,
+\end{equation}
+where $\Phi$ is the standard-normal CDF
+(Appendix~\ref{app:hypercube-scaling}). At fixed $N$, $\epsilon$, and
+$\sigma$, this probability decreases with $L$: each bit receives less
+energy, and all $L$ decisions must succeed.
 
-The hypercube instead assigns one orthonormal axis to each bit:
-$c_m=L^{-1/2}\sum_{j=1}^L(2m_j-1)e_j$, with $L\leq k$.
-It places $2^L$ distinct, generally nonorthogonal codewords on these
-$L$ axes. Under uniformly distributed messages,
-$Q=L^{-1}\sum_{j=1}^Le_je_j^T$. Thus increasing $L$ uses more of the
-available dimensions while dividing unit codeword energy among more
-bit coordinates. For isotropic noise $\Sigma=\sigma^2I_k$, the
-theorem gives the Gaussian bound
-$\frac L2\log(1+N\epsilon^2/(4L\sigma^2))$, capped by the message
-entropy $L\log2$. The bound connects $k$, code geometry, noise, and
-query budget; observed recovery additionally depends on the discrete
-constellation and decoder. Although $Q$ follows from each codebook,
-we do not estimate the projected noise covariance $\Sigma$ for the
-trained models; the payload sweeps therefore test this tradeoff
-empirically rather than fitting the bound.
+The two codebooks of Section~\ref{sec:concrete} distribute energy
+differently. For uniform messages, the orthogonal codebook at $2^L=k$
+has second moment $\mathbb E[c_Mc_M^T]=I_k/k$ and covariance
+$Q=I_k/k-\bar c\bar c^T$, where
+$\bar c=k^{-1}\sum_{m\in\mathcal M}c_m$.
+The hypercube has zero mean and covariance
+$Q=L^{-1}\sum_{j=1}^Le_je_j^T$.
+For isotropic noise, $I_k/k$ is the maximizing covariance in the
+Gaussian capacity expression; finite-codebook decoding additionally
+depends on codeword geometry. Section~\ref{sec:experiments} varies $L$
+at fixed $k$, $N$, and nominal signal strength to test the qualitative
+payload effect in \eqref{eq:hypercube-exact-recovery}.
 
-\subsection{Security Analysis}\label{sec:security_analysis}
+\section{Security Analysis}\label{sec:security_analysis}
 
-\paragraph{Verification and attack goals.}
-The object under verification is a model's velocity field $w(x,t)$, not
-an individual generated image. The verifier holds $K=(P,C)$ and has
-oracle access to $w(x,t)$. Algorithm~\ref{alg:detection} returns a
-decoded message $\hat m_K(w)$ and a score; its argmax always returns
-some message, even for a clean model. For a prespecified key $K$ and
-target message $m$, define the exact-match ownership decision
-$D_{K,m}(w)=\mathbf{1}\{\hat m_K(w)=m\}$. The reported clean false-positive
-rate is the fraction of clean-model trials for which $D_{K,m}=1$;
-watermarked exact-message recovery is the corresponding acceptance
-rate on the marked model. This is an empirical false-positive rate for
-that fixed-target rule, not for arbitrary-key or multiple-message
-searches. We call an attack successful at \emph{unauthorized decoding}
-if an adversary without $K$ recovers $m$; at \emph{removal} if it
-produces a modified model $w'$ that preserves useful generation quality
-but satisfies $\hat m_K(w')\ne m$; and at \emph{forgery} if it produces
-a model without the owner's watermark for which $\hat m_K(w')=m$.
-Recovering $K$ (or an equivalent decoding key) is a separate, stronger
-key-recovery goal. A service exposing only generated images does not
-provide the velocity queries required by this verifier. A deployment
-with multiple ownership claims must account for the number of keys
-and messages tested; a score threshold may further trade false
-positives against missed detections.
+Given the secret key $K$, the verifier extracts an unknown message from
+velocity queries by synchronous demodulation (Section~\ref{sec:detection}).
+Security concerns the
+information available to a party without the key and the persistence
+of the encoded message when the model is modified or copied. We first
+specify this setting, then analyze key identifiability and the effects
+of model modification and transfer.
 
-These goals mirror the removal and false-attribution questions in
-generative watermarking, but the attacked object differs. Tree-Ring
-encodes a fingerprint in the sampling noise and detects it from
-generated images~\cite{wen2023tree}; Stable Signature embeds a signal
-through a fine-tuned decoder and likewise verifies
-images~\cite{fernandez2023stable}. An attack using a public autoencoder
-has weakened Tree-Ring detection in images~\cite{lin2025crack}, but
-image editing or inversion does not directly test our velocity-field
-verifier. Model modification is a closer analogue: fine-tuning has
-been used to remove Stable Signature while retaining image
-quality~\cite{hu2024unstable}. Image-level false attribution has also
-been demonstrated against semantic diffusion watermarks~\cite{muller2025forgery};
-for our model-level claim, forgery instead concerns a model that passes
-the keyed velocity-query test.
+\subsection{Threat Model}
 
-For a fixed embedded message $m$, write $u=P c_m\in\mathbb{R}^D$.
-Even if the attacker estimates $u$ exactly, the following geometric
-ambiguities remain.
+Following model-ownership watermarking
+formulations~\cite{uchida2017embedding,adi2018turning}, consider an owner
+who embeds a message and releases the marked model while retaining
+the key. A recipient may inspect or modify the released parameters,
+query the model, or train a replacement from its responses. The
+embedding and decoding algorithms are public. The recipient's goals
+are to infer the key or encoded message, or to suppress message
+recovery while preserving useful generation. The available
+observations differ between access to generated samples and access
+to intermediate velocities; this distinction governs transfer to a
+replacement model.
+
+\subsection{Key Identifiability}\label{sec:key-identifiability}
+
+For a fixed embedded message, the carrier multiplies a single ambient
+direction $q=Pc_m$. Even exact knowledge of $q$ leaves a family of
+compatible projections and codebooks. The first result characterizes
+the freedom in choosing the projected subspace; the second
+characterizes equivalent coordinate systems within that subspace.
 
 \begin{proposition}[Single-message subspace ambiguity]
 \label{prop:subspace_search}
-Suppose $u\ne0$ and $1<k<D$. Knowledge of $u$ alone does not determine
-$\operatorname{span}(P)$. The $k$-dimensional subspaces containing $u$
-form a Grassmannian $\operatorname{Gr}(k-1,D-1)$ of dimension
+For $q\ne0$ and $1<k<D$, the family of $k$-dimensional subspaces
+compatible with the direction $q$ is parameterized by the Grassmannian
+$\operatorname{Gr}(k-1,D-1)$, of dimension
 $(k-1)(D-k)$.
 \end{proposition}
 
 \begin{proof}
-Let $U=\operatorname{span}(u)$. The quotient space
+Let $U=\operatorname{span}(q)$. The quotient space
 $\mathbb{R}^D/U$ has dimension $D-1$. For every $k$-dimensional
 subspace $S$ containing $U$, the quotient $S/U$ is a $(k-1)$-dimensional
 subspace of $\mathbb{R}^D/U$, and conversely the inverse image of
@@ -710,191 +654,354 @@ For each $j$, $(P Q)(Q^T c_j)=P(QQ^T)c_j=P c_j$.
 The time-dependent carrier is therefore identical under both keys.
 \end{proof}
 
-These propositions establish ambiguity of the original key from one
-message's signal. They do not bound the cost of removal or forgery. In
-particular, an attacker with arbitrary velocity-query access could try
-to estimate $u$ directly in output space using the public temporal
-carrier $\sin(2\pi t)$, then subtract its estimate from the responses
-of a copied model or train a surrogate without the signal. The
-unwatermarked velocity also varies with time, so the success of this
-estimator is an empirical question. Knowing $u$ need not reveal the
-message label assigned by the secret codebook.
+Together, these results describe the subspace and coordinate
+ambiguities in recovering the original key from one message direction.
+The correspondence between that direction and its bit string is
+specified by the keyed codebook.
 
-\paragraph{Evidence under the stated access model.}
-The experiments test complementary properties. The random wrong-key
-trial yields $0/50$ correct recoveries across the reported trials
-(Table~\ref{tab:detection}), showing key specificity against an
-independent projection. Clean-model score distributions are separated
-from watermarked scores by at least $8.4\sigma$ in the reported settings
-(Table~\ref{tab:separation}). Across the five-message RF-UNet runs,
-clean-model target-match rates
-were $3.0\pm2.4\%$ on MNIST, $1.0\pm2.0\%$ on CIFAR-10, and
-$3.0\pm4.0\%$ on CelebA-64; these estimate false positives for the
-fixed-target decision above. In the MNIST MLP
-experiment, message
-recovery remains $100\%$ after $10{,}000$ training steps
-(Appendix~\ref{app:persistence}), establishing persistence during
-continued training with the watermark objective active. The measured
-FID ratios in Table~\ref{tab:quality} track utility alongside these
-detection results. In a separate single-message CIFAR-10 RF-UNet sweep,
-recovery is $80\%$ at $16$ velocity queries and $100\%$ from $32$ to
-$4{,}096$ queries (20 trials per budget), describing sensitivity to the
-verifier's query budget rather than to model modification.
+\subsection{Removal and Transfer}\label{sec:transfer}
 
-These observations support keyed recovery and persistence under the
-tested training procedure. Clean continuation after embedding is a
-different, directly relevant model-modification test: the released
-\texttt{flow-unet-finetune} protocol resumes training without the
-watermark loss and measures message recovery and FID after
-$0$, $100$, $500$, and $1{,}000$ steps. Its outcomes should be reported
-once those runs are complete. For LoRA deployments, verification applies
-to the composed base model and adapter; distributing the adapter
-separately also permits a recipient to revert to the unwatermarked base.
-Neither the wrong-key trial nor watermark-aware continuation measures
-adaptive signal estimation or forged ownership claims.
+Key identifiability and removal resistance concern different objects:
+the original key can remain ambiguous while the combined signal
+direction is estimable. With the public carrier $a(t)=\sin(2\pi t)$, a recipient can estimate
+the carrier-aligned component of the marked velocity by least-squares
+regression onto $a(t)$:
+\begin{equation}\label{eq:carrier-removal}
+\widehat r=\frac{\sum_i a(t_i)v_w(x_i,t_i)}{\sum_i a(t_i)^2},
+\qquad v_\alpha(x,t)=v_w(x,t)-\alpha a(t)\widehat r.
+\end{equation}
+This is the same regression that underlies the detector
+\eqref{eq:detection}, without the secret projection $P$ or the
+codebook: the detector estimates the carrier-aligned component in the
+keyed subspace, while \eqref{eq:carrier-removal} estimates it in the
+full ambient space. The estimate therefore contains both the watermark
+and any carrier-correlated background, and it requires no key, no
+codebook, and no clean-model responses.
+When the carrier is unknown, the recipient can instead regress onto a
+candidate $b(t)$ and subtract $\alpha b(t)\widehat r_b$, replacing
+$a$ by $b$ in~\eqref{eq:carrier-removal}. We compare matched sine
+regression with the mismatched candidate $b(t)=\cos(2\pi t)$.
+Full-backbone fine-tuning instead changes the marked field through
+ordinary flow-matching updates. Section~\ref{sec:modification} studies
+parameter modifications, and Section~\ref{sec:removal-transfer} evaluates
+these two removal mechanisms.
+
+Distillation transfers behavior through teacher
+supervision~\cite{hinton2015distilling}. Velocity supervision directly fits the marked field, whereas sample-only supervision constrains only the terminal distribution and may retain part or all of the encoded response. We evaluate both interfaces using exact-message and bitwise recovery in Section~\ref{sec:removal-transfer}.
 
 \section{Experiments}\label{sec:experiments}
 
-We evaluate five-bit message recovery across model families, then study
-payload scaling under fixed codebook settings. Exact-message recovery,
-the clean false-positive rate for a prespecified key and target message,
-and FID ratio are the primary outcomes. Wrong-key recovery and score
-separation are security diagnostics; nearest-competitor margins explain
-payload failures but are not substitutes for exact recovery.
+We evaluate the watermark on fidelity to the clean model, message
+capacity, recovery reliability, clean-model false-positive rate,
+robustness to utility-preserving modification, and verification cost.
+Because existing methods modify different objects, cross-method
+comparison is at the interface level and is summarized in
+Appendix~\ref{app:comparison}.
 
-\subsection{Experimental Setup}
+Image experiments use MLP, RF-UNet, and SD3.5 DiT generators on MNIST,
+CIFAR-10, CelebA-64, or image latents. Audio experiments use an MLP and
+a Transformer with frozen Music2Latent representations~\cite{music2latent},
+and Stable Audio 3 Small Music Base with its own codec~\cite{stableaudio3base}.
+Audio data are six-second FMA-small recordings with the official
+recording-level split~\cite{fmadataset}.
 
-The main comparison uses five messages each on public rectified-flow
-UNets for MNIST, CIFAR-10, and CelebA-64, an SD3.5 medium DiT, and an
-MNIST MLP trained from initialization. The RF-UNet and DiT experiments
-watermark pretrained backbones with LoRA~\cite{hu2022lora}; the MLP
-updates all weights. We use $L=5$ bits and $k=32$ as a common controlled
-setting: an orthogonal codebook can hold exactly $k=32$ codewords, or
-$\log_2 k=5$ bits. This choice makes the cross-model comparison
-interpretable, but is not a claimed payload limit. The separate payload
-sweep tests what happens after relaxing codeword orthogonality.
-The RF-UNet and MLP detectors use $N=4096$ velocity queries, whereas
-SD3.5 uses $N=256$. FID uses real-image references where available;
-CelebA-64 and SD3.5 use base-model references. Accordingly, the rows
-test applicability across settings rather than isolate a causal effect
-of architecture. Additional training and evaluation settings are given
-in Appendix~\ref{app:hyperparams}.
+The main comparisons use five messages per setting and projection
+dimension $k=32$: five-bit orthogonal encoding (O5), 32-bit hypercube
+encoding (H32), and a five-bit hypercube comparison (H5).
+Pretrained generators use LoRA~\cite{hu2022lora}; scratch models update
+all weights. The image MLP uses encoding-specific embedding objectives.
+Recovery and quality results are reported as mean $\pm$ population
+standard deviation across five messages. Appendix~\ref{app:embedding-configurations}
+gives model-specific optimization, query, and sampling protocols.
 
-\subsection{Five-Bit Results}
+\subsection{Recovery and Quality Preservation}
+
+Exact recovery requires reconstruction of the complete embedded bit
+string; bit accuracy is the fraction of correctly decoded bits.
+Clean-model FPR is the fraction of independently sampled uniform message
+claims that match the clean model's decoded message.
+The quality ratio is the marked model's feature distance to a reference
+divided by the clean model's distance to the same reference, with a
+ratio near one indicating preservation. Distances are Inception FID for
+images and Fr\'echet distance in CLAP feature space for
+audio~\cite{clapcheckpoint}; the reference is real images for MNIST and
+CIFAR-10, base-model samples for CelebA-64 and SD3.5, and held-out FMA
+recordings for audio. Table~\ref{tab:main} reports these metrics;
+Appendix~\ref{app:fpr} gives the sampling procedure.
+
+\input{performance_results.tex}
+
+Both encodings recover all evaluated messages across image and audio
+architectures, with quality ratios close to one. We use CIFAR-10 RF-UNet
+for the detailed payload, cost, modification, and transfer studies.
+These studies use 20 recovery trials of 4096 queries per message unless
+otherwise stated, and evaluate FID with 500 images generated in 100
+sampling steps against CIFAR-10 test images. FID ratios are relative to
+the clean base unless otherwise specified.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/sd35_clean_watermarked_trained_v2.pdf}
+\caption{Paired SD3.5 Medium samples from clean (top) and
+hypercube-watermarked (bottom) models, using identical noise seeds and
+the watermark-training prompt, ``a photo of a cat.'' The figure compares
+visual quality at $1024\times1024$.}
+\label{fig:sd35-quality}
+\end{figure}
+
+\subsection{Payload Scalability}
+% BEGIN GENERATED PAYLOAD RESULTS
+
+Table~\ref{tab:payload-main} varies the hypercube payload on CIFAR-10
+RF-UNet at fixed projection dimension $k=128$, nominal signal strength
+$\epsilon=1.5$, and query count $N=4096$.
 
 \begin{table}[t]
 \centering
-\caption{Five-bit, pairwise-orthogonal codeword results across tested
-models. Entries are
-mean $\pm$ standard deviation over five messages. Exact recovery uses
-20 trials per message. Clean FP is the fixed-target exact-match rate on
-an unwatermarked model (uniform-decoder baseline $1/32$). The RF-UNet
-checkpoints are from
-\texttt{WayBob/FlowMatching-Unet-Celeb-64x64}~\cite{waybobflowmatchingunet}
-and use the Rectified Flow formulation of Liu et al.~\cite{liuflow}.
-FID ratios compare watermarked and clean models using real reference
-images where available and base-model reference samples otherwise;
-latent-model samples use the same pretrained decoder.}
-\label{tab:main}
-\small
-\setlength{\tabcolsep}{2pt}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{llclccc}
-\toprule
-Model & Dataset & Params & Train & Exact recovery ($\uparrow$) & Clean FP ($\downarrow$) & FID ratio ($\downarrow$) \\
-\midrule
-RF-UNet & MNIST          & 6.2M  & LoRA & $100.0{\pm}0.0$\% & $3.0{\pm}2.4$\% & $0.974{\pm}0.031$ \\
-RF-UNet & CIFAR-10       & 9.0M  & LoRA & $100.0{\pm}0.0$\% & $1.0{\pm}2.0$\% & $1.010{\pm}0.018$ \\
-RF-UNet & CelebA-64      & 83M   & LoRA & $100.0{\pm}0.0$\% & $3.0{\pm}4.0$\% & $1.073{\pm}0.007$ \\
-DiT (SD3.5 Med.) & SD3.5 latents & 2.25B & LoRA & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $0.995{\pm}0.017$ \\
-MLP (1024) & MNIST          & 3.71M & Full training & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.086{\pm}0.018$ \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-Table~\ref{tab:main} establishes five-bit feasibility across the tested
-models. The FID ratios are relative to each row's own clean reference;
-they should not be ranked across datasets as absolute image-quality
-scores. The MLP clean reference is independently trained, whereas the
-pretrained-model rows share their respective base checkpoints. The
-longer-payload and velocity-scale results are reported in
-Appendix~\ref{app:payload}.
-
-\subsection{Payload Scaling}
-
-\begin{table}[t]
-\centering
-\caption{Payload scaling for the keyed hypercube code on CIFAR-10 RF-UNet
-at fixed projection dimension $k=128$. Each row reports mean $\pm$
-standard deviation across five messages, with 40 detection trials of
-$N=4096$ interpolation queries per message. Clean FP is the
-prespecified-message match rate on the clean model; zero observed
-matches do not establish zero population false-positive probability.
-FID ratios use 500 generated samples and CIFAR-10 test images per run.}
+\caption{Hypercube payload scaling at $k=128$ and $N=4096$.
+Recovery uses 40 trials per message.}
 \label{tab:payload-main}
 \small
 \begin{tabular}{cccc}
 \toprule
-Bits & Exact recovery ($\uparrow$) & Clean FP ($\downarrow$) & FID ratio ($\downarrow$) \\
+Bits & Exact recovery ($\uparrow$) & Bit accuracy ($\uparrow$) & FID ratio ($\downarrow$) \\
 \midrule
-64  & $95.5{\pm}6.6$\% & $0.0{\pm}0.0$\% & $1.052{\pm}0.014$ \\
-128 & $1.5{\pm}3.0$\%  & $0.0{\pm}0.0$\% & $1.044{\pm}0.009$ \\
+64 & $93.5{\pm}8.3$\% & $99.90{\pm}0.13$\% & $1.052{\pm}0.014$ \\
+96 & $16.0{\pm}22.9$\% & $98.18{\pm}0.81$\% & $1.045{\pm}0.014$ \\
+128 & $1.0{\pm}2.0$\% & $97.07{\pm}1.27$\% & $1.044{\pm}0.009$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-At fixed $k=128$, Table~\ref{tab:payload-main} shows a marked loss of
-exact-message recovery from 64 to 128 bits without a comparable change
-in the FID ratio. This identifies a limit of the tested hypercube
-embedding and decoder, not the channel capacity. The separate explicit
-codeword sweep at $k=32$ recovers all tested 5--20-bit messages, but its
-5-bit orthogonal and longer normalized-vector rows differ in codeword
-geometry. Full sweeps and velocity-scale measurements are reported in
-Appendix~\ref{app:payload}.
+The payload trend agrees qualitatively with
+\eqref{eq:hypercube-exact-recovery}: at fixed total signal energy,
+each bit receives amplitude proportional to $L^{-1/2}$, while exact
+recovery requires all $L$ decisions to succeed. Theorem~\ref{thm:capacity}
+relates signal energy, noise covariance, and query count through an
+information bound; the hypercube recovery expression makes the
+payload penalty explicit under isotropic Gaussian noise.
 
-\subsection{Security and Utility}
+Figure~\ref{fig:payload-queries} separates query variation from the
+learned response. The signed margin of bit $j$ is
+$(2m_j-1)\langle\hat{s},e_j\rangle$; a negative margin gives an
+incorrect bit. Increasing query count brings the 64-bit watermark
+close to complete recovery, consistent with reduced estimation noise.
+At larger payloads, some empirical bit means remain incorrectly signed.
+Averaging concentrates the signature around its learned mean, so it
+cannot correct a persistently wrong sign. Together, the recovery and
+margin measurements identify both the per-bit energy penalty and
+systematic errors in the learned response as factors in the observed
+payload limit.
 
-The five-bit results use the prespecified-key exact-match decision in
-Section~\ref{sec:security_analysis}. The earlier scratch-trained models
-also show no assigned-message recovery in 50 random wrong-key trials;
-this limited test does not establish resistance to adaptive attacks.
-Their score distributions and clean-model controls are detailed in
-Appendix~\ref{app:classic-diagnostics}. Across the main five-message
-runs, FID ratios stay near each model's clean reference
-(Table~\ref{tab:main}), with the reference protocol stated in the table
-caption. The single-message CIFAR-10 RF-UNet query sweep reaches 80\%
-recovery with 16 queries and 100\% from 32 to 4,096 queries (20 trials
-per budget); it measures query sensitivity, not model-modification
-robustness.
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/payload_query_scaling.pdf}
+\caption{Query scaling for 64-, 96-, and 128-bit hypercube watermarks
+at fixed $k=128$ and $\epsilon=1.5$. Curves show exact recovery,
+bit accuracy, and the minimum signed bit margin; error bars indicate
+population standard deviation. Each
+query count uses 40 trials per message, with shared query prefixes
+within each trial.}
+\label{fig:payload-queries}
+\end{figure}
 
+% END GENERATED PAYLOAD RESULTS
+\subsection{Embedding and Verification Cost}\label{sec:embedding-cost}
+
+Embedding is cheap. On CIFAR-10 RF-UNet, the five-bit watermarks recover
+all five messages after 30 optimization steps, with an FID ratio of
+$1.077\pm0.044$ at that checkpoint. Verification is also cheap. A
+query-count study on a saved five-bit model finds that 32 queries
+suffice for complete recovery; the main experiments use
+4096 queries as a conservative operating point. The embedding-step
+protocol is given in Appendix~\ref{app:embedding-configurations}.
+
+\subsection{Robustness to Model Modification}\label{sec:modification}
+
+A watermark is useful for ownership verification only if it survives
+modifications that a recipient might apply while keeping the model
+useful. We therefore evaluate clean fine-tuning, magnitude pruning, and
+simulated quantization on five-bit CIFAR-10 RF-UNet watermarks. The
+question is whether the signal persists under
+modifications that preserve generation utility, and whether recovery
+loss is coupled to quality loss. Each condition independently starts
+from the same marked checkpoint. Only the embedding-trained parameters
+are changed: LoRA matrices, time-embedding layers, attention output
+projections, and final output layers. The remaining backbone parameters
+stay fixed.
+
+Clean fine-tuning uses the flow-matching objective with cosine
+learning-rate decay, and each training duration is an independent
+continuation from the same marked model.
+
+\begin{table}[t]
+\centering
+\caption{Restricted-parameter clean fine-tuning of O5 watermarks.}
+\label{tab:clean-finetune}
+\small
+\begin{tabular}{cccc}
+\toprule
+Initial LR & Updates & Exact recovery & FID ratio \\
+\midrule
+--- & 0 & $100.0{\pm}0.0$\% & $1.012{\pm}0.012$ \\
+$10^{-5}$ & 1,000 & $100.0{\pm}0.0$\% & $0.977{\pm}0.007$ \\
+$10^{-5}$ & 5,000 & $100.0{\pm}0.0$\% & $0.954{\pm}0.004$ \\
+\midrule
+$10^{-4}$ & 100 & $100.0{\pm}0.0$\% & $0.986{\pm}0.007$ \\
+$10^{-4}$ & 250 & $100.0{\pm}0.0$\% & $0.953{\pm}0.005$ \\
+$10^{-4}$ & 500 & $100.0{\pm}0.0$\% & $0.955{\pm}0.005$ \\
+$10^{-4}$ & 1,000 & $96.0{\pm}4.9$\% & $0.956{\pm}0.001$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:clean-finetune} shows that the watermark persists under
+fine-tuning at the lower learning rate. At the higher learning rate,
+longer continuation produces partial recovery loss while FID improves.
+Recovery loss therefore need not entail degraded generation quality.
+
+Pruning removes the smallest-magnitude weights globally within this subset.
+Quantization uses signed symmetric rounding and dequantization within
+each saved tensor. At 2 bits, the reconstruction levels are
+$\{-a,0,a\}$, where $a$ is the tensor's maximum absolute weight.
+
+\begin{table}[t]
+\centering
+\caption{Compression of the embedding-trained parameters of O5
+watermarks. Pruning fractions refer to this parameter set.}
+\label{tab:pruning-quantization}
+\small
+\begin{tabular}{lcc}
+\toprule
+Modification & Exact recovery & FID ratio \\
+\midrule
+None & $100.0{\pm}0.0$\% & $1.012{\pm}0.012$ \\
+Magnitude pruning, 25\% & $100.0{\pm}0.0$\% & $1.018{\pm}0.009$ \\
+Magnitude pruning, 50\% & $77.0{\pm}28.6$\% & $1.344{\pm}0.049$ \\
+Simulated quantization, 8-bit & $100.0{\pm}0.0$\% & $1.013{\pm}0.012$ \\
+Simulated quantization, 4-bit & $100.0{\pm}0.0$\% & $1.073{\pm}0.022$ \\
+Simulated quantization, 2-bit & $68.0{\pm}41.2$\% & $2.854{\pm}0.134$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:pruning-quantization} shows persistence under moderate
+pruning and 8-bit and 4-bit quantization. Stronger compression reduces
+recovery together with generation quality. Weight-level marks also
+exhibit persistence under selected parameter
+modifications~\cite{uchida2017embedding}; their verifier reads parameter
+statistics, whereas ours reads velocity responses. The following study
+examines removal that directly targets the carrier or updates the full
+backbone rather than only the saved trainable parameters.
+
+\FloatBarrier
+\subsection{Targeted Removal and Transfer}\label{sec:removal-transfer}
+
+We evaluate O5 and H32. Carrier subtraction uses 16,384 marked-model interpolation
+queries to estimate \eqref{eq:carrier-removal}, with no secret key or
+clean-model subtraction. Verification uses independent queries.
+The mismatched-carrier attack uses $\cos(2\pi t)$ for both regression
+and subtraction; owner verification retains the original sine carrier.
+Full-backbone fine-tuning first merges the LoRA updates into the marked
+weights, preserving the initial velocity field, then applies 1,000
+clean flow-matching updates to all parameters. Both student models use
+the teacher's architecture, initialized from the public clean backbone,
+and train for 1,000 updates:
+the velocity-supervised student fits teacher responses on real-data
+interpolations, while the sample-only student fits flow matching to
+2,000 completed teacher samples. All training uses AdamW with initial
+learning rate $10^{-4}$ and cosine decay.
+Quality evaluation uses balanced class conditions, a balanced test
+reference, and generation noise paired across conditions.
+
+\begin{table}[!htbp]
+\centering
+\caption{Targeted removal and student transfer. FID ratios are
+relative to each unmodified marked teacher. Carrier subtraction uses
+$\alpha=1$.}
+\label{tab:removal-transfer}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+Code & Condition & \shortstack{Exact recovery\\(\%)} & \shortstack{Bit accuracy\\(\%)} & FID ratio \\
+\midrule
+O5 & Marked teacher & $100.0{\pm}0.0$ & $100.00{\pm}0.00$ & $1.000{\pm}0.000$ \\
+& Sine-carrier subtraction & $2.0{\pm}2.4$ & $49.80{\pm}6.01$ & $0.997{\pm}0.008$ \\
+& Cosine-carrier subtraction & $100.0{\pm}0.0$ & $100.00{\pm}0.00$ & $1.000{\pm}0.000$ \\
+& Full-backbone fine-tuning & $6.0{\pm}4.9$ & $50.80{\pm}6.79$ & $0.939{\pm}0.008$ \\
+& Sample-only student & $100.0{\pm}0.0$ & $100.00{\pm}0.00$ & $1.039{\pm}0.006$ \\
+& Velocity-supervised student & $100.0{\pm}0.0$ & $100.00{\pm}0.00$ & $1.000{\pm}0.001$ \\
+\midrule
+H32 & Marked teacher & $100.0{\pm}0.0$ & $100.00{\pm}0.00$ & $1.000{\pm}0.000$ \\
+& Sine-carrier subtraction & $0.0{\pm}0.0$ & $47.25{\pm}2.00$ & $0.999{\pm}0.006$ \\
+& Cosine-carrier subtraction & $100.0{\pm}0.0$ & $100.00{\pm}0.00$ & $1.000{\pm}0.000$ \\
+& Full-backbone fine-tuning & $0.0{\pm}0.0$ & $51.59{\pm}1.88$ & $0.935{\pm}0.010$ \\
+& Sample-only student & $4.0{\pm}2.0$ & $92.09{\pm}1.22$ & $1.040{\pm}0.007$ \\
+& Velocity-supervised student & $100.0{\pm}0.0$ & $100.00{\pm}0.00$ & $1.000{\pm}0.001$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:removal-transfer} distinguishes loss of complete-message
+recovery from loss of bit information. Matched-carrier subtraction and
+full-backbone fine-tuning bring bit accuracy near 50\%, while FID
+remains close to the marked teacher or improves. Thus carrier
+estimation can suppress the mark without identifying its original
+key. Half-strength subtraction preserves complete recovery for both
+encodings, whereas unit-strength subtraction gives near-chance bit accuracy.
+In contrast, mismatched cosine subtraction preserves exact recovery
+for both encodings. Sine and cosine are orthogonal under uniform-time
+sampling, so the subtracted cosine component has zero population
+correlation with the owner's sine carrier.
+
+Velocity-supervised students retain both encodings completely.
+Sample-only transfer is encoding-dependent: O5 remains fully
+recoverable, while H32 retains high bit accuracy despite low
+exact-message recovery. This residual information makes exact recovery
+alone an incomplete measure of removal. For H32, bit decisions
+correspond directly to signed axes; O5 bit accuracy instead depends on
+the assigned labels of its orthogonal codewords. The five messages
+reuse the original key-generation seed and are not independent key
+replications.
+
+These results place the method in a specific setting. It supports
+provenance auditing of redistributed checkpoints, moderately compressed
+or adapted copies, and velocity-supervised students. A hosted-model deployment that exposes velocity queries would allow the same auditing without releasing weights. It does not prevent removal by a recipient who knows the construction: matched-carrier subtraction and full-backbone fine-tuning both suppress recovery while leaving
+generation quality at or below the marked teacher. Removal under
+fine-tuning is not specific to this method, since fine-tuning removes
+output-level and weight-level watermarks as well~\cite{hu2024unstable}; the construction-specific exposure here is carrier subtraction. These results follow from the access model rather than from the
+embedding. An openly released checkpoint can be updated by any
+recipient, and no mark carried by such a model can bound how far.
+The removal results therefore measure what any mark on an open
+checkpoint can promise. The appendix compares the conditions under which other methods are reported to persist or fail.
+
+\FloatBarrier
 \section{Conclusion}
 
-We have presented a method for embedding verifiable, multi-bit messages
-directly into the learned dynamics of flow matching generative models.
-The watermark is a key-dependent perturbation of the velocity field,
-recovered through synchronous demodulation from black-box velocity
-queries, and
-uses a zero-mean temporal carrier to avoid a persistent velocity bias.
+Dynamics-level watermarking encodes a keyed message in the velocity
+field of a flow matching model and recovers it through synchronous
+demodulation. The formulation separates message encoding from the
+architecture of the generator. Its analysis relates code geometry and
+query count to message information, and bounds the distributional
+change induced by the watermark under regularity assumptions.
 
-Five-bit experiments across the tested MLP, RF-UNet, and DiT settings
-show $100\%$ message recovery with FID ratios near each model's clean
-reference. At fixed $k=128$, the longer-payload sweep reveals a
-substantial drop in exact recovery between 64 and 128 bits despite
-similar FID ratios. The limited random wrong-key trials yield no
-correct recoveries. Extending training to
-$10{,}000$ steps does not degrade watermark recovery; a persistence
-analysis is provided in Appendix~\ref{app:persistence}.
+Experiments demonstrate recovery and quality preservation across image
+and audio generators, and characterize payload, embedding cost, and
+verification cost. The modification and transfer studies delimit the
+scope: attribution holds for redistributed checkpoints, moderately
+adapted copies, and velocity-supervised students when velocity queries
+are available, and fails under carrier subtraction or full-backbone
+fine-tuning. Dynamics-level watermarking therefore serves as a
+provenance signal for auditing released model copies, with persistence
+determined by how the recipient modifies or transfers the generator.
 
-Several directions remain open. A rigorous finite-sample analysis of the
-demodulated channel would sharpen the capacity guarantees. The released
-clean-continuation protocol provides a direct next measurement of
-watermark persistence after unmarked fine-tuning. Extending the
-approach to other generative model families is another next step. The dynamics-level perspective
-introduced here, treating the learned velocity field as a continuous
-communication channel, may also prove useful beyond watermarking.
+Extending the update budget would require placing the mark where the
+recipient's update does not act. SleeperMark pursues this by
+disentangling the mark from the part of the model that downstream
+fine-tuning updates; whether a dynamics-level construction can do the
+same is open.
 
-\paragraph{Code availability.}
 Code and experimental configurations are publicly available at:
 \url{https://github.com/ShuchanWang/flow-matching-dynamics-watermarking}.
 
@@ -902,323 +1009,14 @@ Code and experimental configurations are publicly available at:
 \printbibliography
 
 \appendix
-\section{Proof of Theorem~\ref{thm:capacity}}
-\label{app:capacity_proof}
-
-We first state the approximation leading to the additive channel, then
-prove the information bound for an arbitrary finite codebook. The bound
-is conditional on the Gaussian surrogate, not a claim that trained
-watermarks realize an exactly additive channel.
-
-\subsection{Step 1: Approximate Effective Channel}
-
-Given a watermarked model $v_{\theta,K,m}$, we query it at $N$ random
-points $\{(x_i, t_i)\}_{i=1}^N$ drawn i.i.d.~from a sampling distribution
-$p(x,t)$ and compute the signature:
-\begin{equation}
-\hat{s} = \frac{1}{N}\sum_{i=1}^N \sin(2\pi t_i) \cdot P^T v_{\theta,K,m}(x_i, t_i).
-\end{equation}
-
-Decompose the velocity field as
-$v_{\theta,K,m} = v_\theta + \eta_0 + \epsilon \sin(2\pi t) P c_m$,
-where $v_\theta$ is the learned flow, $\eta_0$ represents background
-variation from training stochasticity and model approximation error, and
-$\epsilon \sin(2\pi t) P c_m$ is the watermark signal. Substituting:
-
-\begin{align}
-\hat{s} &= \frac{1}{N}\sum_{i=1}^N \sin(2\pi t_i) P^T [v_\theta(x_i,t_i) + \eta_0(x_i,t_i)] \\
-        &\quad + \frac{\epsilon}{N}\sum_{i=1}^N \sin^2(2\pi t_i) P^T P c_m.
-\end{align}
-
-Since $P^T P = I_k$ by construction, the second term simplifies to:
-\begin{equation}
-\frac{\epsilon}{N}\sum_{i=1}^N \sin^2(2\pi t_i) \cdot c_m.
-\end{equation}
-
-Define the background term for each query:
-\begin{equation}
-z_i := \sin(2\pi t_i) P^T [v_\theta(x_i, t_i) + \eta_0(x_i, t_i)] \in \mathbb{R}^k.
-\end{equation}
-
-We introduce the following assumptions.
-
-\begin{assumption}[Uncorrelated carrier and background]\label{ass:uncorrelated}
-The temporal carrier $\sin(2\pi t)$ is uncorrelated with the background
-velocity field:
-\begin{equation}
-\mathbb{E}_{x,t}[\sin(2\pi t) \cdot P^T(v_\theta(x,t) + \eta_0(x,t))] = 0.
-\end{equation}
-\end{assumption}
-
-The carrier's zero time average does not by itself imply this
-assumption, because the background velocity depends on $t$. The
-near-zero clean-model scores in Table~\ref{tab:separation} provide a
-limited empirical check for the evaluated query distribution.
-
-\begin{assumption}[Independent and identically distributed queries]\label{ass:iid}
-The query points $\{(x_i, t_i)\}_{i=1}^N$ are drawn i.i.d.~from a
-distribution $p(x,t)$ under which the background terms $z_i$ have finite
-second moments.
-\end{assumption}
-
-Assumption~\ref{ass:iid} holds by construction, as queries are sampled
-independently. Under this assumption, the $z_i$ are i.i.d.~random vectors
-with mean $\mathbb{E}[z_i] = \mathbf{0}$ (by Assumption~\ref{ass:uncorrelated})
-and covariance matrix
-\begin{equation}
-\Sigma := \text{Cov}(z_i) = \mathbb{E}[z_i z_i^T] \in \mathbb{R}^{k \times k}.
-\end{equation}
-
-For the watermark term, we have:
-\begin{equation}
-\mathbb{E}[\sin^2(2\pi t)] = \int_0^1 \sin^2(2\pi t) dt = \frac{1}{2}.
-\end{equation}
-By the Law of Large Numbers,
-$\frac{1}{N}\sum_{i=1}^N \sin^2(2\pi t_i) \to \frac{1}{2}$ as $N \to \infty$.
-
-For the background term, we apply the multivariate Central Limit Theorem
-(CLT). Let $\xi := \frac{1}{N}\sum_{i=1}^N z_i$. Under
-Assumptions~\ref{ass:uncorrelated} and~\ref{ass:iid}, as $N \to \infty$:
-\begin{equation}
-\sqrt{N} \xi \xrightarrow{d} \mathcal{N}(0, \Sigma),
-\end{equation}
-where $\xrightarrow{d}$ denotes convergence in distribution. Equivalently,
-for large $N$:
-\begin{equation}
-\xi \approx \mathcal{N}\!\left(0, \frac{\Sigma}{N}\right).
-\end{equation}
-
-\begin{assumption}[Gaussian approximation for finite $N$]\label{ass:gaussian}
-For the query budgets $N$ used in practice, the distribution of $\xi$ is
-well-approximated by $\mathcal{N}(0, \Sigma/N)$.
-\end{assumption}
-
-While the CLT guarantees asymptotic normality under the stated moment
-condition, its accuracy at finite $N$ depends on the distribution of
-$z_i$. We do not formally verify it for the evaluated query budgets.
-
-The empirical average of $\sin^2(2\pi t_i)$ also fluctuates around
-$1/2$ at finite $N$. Neglecting this message-dependent fluctuation
-and approximating the background average by a Gaussian gives the
-surrogate channel used in Theorem~\ref{thm:capacity}:
-\begin{equation}\label{eq:channel_final}
-\boxed{\hat{s} = \frac{\epsilon}{2} c_m + \xi, \quad \xi \sim \mathcal{N}\!\left(0, \frac{\Sigma}{N}\right).}
-\end{equation}
-
-\subsection{Step 2: The Noise Covariance}
-
-The noise covariance $\Sigma$ captures the background velocity variation
-in the projected $k$-dimensional space. Let
-$u(x,t) := \sin(2\pi t)[v_\theta(x,t) + \eta_0(x,t)] \in \mathbb{R}^D$.
-Then:
-\begin{equation}
-\Sigma = P^T \, \mathbb{E}_{x,t}[u(x,t) u(x,t)^T] \, P.
-\end{equation}
-
-\begin{assumption}[Invertible covariance]\label{ass:invertible}
-The projected covariance $\Sigma$ is invertible.
-\end{assumption}
-
-Invertibility does not follow solely from $k\ll D$ or from randomizing
-$P$: it also requires background variation along every projected
-direction. We use it as an assumption in the following bound.
-
-\subsection{Step 3: Finite-Codebook Information Bound}
-
-Let $a=\epsilon/2$, $Z\sim\mathcal N(0,\Sigma/N)$, and
-$Y=a c_M+Z$. For the finite message distribution, put
-$Q=\operatorname{Cov}(c_M)$. Since $Z$ is independent of $M$,
-$\operatorname{Cov}(Y)=a^2Q+\Sigma/N$. Gaussian vectors maximize
-differential entropy at fixed covariance~\cite{cover1999elements}; hence
-\begin{align}
-I(M;Y)
-&=h(Y)-h(Z)\\
-&\leq\frac12\log\frac{\det(a^2Q+\Sigma/N)}{\det(\Sigma/N)}\\
-&=\frac12\log\det\!\left(I_k+
-\frac{N\epsilon^2}{4}\Sigma^{-1/2}Q\Sigma^{-1/2}\right).
-\end{align}
-Also $I(M;Y)\leq H(M)$, proving the first claim. Since every
-codeword has unit norm,
-$\operatorname{tr}Q=1-\|\mathbb E[c_M]\|^2\leq1$.
-Maximizing the Gaussian expression over all positive semidefinite
-$Q$ with trace at most one gives the unit-power Gaussian relaxation;
-the fixed finite codebook need not attain that maximum.
-
-\subsection{Scaling Analysis}
-
-Let $\nu_1,\ldots,\nu_k$ be the eigenvalues of
-$\Sigma^{-1/2}Q\Sigma^{-1/2}$. The Gaussian upper bound is
-$\frac12\sum_j\log(1+N\epsilon^2\nu_j/4)$.
-For fixed positive definite $\Sigma$ and fixed $Q$, its large-$N$
-coefficient is $\operatorname{rank}(Q)/2$, the number of codebook
-directions carrying message variation. This is a property of the relaxed
-Gaussian expression: the finite-alphabet information $I(M;Y)$ is
-always capped by $H(M)$ and approaches that cap as the message
-distributions become distinguishable. At finite $N$, the nonzero
-$\nu_j$ govern how quickly the bound rises. Correlations in projected
-velocity affect these values, but covariance alone does not establish
-the reliability of a particular decoder.
-
-For uniform hypercube messages on $L$ orthonormal axes,
-$Q=L^{-1}\sum_{j=1}^Le_je_j^T$ and $H(M)=L\log 2$. If additionally
-$\Sigma=\sigma^2 I_k$, sign decoding has independent bit-error
-probability $\Phi(-\epsilon\sqrt{N}/(2\sigma\sqrt L))$ under the
-surrogate, where $\Phi$ is the standard-normal CDF. Exact-message
-recovery is then $(1-p_{\rm bit})^L$. This illustrative special case
-shows how exact recovery can decrease with $L$ even though the total
-codeword energy remains one; it is not fitted to the measured models.
-
-\subsection{Relationship to Experiments}
-
-The theorem bounds information in the assumed Gaussian surrogate; it
-does not give an achievable payload for the trained decoder. In our experiments,
-the message size is $L = 5$ bits with $k = 32$ and $N = 4096$. The
-observed statistical separation ($>8.4\sigma$, Table~\ref{tab:separation})
-indicates that the empirical SNR is far above the threshold for reliable
-decoding of 5-bit messages. Appendix Table~\ref{tab:app-payload} extends
-this check to longer payloads on public rectified-flow UNet checkpoints.
-In the additional CIFAR-10 sweep (Table~\ref{tab:app-capacity}), exact
-recovery drops sharply from 64 to 128 bits at fixed $k=128$, while the
-nearest-competitor margin changes sign. This identifies a failure of the
-tested decoder under its stated query protocol, not the
-information-theoretic capacity of the velocity channel. Comparisons
-across $k=32$ and $k=128$ do not isolate payload length because the
-carrier dimension also changes.
-
-\section{Watermark Persistence Under Extended Training}\label{app:persistence}
-
-The 10K-step MNIST MLP results provide evidence that the watermark does
-not fade with extended training. Across all six watermarked models trained
-for $10{,}000$ steps, detection accuracy remains $100\%$. The velocity
-loss decreases from $\sim\!0.41$ (at 5K steps) to $\sim\!0.37$ (at 10K
-steps), while the watermark correlation term stabilizes around
-$3.55$--$3.67$ throughout the second half of training. This indicates that
-the two loss terms $\mathcal{L}_{\text{vel}}$ and $\mathcal{L}_{\text{wm}}$
-reach a stable equilibrium: the model continues to improve its fit to the
-data distribution without suppressing the watermark signal. We attribute
-this to the structure of the watermark perturbation: since
-$s_{K,m}(x,t)$ is orthogonal to the clean velocity field in expectation,
-the two objectives do not directly compete, and the watermark signal is
-maintained as a persistent offset in the learned dynamics.
-
-The watermark correlation term stabilizes despite extended training
-(Table~\ref{tab:separation}). In the 10K-step clean-model evaluation,
-one of 40 trials decoded to a tested message. This is a target-set match,
-not a calibrated watermark-presence false positive.
-
-\section{Capacity and Multiplexing}\label{app:multiplexing}
-
-A natural question is whether message capacity can be increased beyond $k$
-bits by using multiple carrier frequencies (frequency-division) or time
-segments (time-division). We tested this empirically on MNIST and found
-that dividing the channel reduces per-carrier signal strength, degrading
-detection accuracy significantly compared to the single-carrier design.
-
-\begin{table}[h]
-\centering
-\caption{Multiplexing ablation on MNIST. Detection accuracy degrades when
-dividing the channel.}
-\label{tab:multiplexing}
-\begin{tabular}{lccc}
-\toprule
-Method & Carriers/Segments & Bits & Accuracy \\
-\midrule
-Single-carrier & 1 & 5 & 100\% \\
-FDM-2 & 2 & 4 & 75\% \\
-FDM-4 & 4 & 12 & 75\% \\
-TDM-2 & 2 & 4 & 75\% \\
-TDM-4 & 4 & 12 & 58\% \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The fundamental limitation is that dividing the channel among multiple
-carriers reduces the effective signal strength per carrier, as the
-total perturbation budget is shared. This lowers the per-carrier SNR
-and degrades detection accuracy, as observed in our experiments. We therefore adopt the single-carrier design. A rigorous study of multi-carrier random coding in this setting is left to future work.
-
-\section{Generated Samples}\label{app:samples}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{outputs/mnist_lora_results.png}
-\caption{Generated MNIST samples from UNet + LoRA models.
-Top row: real MNIST digits. Second row: clean UNet model.
-Rows 3--5: watermarked LoRA models.}
-\label{fig:samples_mnist_unet}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{outputs/cifar10_lora_results.png}
-\caption{Generated CIFAR-10 samples from UNet + LoRA models.
-Top row: real CIFAR-10 images. Second row: clean UNet model.
-Rows 3--5: watermarked LoRA models.}
-\label{fig:samples_cifar10}
-\end{figure}
-
-\section{Hyperparameters}\label{app:hyperparams}
-
-\begin{table}[h]
-\centering
-\caption{Complete hyperparameter configuration for all experiments.}
-\label{tab:hyperparams}
-\begin{tabular}{lcccc}
-\toprule
-Hyperparameter & MNIST (MLP) & MNIST (MLP 10K) & MNIST (UNet) & CIFAR-10 (UNet) \\
-\midrule
-\multicolumn{5}{c}{\textit{Data}} \\
-\quad Image size & $28 \times 28$ (gray) & $28 \times 28$ (gray) & $28 \times 28$ (gray) & $32 \times 32$ (RGB) \\
-\quad Training samples & $12{,}000$ & $12{,}000$ & $60{,}000$ & $50{,}000$ \\
-\midrule
-\multicolumn{5}{c}{\textit{Architecture}} \\
-\quad Model & 4-layer MLP & 4-layer MLP & UNet & UNet \\
-\quad Hidden size / ch. & $1{,}024$ & $1{,}024$ & 64--256 & 64--256 \\
-\quad Activation & SiLU & SiLU & SiLU & SiLU \\
-\quad LoRA rank & -- & -- & 4 & 4 \\
-\quad LoRA $\alpha$ & -- & -- & 8 & 8 \\
-\midrule
-\multicolumn{5}{c}{\textit{Flow Matching}} \\
-\quad Interpolation & Linear & Linear & Linear & Linear \\
-\quad Training steps (base) & $5{,}000$ & $10{,}000$ & $5{,}000$ & $5{,}000$ \\
-\quad Training steps (WM) & $5{,}000$ & $10{,}000$ & $500$ (LoRA) & $500$ (LoRA) \\
-\quad Batch size & $512$ & $512$ & $512$ & $512$ \\
-\quad Learning rate & $10^{-3}$ & $10^{-3}$ & $10^{-3}$ & $10^{-3}$ \\
-\quad Optimizer & AdamW & AdamW & AdamW & AdamW \\
-\midrule
-\multicolumn{5}{c}{\textit{Watermark}} \\
-\quad Projection dim.\ $k$ & 32 & 32 & 32 & 32 \\
-\quad Message bits $L$ & 5 & 5 & 5 & 5 \\
-\quad Strength $\epsilon_0$ & 0.3 & 0.2 & 0.2 & 0.2 \\
-\quad Loss weight $\lambda$ & 0.02 & 0.018 & 0.01 & 0.01 \\
-\midrule
-\multicolumn{5}{c}{\textit{Detection}} \\
-\quad Query budget $N$ & $4{,}096$ & $4{,}096$ & $4{,}096$ & $4{,}096$ \\
-\quad Query distribution & $\mathcal{N}(0, 4I)$ & $\mathcal{N}(0, 4I)$ & $\mathcal{N}(0, 4I)$ & $\mathcal{N}(0, 4I)$ \\
-\quad Time sampling & $\text{Uniform}(0,1)$ & $\text{Uniform}(0,1)$ & $\text{Uniform}(0,1)$ & $\text{Uniform}(0,1)$ \\
-\midrule
-\multicolumn{5}{c}{\textit{Evaluation}} \\
-\quad Watermarked models & 6 & 6 & 3 & 3 \\
-\quad Clean models & 2 & 2 & 1 & 1 \\
-\quad Trials per model & 20 & 20 & 20 & 20 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
 % ============================================================
 % APPENDIX: PRESERVATION ANALYSIS
 % ============================================================
 \section{Preservation Analysis}
 \label{app:preservation}
 
-This appendix characterizes the effect of the proposed perturbation on
-the generated distribution. The main result is a first-order bound on
-the drift induced by the keyed carrier. Exact endpoint- and
-distribution-preserving constructions are discussed afterward as
-reference regimes that clarify the tradeoff made by the proposed
-watermark. The analysis complements the empirical FID measurements in
-Tables~\ref{tab:quality} and~\ref{tab:main} by identifying the leading
-factors that control distributional change.
+We derive the drift bound used in Definition~\ref{def:admissible}, then
+specialize it to the proposed carrier and compare exact preservation regimes.
 
 % ------------------------------------------------------------
 \subsection{Preliminaries}
@@ -1240,27 +1038,13 @@ density as
 =\rho(\cdot,t)+\epsilon\,\xi(\cdot,t)+O(\epsilon^2),
 \label{eq:density-expansion}
 \end{equation}
-where $\xi$ is the first-order density perturbation. For $0\le s\le
-t\le 1$, let $\mathcal{T}_{t\leftarrow s}$ denote the transport
-operator associated with the homogeneous part of the linearized
-continuity equation around the clean flow. It propagates a density
-perturbation from time $s$ to time $t$ under the clean dynamics $u$.
-We summarize the worst-case terminal amplification of such perturbations
-by
-\begin{equation}
-M_T = \sup_{0\le r\le 1}\|\mathcal{T}_{1\leftarrow r}\|_{\TV\to\TV},
-\label{eq:transport-amplification}
-\end{equation}
-which is finite under the smooth-flow assumptions used below. This is a
-stability quantity for the linearized transport/continuity equation
-rather than a standard flow-matching metric; related stability analyses
-appear in the transport equation
-literature~\cite{diperna1989ordinary,ambrosio2004transport}. In the
-flow-matching settings considered here, the source distribution is a
-full-dimensional Gaussian and the generated distribution is represented
-in the same ambient image or latent space. Thus the clean flow is not
-expected to amplify perturbations through a severe dimensional collapse,
-and the measured FID ratios are consistent with this stable behavior.
+where $\xi$ is the first-order density perturbation. For $0\le s\le t\le 1$, let $\mathcal{T}_{t\leftarrow s}$ denote the
+transport operator associated with the homogeneous part of the
+linearized continuity equation around the clean flow, as used in the
+definition of $M_T$ in \eqref{eq:transport-amplification}. It
+propagates a density perturbation from time $s$ to time $t$ under the
+clean dynamics $u$. This operator controls transport of density perturbations
+under the clean dynamics~\cite{diperna1989ordinary,ambrosio2004transport}.
 
 The proposed perturbation is
 \begin{equation}
@@ -1274,15 +1058,24 @@ and $\epsilon > 0$.
 % ------------------------------------------------------------
 \subsection{First-Order Distribution Drift}
 
-The proposed carrier adds a fixed keyed direction to the velocity field.
-It is therefore natural to analyze the resulting change in the terminal
-density directly. The following bound is the preservation statement used
-for the proposed method.
+We first bound the drift for a general signal $s_{K,m}(x,t)$ that may
+depend on the state $x$, then specialize to the proposed carrier
+$s_{K,m}(x,t) = \alpha(t) P c_m$, which is constant in $x$.
 
 \begin{theorem}[First-order drift bound]
 \label{thm:drift}
-Assume $u$, $\rho$, and $\delta u$ are sufficiently smooth, and write
-$q=P c_m$. Then, for $\delta u(x,t)=\epsilon\alpha(t)q$,
+Assume the regularity conditions on $u$ and $\rho$ under which the
+continuity equation has a unique flow and the transport operator
+$\mathcal{T}_{t \leftarrow s}$ is well defined, and assume that the
+expansion \eqref{eq:density-expansion} holds in total variation. For $\delta u=\epsilon s_{K,m}$,
+\begin{equation}
+\bigl\|\rho^w(\cdot,1)-\rho(\cdot,1)\bigr\|_{\TV}
+\le \epsilon M_T\int_0^1
+\bigl\|\nabla\!\cdot(\rho(\cdot,r)s_{K,m}(\cdot,r))\bigr\|_{\TV}\,dr
++O(\epsilon^2).
+\label{eq:general-drift-bound}
+\end{equation}
+For $s_{K,m}(x,t)=\alpha(t)q$, $q=P c_m$, this specializes to
 \begin{equation}
 \bigl\|\rho^w(\cdot,1) - \rho(\cdot,1)\bigr\|_{\TV}
 \;\le\;
@@ -1295,31 +1088,29 @@ $q=P c_m$. Then, for $\delta u(x,t)=\epsilon\alpha(t)q$,
 
 \begin{proof}
 Let $\rho^\epsilon=\rho^w$ be the density induced by
-$u+\epsilon\alpha(t)q$. In the expansion
+$u+\epsilon s_{K,m}$. In the expansion
 \eqref{eq:density-expansion}, $\xi(\cdot,0)=0$ because the clean and
 perturbed flows use the same initial distribution. Substituting
 \eqref{eq:density-expansion} into the
 continuity equation
 \begin{equation}
 \partial_t\rho^\epsilon
-+\nabla\!\cdot\!\left(\rho^\epsilon(u+\epsilon\alpha(t)q)\right)=0
++\nabla\!\cdot\!\left(\rho^\epsilon(u+\epsilon s_{K,m})\right)=0
 \end{equation}
 and collecting first-order terms in $\epsilon$ gives
 \begin{equation}
 \partial_t\xi+\nabla\!\cdot(\xi u)
 =
--\alpha(t)\nabla\!\cdot(\rho q).
+-\nabla\!\cdot(\rho s_{K,m}).
 \label{eq:linearized-continuity}
 \end{equation}
-Since $q$ is independent of $x$,
-$\nabla\!\cdot(\rho q)=q^\top\nabla\rho$. Duhamel's principle for the
-linear equation \eqref{eq:linearized-continuity} yields
+Duhamel's principle yields
 \begin{equation}
 \xi(\cdot,1)
 =
--\int_0^1 \alpha(r)\,
+-\int_0^1
 \mathcal{T}_{1\leftarrow r}\!\left[
-q^\top\nabla\rho(\cdot,r)
+\nabla\!\cdot(\rho(\cdot,r)s_{K,m}(\cdot,r))
 \right]\,dr .
 \end{equation}
 Therefore
@@ -1332,21 +1123,18 @@ and the triangle inequality gives
 \begin{equation}
 \|\xi(\cdot,1)\|_{\TV}
 \le
-\int_0^1 |\alpha(r)|\,
-\|\mathcal{T}_{1\leftarrow r}[q^\top\nabla\rho(\cdot,r)]\|_{\TV}\,dr .
+\int_0^1
+\bigl\|\mathcal{T}_{1\leftarrow r}[\nabla\!\cdot(\rho s_{K,m})(\cdot,r)]\bigr\|_{\TV}\,dr .
 \end{equation}
-Using the definition of $M_T$ yields \eqref{eq:drift-bound}. The sign is
-irrelevant because the total-variation norm is used.
+The definition of $M_T$ gives \eqref{eq:general-drift-bound}. For the
+proposed signal, $\nabla\!\cdot(\rho s_{K,m})=\alpha(r)q^\top\nabla\rho$,
+which gives \eqref{eq:drift-bound}.
 \end{proof}
 
-The bound identifies the leading factors that can change the terminal
-distribution: the temporal carrier, the transport of perturbations
-through the clean flow, and the alignment between the watermark
-direction and the density gradient. This decomposition motivates the
-use of a small keyed carrier in a high-dimensional subspace: preservation
-is favored when the clean flow has moderate transport amplification and
-the keyed direction has limited alignment with the evolving density
-gradient, while detectability is retained through matched keyed queries.
+The terminal-TV requirement \eqref{eq:admissible-drift} is satisfied
+when the linear term in \eqref{eq:general-drift-bound} plus its
+higher-order $O(\epsilon^2)$ contribution is at most
+$\delta_{\mathrm{dist}}$.
 
 \begin{corollary}[Zero mean removes the time-invariant drift component]
 \label{cor:zero-mean-gap}
@@ -1398,451 +1186,329 @@ L_q\int_0^1 |\sin(2\pi r)|\,|r-1/2|\,dr
 which proves \eqref{eq:zero-mean-lipschitz}.
 \end{proof}
 
-The corollary gives the mathematical role of the zero-integral carrier
-in the preservation analysis. It removes the component of the transported
-forcing that is constant over time; the remaining first-order drift is
-controlled by how much the transported density-gradient term varies along
-the trajectory. Thus zero mean is useful but not sufficient for exact
-preservation, and empirical FID remains the relevant quality measure.
+Zero mean cancels the time-invariant forcing component. Under the
+Lipschitz assumption, terminal distortion is at most
+$\epsilon L_q/(2\pi)+O(\epsilon^2)$.
 
-% ------------------------------------------------------------
-\subsection{Interpretation of the Drift Bound}
-\label{sec:decomp}
+\section{Proof of Theorem~\ref{thm:capacity}}
+\label{app:capacity_proof}
 
-Theorem~\ref{thm:drift} exposes the two quantities that determine the
-first-order distribution drift. The first is $M_T$, the maximum
-amplification of density perturbations by the clean flow. The second is
-the alignment integral
+We derive the additive Gaussian approximation for the demodulated
+signature, then prove the information bound for a finite codebook
+under that model.
+
+\subsection{Step 1: Approximate Effective Channel}
+
+Given a watermarked model $v_{\theta,K,m}$, we query it at $N$ random
+points $\{(x_i, t_i)\}_{i=1}^N$ drawn i.i.d.~from a sampling distribution
+$p(x,t)$ and compute the signature:
+\begin{equation}
+\hat{s} = \frac{1}{N}\sum_{i=1}^N \sin(2\pi t_i) \cdot P^T v_{\theta,K,m}(x_i, t_i).
+\end{equation}
+
+Decompose the velocity field as
+$v_{\theta,K,m} = v_\theta + \eta_0 + \epsilon \sin(2\pi t) P c_m$,
+where $v_\theta$ is the learned flow, $\eta_0$ represents background
+variation from training stochasticity and model approximation error, and
+$\epsilon \sin(2\pi t) P c_m$ is the watermark signal. Substituting:
+
+\begin{align}
+\hat{s} &= \frac{1}{N}\sum_{i=1}^N \sin(2\pi t_i) P^T [v_\theta(x_i,t_i) + \eta_0(x_i,t_i)] \\
+        &\quad + \frac{\epsilon}{N}\sum_{i=1}^N \sin^2(2\pi t_i) P^T P c_m.
+\end{align}
+
+Since $P^T P = I_k$ by construction, the second term simplifies to:
+\begin{equation}
+\frac{\epsilon}{N}\sum_{i=1}^N \sin^2(2\pi t_i) \cdot c_m.
+\end{equation}
+
+Define the background term for each query:
+\begin{equation}
+z_i := \sin(2\pi t_i) P^T [v_\theta(x_i, t_i) + \eta_0(x_i, t_i)] \in \mathbb{R}^k.
+\end{equation}
+
+We introduce the following assumptions.
+
+\begin{assumption}[Uncorrelated carrier and background]\label{ass:uncorrelated}
+The temporal carrier $\sin(2\pi t)$ is uncorrelated with the background
+velocity field:
+\begin{equation}
+\mathbb{E}_{x,t}[\sin(2\pi t) \cdot P^T(v_\theta(x,t) + \eta_0(x,t))] = 0.
+\end{equation}
+\end{assumption}
+
+This assumption concerns the joint dependence of the carrier and the
+time-varying background velocity.
+
+\begin{assumption}[Independent queries]\label{ass:iid}
+The query points $\{(x_i, t_i)\}_{i=1}^N$ are drawn i.i.d.~from a
+distribution $p(x,t)$ under which the background terms $z_i$ have finite
+second moments.
+\end{assumption}
+
+Queries are sampled independently; finite second moments remain a
+moment assumption. Under these conditions, the $z_i$ are i.i.d.~random vectors
+with mean $\mathbb{E}[z_i] = \mathbf{0}$ (by Assumption~\ref{ass:uncorrelated})
+and covariance matrix
+\begin{equation}
+\Sigma := \text{Cov}(z_i) = \mathbb{E}[z_i z_i^T] \in \mathbb{R}^{k \times k}.
+\end{equation}
+
+For the watermark term, we have:
+\begin{equation}
+\mathbb{E}[\sin^2(2\pi t)] = \int_0^1 \sin^2(2\pi t) dt = \frac{1}{2}.
+\end{equation}
+By the Law of Large Numbers,
+$\frac{1}{N}\sum_{i=1}^N \sin^2(2\pi t_i) \to \frac{1}{2}$ as $N \to \infty$.
+
+For the background term, we apply the multivariate Central Limit Theorem
+(CLT). Let $\xi := \frac{1}{N}\sum_{i=1}^N z_i$. Under
+Assumptions~\ref{ass:uncorrelated} and~\ref{ass:iid}, as $N \to \infty$:
+\begin{equation}
+\sqrt{N} \xi \xrightarrow{d} \mathcal{N}(0, \Sigma),
+\end{equation}
+where $\xrightarrow{d}$ denotes convergence in distribution. Equivalently,
+for large $N$:
+\begin{equation}
+\xi \approx \mathcal{N}\!\left(0, \frac{\Sigma}{N}\right).
+\end{equation}
+
+\begin{assumption}[Gaussian approximation for finite $N$]\label{ass:gaussian}
+For the query counts $N$ used in practice, the distribution of $\xi$ is
+well-approximated by $\mathcal{N}(0, \Sigma/N)$.
+\end{assumption}
+
+While the CLT guarantees asymptotic normality under the stated moment
+condition, its accuracy at finite $N$ depends on the distribution of
+$z_i$; Assumption~\ref{ass:gaussian} specifies the approximation used
+by the finite-query analysis.
+
+The empirical average of $\sin^2(2\pi t_i)$ also fluctuates around
+$1/2$ at finite $N$. Neglecting the fluctuation
+and approximating the background average by a Gaussian gives the
+surrogate channel used in Theorem~\ref{thm:capacity}:
+\begin{equation}\label{eq:channel_final}
+\boxed{\hat{s} = \frac{\epsilon}{2} c_m + \xi, \quad \xi \sim \mathcal{N}\!\left(0, \frac{\Sigma}{N}\right).}
+\end{equation}
+
+\subsection{Step 2: The Noise Covariance}
+
+The noise covariance $\Sigma$ captures the background velocity variation
+in the projected $k$-dimensional space. Let
+$b(x,t) := \sin(2\pi t)[v_\theta(x,t) + \eta_0(x,t)] \in \mathbb{R}^D$.
+Then:
+\begin{equation}
+\Sigma = P^T \, \mathbb{E}_{x,t}[b(x,t) b(x,t)^T] \, P.
+\end{equation}
+
+\begin{assumption}[Invertible covariance]\label{ass:invertible}
+The projected covariance $\Sigma$ is invertible.
+\end{assumption}
+
+Invertibility requires background variation along every projected
+direction and makes the covariance whitening below well defined.
+
+\subsection{Step 3: Finite-Codebook Information Bound}
+
+Let $a=\epsilon/2$, $Z\sim\mathcal N(0,\Sigma/N)$, and
+$Y=a c_M+Z$. For the finite message distribution, put
+$Q=\operatorname{Cov}(c_M)$. Since $Z$ is independent of $M$,
+$\operatorname{Cov}(Y)=a^2Q+\Sigma/N$. Gaussian vectors maximize
+differential entropy at fixed covariance~\cite{cover1999elements}; hence
+\begin{align}
+I(M;Y)
+&=h(Y)-h(Z)\\
+&\leq\frac12\log\frac{\det(a^2Q+\Sigma/N)}{\det(\Sigma/N)}\\
+&=\frac12\log\det\!\left(I_k+
+\frac{N\epsilon^2}{4}\Sigma^{-1/2}Q\Sigma^{-1/2}\right).
+\end{align}
+Also $I(M;Y)\leq H(M)$, proving the first claim. Since every
+codeword has unit norm,
+$\operatorname{tr}Q=1-\|\mathbb E[c_M]\|^2\leq1$.
+Maximizing the Gaussian expression over all positive semidefinite
+$Q$ with trace at most one gives the unit-power Gaussian relaxation.
+The selected codebook determines its own covariance $Q$ within this
+optimization domain.
+
+\subsection{Scaling Analysis}\label{app:hypercube-scaling}
+
+Let $\nu_1,\ldots,\nu_k$ be the eigenvalues of
+$\Sigma^{-1/2}Q\Sigma^{-1/2}$. The Gaussian upper bound is
 \[
-\int_0^1 |\alpha(r)|\,\|P c_m\cdot\nabla\rho(\cdot,r)\|_{\TV}\,dr,
+\frac12\sum_j\log(1+N\epsilon^2\nu_j/4).
 \]
-which measures how much the watermark direction overlaps with the
-time-dependent density gradient. These two terms have different roles:
+For fixed positive definite $\Sigma$ and fixed $Q$, its large-$N$
+coefficient of $\log N$ is $\operatorname{rank}(Q)/2$, the number of codebook
+directions carrying message variation. This is a property of the relaxed
+Gaussian expression: the finite-alphabet information $I(M;Y)$ is
+always capped by $H(M)$ and approaches that cap as the message
+distributions become distinguishable. At finite $N$, the nonzero
+$\nu_j$ govern how quickly the bound rises. Correlations in projected
+velocity affect these values, but covariance alone does not establish
+the reliability of a particular decoder.
 
-\begin{enumerate}
-\item \textbf{Amplification.} $M_T$ measures
-the maximum expansion of perturbations by the clean flow. For a
-well-conditioned flow, this factor is $O(1)$. This is the regime we
-expect for the tested flow-matching models because they transport a
-full-dimensional Gaussian source to samples in the same ambient space,
-rather than collapsing mass onto a low-dimensional endpoint. Empirically,
-successful watermark detection does not coincide with a systematic
-increase in FID.
-\item \textbf{Alignment.} The integral measures the overlap between the
-watermark direction and the density gradient across time. If $P c_m$ is
-drawn independently of any fixed gradient direction, the typical
-projection is smaller in high dimension, scaling like an inverse
-square-root dimension factor.
-\item \textbf{Carrier.} $\|\alpha\|_\infty = 1$ is fixed by the choice
-of $\alpha(t) = \sin(2\pi t)$.
-\end{enumerate}
+For uniform hypercube messages on $L$ orthonormal axes,
+$Q=L^{-1}\sum_{j=1}^Le_je_j^T$ and $H(M)=L\log 2$. If additionally
+$\Sigma=\sigma^2 I_k$, sign decoding has independent bit-error
+probability $\Phi(-\epsilon\sqrt{N}/(2\sigma\sqrt L))$ under the
+surrogate, where $\Phi$ is the standard-normal CDF. Exact-message
+recovery is then $(1-p_{\rm bit})^L$, giving
+\eqref{eq:hypercube-exact-recovery}. The per-bit success probability
+decreases with $L$ and lies below one; increasing its exponent also
+decreases exact recovery. The prediction holds at fixed $N$,
+$\epsilon$, and $\sigma$ even though total codeword energy remains one.
 
-The decomposition suggests why the proposed perturbation can remain
-small in distributional effect: in high-dimensional latent spaces, a
-random $P c_m$ is expected to have limited alignment with any fixed
-density-gradient direction. This intuition is consistent with the FID
-ratios in Tables~\ref{tab:quality} and~\ref{tab:main}, but the FID
-measurements are the empirical evidence for quality preservation.
+\subsection{Relationship to Experiments}
 
-% ------------------------------------------------------------
-\subsection{Relation to Exact Regimes}
+The channel model relates the chosen codebook, noise covariance, and
+query count to recoverable message information. For the hypercube,
+the bit-error expression above makes the role of payload explicit:
+fixed total signal energy gives less energy to each bit as $L$ grows,
+and complete recovery requires all bit decisions to succeed.
+Table~\ref{tab:payload-main} exhibits the resulting effective payload
+limit at fixed projection dimension and query count. Changing the
+projection dimension provides an additional way to adjust the
+signaling space.
 
-The drift bound above does not claim exact preservation. For comparison,
-we distinguish two exact notions. A perturbation $\delta u$ preserves
-endpoints if $\varphi_1^w(x_0)=\varphi_1(x_0)$ for every
-$x_0\sim p_0$, and it preserves the distribution if
-$\rho^w(\cdot,1)=\rho(\cdot,1)$. These notions correspond to two
-standard sufficient conditions.
 
-\begin{proposition}[Time reparameterizations preserve endpoints]
-\label{prop:parallel}
-Let $\tau : [0,1]\to[0,1]$ be differentiable with $\tau(0)=0$,
-$\tau(1)=1$, and $\dot{\tau}(t)>0$. If
-$v(x,t)=\dot{\tau}(t)u(x,\tau(t))$, then $\varphi_1^w=\varphi_1$.
-\end{proposition}
+\section{Evaluation and Embedding Protocols}\label{app:embedding-configurations}
 
-\begin{proof}
-For any $x_0$, set $\psi_t(x_0)=\varphi_{\tau(t)}(x_0)$. Then
-$\psi_0(x_0)=x_0$ and
+\subsection{Recovery and Quality}
+
+For Table~\ref{tab:main}, recovery uses five target messages and 20 trials per message, except
+CIFAR-10 H32, which uses 40 trials. Image MLP, RF-UNet, and audio trials
+use 4096 velocity queries; SD3.5 trials use 256. Image MLP queries are
+pure noise. RF-UNet, SD3.5, and audio queries use the interpolation
+distributions associated with their data or latent pools. Recovery is
+therefore compared under model-specific query protocols, not equal
+query cost.
+
+Image MLP and RF-UNet quality use 500 samples with the same Inception
+feature extractor and preprocessing. SD3.5 uses 30 samples and the
+standard descending-noise SD3 sampler. Scratch audio uses 500 clips;
+Stable Audio uses 32. Image and audio distances use their respective
+feature spaces, and ratios are interpreted relative to each setting's
+clean model and reference distribution. The SD3.5 and Stable Audio
+quality estimates have especially small sample counts.
+The high-resolution SD3.5 figure uses 40 sampling steps and guidance
+scale 4.5; its matched clean and marked seeds are fixed before generation.
+
+\subsection{Clean-Model FPR}\label{app:fpr}
+
+For MLP FPR, 10,000 trials each use a new key, 4096 fresh pure-noise
+queries, and an independent uniform message claim. Velocity queries are
+shared across encodings. The zero-match H32 result has a one-sided
+95\% upper bound of $0.030\%$. These trials use one clean checkpoint.
+
+Other generators use 20 clean decoded outputs under one saved key and
+one million independent uniform claims. Query distributions and query counts
+match recovery evaluation; audio and SD3.5 H32 reuse recorded clean
+decodes. The million trials sample claims, not fresh model responses.
+For zero matches, the one-sided 95\% upper bound is $0.000300\%$ for
+this conditional claim-sampling experiment. These counts do not
+estimate acceptance of a chosen fixed target across independent models.
+
+\subsection{Model-Specific Optimization}
+
+The image MLPs are trained from scratch for 5000 epochs, or 115,000 updates
+at batch size 512 on 12,000 images, followed by 50 updates of velocity
+distillation and decoding-margin optimization. SD3.5 H32 uses 700
+optimizer updates with rank-16 LoRA and projected-residual and
+bit-margin losses. Training-time bias compensation is applied in the
+final 150 updates, with nominal strength 3.0 in the final objective.
+Verification uses raw marked velocities and the saved key.
+
+\subsection{Audio Implementation}\label{app:audio-results}
+
+Audio experiments use six-second clips from FMA-small~\cite{fmadataset}.
+Training and held-out recordings follow the official split. The scratch
+MLP and Transformer use a frozen Music2Latent codec~\cite{music2latent},
+with 2,000 training clips and 500 held-out clips. Clean training uses 5,000
+updates; embedding uses 1,000 updates with batch size 32 and initial
+learning rate $10^{-4}$.
+
+Stable Audio 3 Small Music Base is the rectified-flow
+checkpoint~\cite{stableaudio3base}. Its own frozen codec produces
+$256\times66$ latents per clip; the projection acts on all 16,896
+flattened coordinates. The experiment uses 128 training and 32 held-out
+recordings, the fixed prompt \textit{An instrumental music recording},
+and rank-16, alpha-16 LoRA on linear layers (10,277,184 trainable
+parameters). The backbone's descending noise-time coordinate is
+converted to forward flow time by $v(x,t)=-u(x,1-t)$.
+Embedding uses batch size one, initial learning rate $10^{-4}$,
+AdamW, cosine decay, and nominal strength 1.5.
+
+Stable Audio O5 uses 100 updates per message; four runs use a 100-update
+cosine schedule and one uses the first 100 updates of a 500-update
+schedule. H32 uses 400 total updates, with bias-compensated residual
+fitting and a bit-margin loss in the final 100. Continuations restart
+cosine decay at $10^{-4}$.
+
+Bias compensation estimates the clean demodulated projection $b_K$
+from 4096 training-pool queries. With $\alpha(t)=\sin(2\pi t)$ and
+nominal strength $\varepsilon=1.5$, the projected residual target is
+$\alpha(t)(\varepsilon c_m-2b_K)$, using
+$\mathbb E[\alpha(t)^2]=1/2$. The additional unit-weight penalty is
 \begin{equation}
-\frac{d}{dt}\psi_t(x_0)
-=\dot{\tau}(t)u(\varphi_{\tau(t)}(x_0),\tau(t))
-=v(\psi_t(x_0),t).
+\mathcal L_{\mathrm{bit}}=\frac{1}{BL}\sum_{i=1}^B\sum_{j=1}^L
+\left[\frac{\varepsilon\alpha(t_i)^2}{\sqrt L}
+-s_j\alpha(t_i)(P^\top v_\theta(x_i,t_i))_j\right]_+,
+\qquad s_j=2m_j-1,
 \end{equation}
-Thus $\psi_t$ and $\varphi_t^w$ solve the same initial-value problem.
-By uniqueness, $\varphi_1^w=\psi_1=\varphi_{\tau(1)}=\varphi_1$.
-\end{proof}
+where $B$ is batch size and $[a]_+=\max(a,0)$. Compensation changes the
+target direction and norm, so nominal strength alone does not specify
+the effective perturbation. The residual projection weight is 10 and
+the carrier-correlation weight is one. Clean-model information is used
+only for embedding; recovery uses raw marked velocities and the key.
+Bias estimation and recovery use disjoint training and held-out pools.
 
-\begin{proposition}[Divergence-free perturbations preserve the distribution]
-\label{prop:divfree}
-Let $\rho$ be the clean density. If
-$\nabla\!\cdot(\rho\,\delta u)=0$ for all $(x,t)$, then
-$\rho^w(\cdot,1)=\rho(\cdot,1)$.
-\end{proposition}
-
-\begin{proof}
-Since $\rho$ satisfies
-$\partial_t\rho+\nabla\!\cdot(\rho u)=0$, the condition
-$\nabla\!\cdot(\rho\,\delta u)=0$ implies
-\begin{equation}
-\partial_t\rho+\nabla\!\cdot\bigl(\rho(u+\delta u)\bigr)=0.
-\end{equation}
-Thus $\rho$ also solves the continuity equation induced by
-$v=u+\delta u$, with the same initial density $p_0$. Uniqueness of the
-continuity equation under the assumed regularity gives
-$\rho^w(\cdot,t)=\rho(\cdot,t)$ for all $t$.
-\end{proof}
-
-These two regimes are useful theoretically, but they are not used as
-empirical baselines in this paper: the parallel carrier changes the
-temporal representation problem as the payload grows, while the
-divergence-free carrier requires an auxiliary density model.
-Table~\ref{tab:regimes} summarizes the resulting tradeoff.
-
-\begin{table}[t]
-\centering
-\caption{Three preservation regimes for dynamics-level watermarking.
-Endpoint preservation fixes every generated sample; distribution
-preservation fixes only the generated law; the proposed construction
-uses neither exact constraint but supports keyed multi-bit payloads
-without an auxiliary density model.}
-\label{tab:regimes}
-\small
-\begin{tabular}{lcccc}
-\toprule
-Regime & Endpoint exact & Distribution exact & Multi-bit & Auxiliary model \\
-\midrule
-Parallel carrier & Yes & Yes & Limited by carrier bandwidth & No \\
-Divergence-free carrier & No & Yes & Yes & Yes \\
-Proposed random carrier & No & No & Yes & No \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Parallel construction.}
-We replace \eqref{eq:proposed} with $\delta u(x,t) = a_m(t)\,u(x,t)$,
-where $a_m(t) = \sum_{i=1}^{L} b_{m,i}\,\sin(2\pi(i+1)t)$ and
-$b_{m,i} \in \{\pm 1\}$ is the $i$-th bit of message $m$. This
-preserves the endpoint exactly (Proposition~\ref{prop:parallel}) but
-requires the model to represent the high-frequency carrier
-$\sin(2\pi(L+1)t)$. This makes it a poor match for a concise
-multi-bit ownership watermark: increasing the payload also increases
-the highest temporal frequency that must be learned.
-
-\paragraph{Divergence-free construction.}
-We replace \eqref{eq:proposed} with $\delta u(x,t) = \epsilon\,\alpha(t)\,w(x,t)$
-where $w(x,t)$ is a vector field satisfying $\nabla\!\cdot\!(\rho\,w) = 0$
-at every $(x,t)$. This preserves the distribution exactly
-(Proposition~\ref{prop:divfree}) but requires access to, or an
-estimate of, the intermediate density $\rho(\cdot,t)$. In a practical
-implementation, such an estimate would usually require an auxiliary
-density model, making the watermark depend on density-estimation
-accuracy as well as the base generator.
-
-The comparison identifies the tradeoff: the parallel regime gives exact
-endpoint preservation but makes larger payloads harder to represent;
-the divergence-free regime gives exact distribution preservation but
-requires density information; the proposed construction gives up exact
-preservation in exchange for a simple keyed multi-bit carrier whose
-first-order drift is controlled by Theorem~\ref{thm:drift}.
-
-% ------------------------------------------------------------
-\subsection{Summary}
-
-The proposed construction preserves neither the endpoint nor the
-distribution exactly. It satisfies a first-order bound controlled by the
-transport amplification $M_T$ and by the alignment between the watermark
-direction $P c_m$ and the time-dependent density gradient
-$\nabla\rho(\cdot,t)$. Among the three regimes of
-Table~\ref{tab:regimes}, it is the only one that carries multi-bit
-messages with no auxiliary model. Empirical drift-factor estimation is
-left as a separate ablation; here, sample-quality preservation is
-supported by the measured FID ratios rather than by this first-order
-analysis alone.
+The codec encodes padded 44.1\,kHz inputs. Decoded clips are truncated
+to six seconds and averaged to mono for quality evaluation. Generation
+uses 100 forward-Euler steps without classifier-free guidance
+amplification.
 
 % ============================================================
 % APPENDIX: EXPERIMENTAL TABLES
 % ============================================================
-\section{Additional Experimental Results}
-\label{app:tables}
-
-This appendix reports completed experimental groups and separates
-scratch-trained diagnostics from public-checkpoint payload sweeps.
-
-For pretrained latent models such as SD3.5, the reported FID ratio is a
-preservation metric relative to base-model reference samples decoded with
-the same pretrained VAE/decoder. It tests whether watermarking changes
-the base model's decoded output distribution, rather than serving as an
-absolute measure of image fidelity.
-
-\subsection{Classic-Model Diagnostics}\label{app:classic-diagnostics}
-
-The original MNIST MLP is trained with all weights updated for 5,000
-and 10,000 steps. The scratch-trained MNIST and CIFAR-10 UNets first
-train a clean base for 5,000 steps and then watermark it with 500 LoRA
-steps per message. These runs use five-bit messages, $k=32$, and
-$N=4096$ velocity queries. The tables below retain trial counts,
-score distributions, and absolute real-reference FID for this
-protocol; they are not additional rows in the public-checkpoint study.
-
-\subsubsection{Detection and Key Controls}
-
-\begin{table}[t]
-\centering
-\caption{Detection and key controls for the scratch-trained MLP and UNets.}
-\label{tab:detection}
-\begin{tabular}{lccc}
-\toprule
- & Trials & Accuracy ($\uparrow$) \\
-\midrule
-\multicolumn{3}{c}{\textit{MNIST (MLP, 5K steps)}} \\
-\quad Watermarked models (6 total) & 120 & 120/120 (100\%) \\
-\quad Clean models (2 total) & 40 & 0/40 (0\%) \\
-\midrule
-\multicolumn{3}{c}{\textit{MNIST (MLP, 10K steps)}} \\
-\quad Watermarked models (6 total) & 120 & 120/120 (100\%) \\
-\quad Clean models (2 total) & 40 & 1/40 (2.5\%) \\
-\midrule
-\multicolumn{3}{c}{\textit{MNIST (UNet + LoRA)}} \\
-\quad Watermarked models (3 total) & 60 & 60/60 (100\%) \\
-\quad Clean model & 60 & 0/60 (0\%) \\
-\midrule
-\multicolumn{3}{c}{\textit{CIFAR-10 (UNet + LoRA)}} \\
-\quad Watermarked models (3 total) & 60 & 60/60 (100\%) \\
-\quad Clean model & 60 & 0/60 (0\%) \\
-\midrule
-\multicolumn{3}{c}{\textit{Wrong key attack (all datasets)}} \\
-\quad Random $P' \neq P$ & 50 & 0/50 (0\%) \\
-\midrule
-Single-message random match & -- & 3.1\% (1/32) \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:detection} summarizes message recovery. Across these
-scratch-trained settings and training durations, watermarked models achieve $100\%$
-recovery of their assigned message. The clean-model rows count matches
-to any of the tested messages; one such match occurred in the 10K-step
-MNIST MLP configuration (1/40). The $1/32$ baseline applies to one
-preselected target message, whereas the aggregate clean-model match
-probability depends on how many messages are included. With a random
-projection rather than the true $P$, none of 50 trials recovered the
-assigned message; this limited wrong-key test does not establish a
-calibrated ownership false-positive rate.
-
-\subsubsection{Statistical Separation}
-
-\begin{table}[t]
-\centering
-\caption{Statistical separation and signature statistics.}
-\label{tab:separation}
-\small
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lcccc}
-\toprule
-Dataset / Architecture & WM Score ($\uparrow$) & Clean Score ($\downarrow$) & $\|\hat{s}\|$ (WM / Clean) & Min.\ Separation ($\uparrow$) \\
-\midrule
-MNIST (MLP, 5K)  & $0.58$--$1.11$ & $-0.09$--$0.11$ & $1.06$ / $0.69$ & $8.4\sigma$ \\
-MNIST (MLP, 10K) & $1.41$--$2.07$ & $0.01$--$0.16$ & $1.85$ / $0.84$ & $25.5\sigma$ \\
-MNIST (UNet)     & $0.29$--$0.45$ & $-0.07$--$0.15$ & $0.66$ / $0.56$ & $8.6\sigma$ \\
-CIFAR-10 (UNet)  & $0.62$--$0.64$ & $-0.01$--$0.00$ & $0.65$ / $0.13$ & $17.9\sigma$ \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-Table~\ref{tab:separation} reports per-message score statistics. Watermarked
-models consistently produce large positive scores, while clean model scores
-are near zero. The minimum separation across all settings is $8.4\sigma$
-(MNIST MLP), and all $p$-values are below $10^{-37}$ (Welch's $t$-test).
-These margins show separation for the tested messages and query
-distribution; an ownership decision still requires calibration of a
-score threshold against clean and attacked models.
-
-We additionally examine the signature norm $\|\hat{s}\|$, which measures
-the total signal energy in the projected space before correlating with any
-specific codeword. On MNIST, $\|\hat{s}\|$ is comparable between
-watermarked and clean models across all architectures (e.g., $0.66$ vs.\
-$0.56$ for UNet). On CIFAR-10, watermarked models exhibit a larger
-signature norm ($0.65$ vs.\ $0.13$), meaning an attacker could potentially
-identify a model as watermarked by measuring the projected energy. We note
-that this does not compromise message recovery: without the codebook $C$,
-the attacker still cannot determine which message is embedded, and
-wrong-key decoding remains at chance level (Table~\ref{tab:detection}).
-The watermark therefore satisfies the keyed security requirement:
-detection and message recovery require knowledge of the secret key.
-
-\subsubsection{Sample Quality Preservation}
-
-\begin{table}[t]
-\centering
-\caption{Sample quality metrics across datasets and architectures.
-FID is computed against real test images ($1{,}000$ for MNIST;
-$10{,}000$ for CIFAR-10).}
-\label{tab:quality}
-\begin{tabular}{lcc}
-\toprule
-Dataset / Architecture / Model & FID ($\downarrow$) & FID Ratio ($\downarrow$) \\
-\midrule
-\multicolumn{3}{c}{\textit{MNIST (MLP, 5K steps)}} \\
-Clean & $7.4$ & -- \\
-WM Average & $8.1 \pm 0.3$ & $1.10\times$ \\
-\midrule
-\multicolumn{3}{c}{\textit{MNIST (MLP, 10K steps)}} \\
-Clean & $7.3$ & -- \\
-WM Average & $6.9 \pm 0.1$ & $0.947\times$ \\
-\midrule
-\multicolumn{3}{c}{\textit{MNIST (UNet + LoRA)}} \\
-Clean & $7.1$ & -- \\
-WM range & $6.8$--$7.5$ & $0.955\times$--$1.059\times$ \\
-\midrule
-\multicolumn{3}{c}{\textit{CIFAR-10 (UNet + LoRA)}} \\
-Clean & $24.3$ & -- \\
-WM range & $23.5$--$25.1$ & $0.966\times$--$1.032\times$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:quality} quantifies sample quality. Across all settings,
-the FID ratio between watermarked and clean models remains close to
-$1.0\times$. We note that in several configurations watermarked models
-achieve marginally lower FID than the corresponding clean baseline (e.g.,
-$6.9$ vs.\ $7.3$ at 10K steps). This is attributable to random training
-variation and finite-sample FID estimation noise. The key finding is that FID ratios remain
-tightly clustered around $1.0\times$, confirming that the watermark
-perturbation does not degrade sample quality. The generated samples are provided in Appendix~\ref{app:samples}.
-
-These results validate the design of the time-modulated perturbation:
-the zero-mean carrier provides a centered, demodulatable watermark
-signal, while the measured FID ratios show that this signal preserves
-sample quality in practice across datasets, architectures, and training
-durations.
-
-
-% ------------------------------------------------------------
-\subsection{Payload Scaling}
+\subsection{Additional Payload Analysis}\label{app:tables}
 \label{app:payload}
 
-We separate three questions rather than pooling rows from different
-codebooks. Within each question, payload length $L$ is the variable of
-interest; the base checkpoint, training objective and budget, watermark
-strength, query count, and quality-evaluation procedure are held fixed.
-The projection dimension $k$ and decoder are stated for each block.
-
-\paragraph{Short-payload feasibility across datasets.}
-Table~\ref{tab:app-payload} varies $L$ separately on CIFAR-10 and
-CelebA-64 at $k=32$. The 1-, 3-, and 5-bit rows use orthogonal
-codewords; the 8- and 12-bit rows use explicit normalized random
-codewords. Hence the table shows successful recovery on both datasets
-over the tested lengths, but its full 1--12-bit sequence is not a
-single-codebook payload comparison. Clean false-positive rates under
-the fixed-target rule also fall with message length, as expected when
-the message space grows; this is not by itself evidence of stronger
-watermark security.
+The explicit-codebook sweep in Table~\ref{tab:app-capacity} fixes
+$k=32$ and varies $L$ from 5 to 20. Each message has an independently
+sampled vector $g_m\sim\mathcal N(0,I_k)$ normalized to
+$c_m=g_m/\|g_m\|_2$. These unit vectors need not be orthogonal.
+This supplemental construction permits explicit codebooks beyond the
+orthogonal limit $2^L\leq k$, but requires storing and searching $2^L$
+vectors. Hypercube encoding avoids that enumeration.
 
 \begin{table}[t]
 \centering
-\caption{Payload-scaling runs for public RF-UNet checkpoints. Entries
-show mean $\pm$ standard deviation across completed messages at each
-payload size (two messages at 1 bit; five at other displayed sizes).
-Clean FP uses the prespecified key and message; a uniformly decoded
-clean message would match with probability $2^{-L}$.
-CelebA-64 uses base-model reference samples for FID. The CelebA-64
-12-bit setting is omitted because only one of five messages had completed
-when the run was interrupted. Because all completed settings retain
-100\% watermark accuracy, this table verifies payload feasibility over
-the tested range but does not locate the capacity boundary.}
-\label{tab:app-payload}
-\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{llccc}
-\toprule
-Dataset & Bits & Exact recovery ($\uparrow$) & Clean FP ($\downarrow$) & FID ratio ($\downarrow$) \\
-\midrule
-CIFAR-10 & 1  & $100.0{\pm}0.0$\% & $50.0{\pm}30.0$\% & $0.995{\pm}0.001$ \\
-CIFAR-10 & 3  & $100.0{\pm}0.0$\% & $6.0{\pm}4.9$\% & $1.021{\pm}0.022$ \\
-CIFAR-10 & 5  & $100.0{\pm}0.0$\% & $1.0{\pm}2.0$\% & $1.010{\pm}0.018$ \\
-CIFAR-10 & 8  & $100.0{\pm}0.0$\% & $1.0{\pm}2.0$\% & $1.015{\pm}0.020$ \\
-CIFAR-10 & 12 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.032{\pm}0.019$ \\
-\midrule
-CelebA-64 & 1 & $100.0{\pm}0.0$\% & $50.0{\pm}0.0$\% & $1.066{\pm}0.012$ \\
-CelebA-64 & 3 & $100.0{\pm}0.0$\% & $16.0{\pm}7.3$\% & $1.102{\pm}0.022$ \\
-CelebA-64 & 5 & $100.0{\pm}0.0$\% & $3.0{\pm}4.0$\% & $1.073{\pm}0.007$ \\
-CelebA-64 & 8 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.088{\pm}0.017$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Fixed-carrier payload sweeps.}
-The first block of Table~\ref{tab:app-capacity} holds $k=32$ and the
-explicit-codeword decoder fixed while varying $L$ from 5 to 20.
-The nearest-competitor margin decreases from $0.478$ to $0.197$, while
-exact-message recovery remains at 100\% in the evaluated trials. This
-shows reduced separation, not an observed recovery boundary. The
-5-bit row uses QR-orthogonalized random codewords; the longer rows
-use independently sampled normalized vectors. Explicitly storing and
-searching $2^L$ codewords becomes impractical at larger $L$, motivating
-the implicit hypercube realization of the keyed random code. With
-orthonormal code-space axes
-$e_1,\ldots,e_L\in\mathbb{R}^k$ and $L\leq k$, it assigns message
-$m\in\{0,1\}^L$ the unit codeword
-$c_m=L^{-1/2}\sum_{j=1}^{L}(2m_j-1)e_j$.
-The detector reads each bit from the sign of the corresponding
-demodulated coordinate, without enumerating $2^L$ messages or applying
-error correction. The $k=32$, 32-bit row is a single feasibility point
-for this construction. The last block holds the hypercube code and
-$k=128$ fixed while varying $L$ from 64 to 128; only this last pair
-isolates payload length at the higher dimension. The constructions have
-different codeword geometries and margin scales, so their margins should
-not be compared numerically across blocks.
-
-\begin{table}[t]
-\centering
-\caption{CIFAR-10 payload sweep on the public RF-UNet. Mean $\pm$
-standard deviation over five independently trained messages per row;
-each message has 40 detection trials with $N=4096$ queries. Accuracy
-denotes exact-message recovery. Detection uses noise--image interpolation
-queries. Clean FP uses the prespecified key and target message. FID
-ratios use 500 generated and real-reference
-samples per run. Codeword geometry and projection dimension $k$
-change between ruled groups. Every row uses a random secret projection
-$P$; ``normalized vectors'' refers specifically to independently
-drawn explicit codewords.}
+\caption{Explicit random-codebook payload scaling at $k=32$.
+Recovery uses 40 trials of 4096 queries per message; FID uses 500 images
+and a real-data reference.}
 \label{tab:app-capacity}
 \small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{llcccc}
+\begin{tabular}{ccc}
 \toprule
-$k$ & Code & Bits & Exact recovery ($\uparrow$) & Clean FP ($\downarrow$) & FID ratio ($\downarrow$) \\
+Bits & Exact recovery & FID ratio \\
 \midrule
-32 & Orthogonal & 5  & $100.0{\pm}0.0$\% & $0.5{\pm}1.0$\% & $1.043{\pm}0.020$ \\
-32 & Norm. vectors & 8  & $100.0{\pm}0.0$\% & $0.5{\pm}1.0$\% & $1.031{\pm}0.016$ \\
-32 & Norm. vectors & 12 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.030{\pm}0.012$ \\
-32 & Norm. vectors & 16 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.036{\pm}0.018$ \\
-32 & Norm. vectors & 18 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.015{\pm}0.016$ \\
-32 & Norm. vectors & 20 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $0.988{\pm}0.013$ \\
-\midrule
-32 & Hypercube & 32 & $100.0{\pm}0.0$\% & $0.0{\pm}0.0$\% & $1.032{\pm}0.021$ \\
-\midrule
-128 & Hypercube & 64  & $95.5{\pm}6.6$\% & $0.0{\pm}0.0$\% & $1.052{\pm}0.014$ \\
-128 & Hypercube & 128 & $1.5{\pm}3.0$\% & $0.0{\pm}0.0$\% & $1.044{\pm}0.009$ \\
+5 & $100.0{\pm}0.0$\% & $1.043{\pm}0.020$ \\
+8 & $100.0{\pm}0.0$\% & $1.031{\pm}0.016$ \\
+12 & $100.0{\pm}0.0$\% & $1.030{\pm}0.012$ \\
+16 & $100.0{\pm}0.0$\% & $1.036{\pm}0.018$ \\
+18 & $100.0{\pm}0.0$\% & $1.015{\pm}0.016$ \\
+20 & $100.0{\pm}0.0$\% & $0.988{\pm}0.013$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-At fixed $k=128$ with the hypercube decoder, mean exact-message recovery
-falls from 95.5\% at 64 bits to 1.5\% at 128 bits, and the mean
-nearest-competitor margin changes sign. FID ratios remain between
-$1.044$ and $1.052$ on average, so this sweep finds a decoding limit
-under the evaluated interpolation-query protocol without a comparably
-large change in the reported sample-quality metric. Increasing $k$ from
-32 to 128 is a separate setting change; these data do not isolate its
-effect from the simultaneous increase in $L$. An observed 0\% clean FP
-at long payloads means no target matches in the finite trials, not that
-the underlying false-positive probability is zero; under uniform clean
-decoding, the fixed-target chance rate is $2^{-L}$.
+The nearest-competitor margin decreases from $0.478$ to $0.197$ across
+this sweep, but all evaluated messages remain recoverable. The sweep establishes feasibility over these lengths. A recovery
+boundary would require a finer payload grid and a query-count sweep. The fixed-dimension hypercube comparison in
+Table~\ref{tab:payload-main} instead exhibits a sharp recovery loss
+between 64 and 128 bits. These constructions have different geometries;
+their margins are not directly comparable.
 
-\paragraph{Measured velocity scale.}
 For the $k=128$ runs, we compare the trained watermarked model $v_w$
 with its shared base model $v_0$ on the same 4,096 held-out CIFAR-10
 noise--image interpolation points. Let $d=P c_m$ and
@@ -1862,52 +1528,102 @@ $12.20\pm0.21\%$ and $11.99\pm0.29\%$, respectively. The latter
 includes all changes caused by fine-tuning and should not be identified
 with the watermark carrier alone. Relative to the base velocity's
 RMS along the keyed direction $d$, the carrier component is
-$1.066\pm0.019$ and $1.044\pm0.044$ times as large. Thus the carrier
-is small relative to the full velocity field but not relative to the
-single coordinate used for detection; similar aggregate strength at
-the two payload sizes does not imply equally reliable recovery of
-every bit.
+$1.066\pm0.019$ and $1.044\pm0.044$ times as large. The carrier is small relative to the full velocity field and comparable
+to the single coordinate used for detection. Equal aggregate strength
+at the two payload sizes therefore does not imply equally reliable
+recovery of every bit.
 
 % ------------------------------------------------------------
+\FloatBarrier
 \section{Comparison with Existing Methods}\label{app:comparison}
 
-\begin{table}[t]
+Table~\ref{tab:comparison} lists representative methods by what the
+signal is attached to, what the verifier must access, and the weakness
+that follows from the attachment. Each weakness is a consequence of
+where the signal lives: a signal in the sampling path is lost when the
+path changes, a signal in the weights requires the weights and is lost
+when they are updated, and a signal in a trigger is defined only on the
+trigger set. The construction here attaches the signal to the velocity
+field and is verified from velocity queries alone.
+
+\begin{table}[!htbp]
 \centering
-\caption{Qualitative comparison to existing generative-model watermarking
-methods. ``White-box'' indicates whether verification requires access to
-model weights. ``Keyed'' indicates independent secret keys. ``Multi-bit''
-indicates payloads beyond binary ownership.}
+\caption{Signal attachment, verification access, and principal
+weakness of representative watermarking interfaces.}
 \label{tab:comparison}
 \small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{lcccccc}
+\begin{tabular}{@{}llll@{}}
 \toprule
-Method & Model-level & Black-box & White-box & Keyed & Multi-bit & Dynamics-level \\
+Method & Attached to & Verification & Weakness \\
 \midrule
 Tree-Ring~\cite{wen2023tree}
-& No & Yes & No & Yes & Yes & No \\
+  & Sampling noise & Images + inversion & Sampling path \\
 Stable Signature~\cite{fernandez2023stable}
-& Yes & Yes & No & Partial & Yes & No \\
+  & Image decoder & Images + extractor & Decoder fine-tuning~\cite{hu2024unstable} \\
 Weight embedding~\cite{uchida2017embedding}
-& Yes & No & Yes & No & Yes & No \\
-Backdoor~\cite{adi2018turning}
-& Yes & Yes & No & Partial & No & No \\
-BlackMarks~\cite{chen2019blackmarks}
-& Yes & Yes & No & Partial & Yes & No \\
+  & Selected weights & Model weights & Weight updates \\
+Trigger-based~\cite{adi2018turning,chen2019blackmarks,fei2025high}
+  & Trigger responses & Trigger queries & Trigger access \\
+SleeperMark~\cite{wang2025sleepermark}
+  & Triggered latent residual & Triggered images & Full-weight updates \\
 \textbf{Ours}
-& Yes & Yes & No & Yes & Yes & Yes \\
+  & Velocity field & Velocity queries & Field replacement \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-We report quantitative results for our method on the tested backbones
-in Table~\ref{tab:main} and Appendix~\ref{app:payload}.
-We do not include partially reimplemented Tree-Ring or Stable Signature
-numbers in the same-base table because these methods watermark different
-objects: Tree-Ring modifies the sampling noise rather than the model, while
-Stable Signature requires training an additional image-space decoder. A
-lightweight reimplementation would therefore conflate method differences
-with decoder capacity, prompt distribution, and sampler details rather than
-isolate whether the learned generative dynamics preserve a keyed payload.
+\paragraph{Output-level methods.}
+Tree-Ring and Stable Signature verify from generated images, with no
+need for weights or a special interface. That attachment is also their
+weakness. Tree-Ring depends on the noise-to-image path, so an operation
+that breaks the correspondence suppresses
+detection~\cite{lin2025crack}. Stable Signature depends on the decoder,
+so decoder fine-tuning removes it while preserving image
+quality~\cite{hu2024unstable}. Both are tied to a pipeline stage that
+can be replaced without replacing the generator.
 
+\paragraph{Weight-level methods.}
+Weight embedding is precise and cheap when the weights are available,
+and it requires white-box access, which excludes any audit of a hosted
+model or a released binary. It is tied to a parameterization: any
+procedure that reinitializes or substantially updates the weights
+removes the mark. The reported survival under fine-tuning and pruning
+concerns a subset of parameters and a bounded pruning level, not
+full-weight optimization~\cite{uchida2017embedding}.
+
+\paragraph{Trigger-based methods.}
+Trigger-based methods verify from designated input--response pairs,
+which permits black-box verification on a narrow input set. That
+narrowness is the weakness: the mark is defined on the trigger set, and
+a verifier who cannot query those inputs cannot verify it.
+
+\paragraph{Latent and persistence-aware methods.}
+SleeperMark attaches a latent residual to a secret prompt trigger and
+is designed to survive downstream fine-tuning. It is the strongest
+persistence result in this comparison, and the persistence is bounded
+by the fine-tuning family it was trained against: under general
+fine-tuning, including full-weight optimization, the mark
+degrades~\cite{wang2025sleepermark}. Verification is also conditioned
+on the trigger prompt.
+
+\paragraph{This construction.}
+The signal is attached to the velocity field and verified by querying
+it, without inspecting weights or generating samples. It survives
+compression and velocity-supervised distillation. Its weakness is shared with every method in the table: enough
+full-parameter updates replace the field and remove the mark. Carrier subtraction behaves differently depending on what the adversary
+knows. With the published carrier, the regression estimates the
+watermark amplitude plus the carrier-aligned component of the clean
+field, and subtracting it cancels the watermark. With an unknown carrier, the
+adversary must estimate the carrier itself, and the clean field's
+carrier-aligned component is indistinguishable from it in the response,
+so the carrier estimate is inexact and the subtraction is inexact as
+well.
+\paragraph{Choice.}
+The methods are complementary rather than ordered. If the verifier has
+only generated images, the output-level methods apply and this one does
+not. If the verifier has weights, weight embedding applies and is more
+precise than a query-based check. If the verifier has velocity access
+and the copy has undergone compression or velocity-supervised
+distillation, this construction applies. No method in the table
+survives an unbounded number of full-parameter updates.
 \end{document}

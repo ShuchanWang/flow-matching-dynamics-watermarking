@@ -1,0 +1,225 @@
+{
+  "config": {
+    "trials": 10000,
+    "queries_per_trial": 4096,
+    "batch": 512,
+    "seed": 202610140,
+    "clean_sha256": "6208439a3deb12fa04c90cd91c2d48c21108d4fb4599b6a701bf6094ead5d6ad",
+    "original_key_sha256": [
+      "98c238f93b2c37168ae829602d89f7c188e2c46e7c56d04b3eb21a2209ce5f95",
+      "01c2893ce55e61fdddcdeaba0b1e9a749ab0ec572943b6b1ae79ed24b1ae1694",
+      "a13929591f98a98e273da38ea532d983bdad9bc02f76ff90228a845bede3e2cd"
+    ],
+    "distribution": "pure_noise_original_mlp_protocol",
+    "model": "MNIST image MLP",
+    "training": false,
+    "shared_clean_queries": true,
+    "random_decision": "Exact equality to an independent full-codebook claim under a fresh random key",
+    "fixed_decision": "Exact equality to each original predeclared target under its original key"
+  },
+  "new_velocity_queries": 40960000,
+  "caveat": "One clean MLP checkpoint, not population FPR across architectures; randomized claims do not validate fixed-target ownership",
+  "summary": [
+    {
+      "scheme": "orthogonal5",
+      "bits": 5,
+      "random_key_random_claim": {
+        "matches": 310,
+        "trials": 10000,
+        "fpr_pct": 3.1,
+        "wilson_95_interval_pct": [
+          2.7779012856555525,
+          3.4581177615139116
+        ],
+        "zero_match_one_sided_95_upper_pct": null
+      },
+      "original_key_fixed_targets": {
+        "00000": {
+          "matches": 0,
+          "trials": 10000,
+          "fpr_pct": 0.0,
+          "wilson_95_interval_pct": [
+            0,
+            0.03839983706765957
+          ],
+          "zero_match_one_sided_95_upper_pct": 0.0299528359776612
+        },
+        "00111": {
+          "matches": 0,
+          "trials": 10000,
+          "fpr_pct": 0.0,
+          "wilson_95_interval_pct": [
+            0,
+            0.03839983706765957
+          ],
+          "zero_match_one_sided_95_upper_pct": 0.0299528359776612
+        },
+        "01010": {
+          "matches": 10000,
+          "trials": 10000,
+          "fpr_pct": 100.0,
+          "wilson_95_interval_pct": [
+            99.96160016293234,
+            100
+          ],
+          "zero_match_one_sided_95_upper_pct": null
+        },
+        "10101": {
+          "matches": 0,
+          "trials": 10000,
+          "fpr_pct": 0.0,
+          "wilson_95_interval_pct": [
+            0,
+            0.03839983706765957
+          ],
+          "zero_match_one_sided_95_upper_pct": 0.0299528359776612
+        },
+        "11001": {
+          "matches": 0,
+          "trials": 10000,
+          "fpr_pct": 0.0,
+          "wilson_95_interval_pct": [
+            0,
+            0.03839983706765957
+          ],
+          "zero_match_one_sided_95_upper_pct": 0.0299528359776612
+        }
+      }
+    },
+    {
+      "scheme": "hypercube5",
+      "bits": 5,
+      "random_key_random_claim": {
+        "matches": 316,
+        "trials": 10000,
+        "fpr_pct": 3.16,
+        "wilson_95_interval_pct": [
+          2.8347190302313425,
+          3.52125393713364
+        ],
+        "zero_match_one_sided_95_upper_pct": null
+      },
+      "original_key_fixed_targets": {
+        "00000": {
+          "matches": 0,
+          "trials": 10000,
+          "fpr_pct": 0.0,
+          "wilson_95_interval_pct": [
+            0,
+            0.03839983706765957
+          ],
+          "zero_match_one_sided_95_upper_pct": 0.0299528359776612
+        },
+        "00111": {
+          "matches": 1,
+          "trials": 10000,
+          "fpr_pct": 0.01,
+          "wilson_95_interval_pct": [
+            0.0017652673601122309,
+            0.056626889740133815
+          ],
+          "zero_match_one_sided_95_upper_pct": null
+        },
+        "01010": {
+          "matches": 0,
+          "trials": 10000,
+          "fpr_pct": 0.0,
+          "wilson_95_interval_pct": [
+            0,
+            0.03839983706765957
+          ],
+          "zero_match_one_sided_95_upper_pct": 0.0299528359776612
+        },
+        "10101": {
+          "matches": 0,
+          "trials": 10000,
+          "fpr_pct": 0.0,
+          "wilson_95_interval_pct": [
+            0,
+            0.03839983706765957
+          ],
+          "zero_match_one_sided_95_upper_pct": 0.0299528359776612
+        },
+        "11001": {
+          "matches": 0,
+          "trials": 10000,
+          "fpr_pct": 0.0,
+          "wilson_95_interval_pct": [
+            0,
+            0.03839983706765957
+          ],
+          "zero_match_one_sided_95_upper_pct": 0.0299528359776612
+        }
+      }
+    },
+    {
+      "scheme": "hypercube32",
+      "bits": 32,
+      "random_key_random_claim": {
+        "matches": 0,
+        "trials": 10000,
+        "fpr_pct": 0.0,
+        "wilson_95_interval_pct": [
+          0,
+          0.03839983706765957
+        ],
+        "zero_match_one_sided_95_upper_pct": 0.0299528359776612
+      },
+      "original_key_fixed_targets": {
+        "01100011100000010111101001111110": {
+          "matches": 0,
+          "trials": 10000,
+          "fpr_pct": 0.0,
+          "wilson_95_interval_pct": [
+            0,
+            0.03839983706765957
+          ],
+          "zero_match_one_sided_95_upper_pct": 0.0299528359776612
+        },
+        "01000100001011101011011000110111": {
+          "matches": 0,
+          "trials": 10000,
+          "fpr_pct": 0.0,
+          "wilson_95_interval_pct": [
+            0,
+            0.03839983706765957
+          ],
+          "zero_match_one_sided_95_upper_pct": 0.0299528359776612
+        },
+        "11100000100111110110101001100101": {
+          "matches": 0,
+          "trials": 10000,
+          "fpr_pct": 0.0,
+          "wilson_95_interval_pct": [
+            0,
+            0.03839983706765957
+          ],
+          "zero_match_one_sided_95_upper_pct": 0.0299528359776612
+        },
+        "01110000101110011010011100101010": {
+          "matches": 0,
+          "trials": 10000,
+          "fpr_pct": 0.0,
+          "wilson_95_interval_pct": [
+            0,
+            0.03839983706765957
+          ],
+          "zero_match_one_sided_95_upper_pct": 0.0299528359776612
+        },
+        "00110101011110010100111101110101": {
+          "matches": 0,
+          "trials": 10000,
+          "fpr_pct": 0.0,
+          "wilson_95_interval_pct": [
+            0,
+            0.03839983706765957
+          ],
+          "zero_match_one_sided_95_upper_pct": 0.0299528359776612
+        }
+      }
+    }
+  ],
+  "complete": true,
+  "trial_outcomes_file": "trial_outcomes.csv",
+  "trial_outcome_count": 30000
+}

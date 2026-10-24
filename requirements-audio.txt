@@ -1,6 +1,6 @@
 -r requirements.txt
-music2latent
-librosa
+music2latent==0.1.8
+librosa==0.11.0
 soundfile
 pandas
-stable-audio-tools
+# Stable Audio 3 uses requirements-stable-audio.txt in Python 3.10.

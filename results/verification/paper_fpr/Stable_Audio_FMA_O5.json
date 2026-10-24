@@ -1,0 +1,104 @@
+{
+  "generator": "Stable Audio",
+  "dataset": "FMA",
+  "code": "O5",
+  "source": "table_runs/audio_ownership/stable/00000_orthogonal.json",
+  "claim_seed": 2149424381,
+  "claim_distribution": "independent uniform full-codebook messages",
+  "clean_query_trials": 20,
+  "new_velocity_queries": 0,
+  "scope": "Claim sampling conditional on recorded clean decodes under one saved key; not one million model-query trials",
+  "records": [
+    {
+      "trial": 0,
+      "query_seed": 900042
+    },
+    {
+      "trial": 1,
+      "query_seed": 900043
+    },
+    {
+      "trial": 2,
+      "query_seed": 900044
+    },
+    {
+      "trial": 3,
+      "query_seed": 900045
+    },
+    {
+      "trial": 4,
+      "query_seed": 900046
+    },
+    {
+      "trial": 5,
+      "query_seed": 900047
+    },
+    {
+      "trial": 6,
+      "query_seed": 900048
+    },
+    {
+      "trial": 7,
+      "query_seed": 900049
+    },
+    {
+      "trial": 8,
+      "query_seed": 900050
+    },
+    {
+      "trial": 9,
+      "query_seed": 900051
+    },
+    {
+      "trial": 10,
+      "query_seed": 900052
+    },
+    {
+      "trial": 11,
+      "query_seed": 900053
+    },
+    {
+      "trial": 12,
+      "query_seed": 900054
+    },
+    {
+      "trial": 13,
+      "query_seed": 900055
+    },
+    {
+      "trial": 14,
+      "query_seed": 900056
+    },
+    {
+      "trial": 15,
+      "query_seed": 900057
+    },
+    {
+      "trial": 16,
+      "query_seed": 900058
+    },
+    {
+      "trial": 17,
+      "query_seed": 900059
+    },
+    {
+      "trial": 18,
+      "query_seed": 900060
+    },
+    {
+      "trial": 19,
+      "query_seed": 900061
+    }
+  ],
+  "metric": {
+    "matches": 31419,
+    "trials": 1000000,
+    "fpr_pct": 3.1419,
+    "wilson_95_interval_pct": [
+      3.107888559987183,
+      3.1762714455530037
+    ],
+    "zero_match_one_sided_95_upper_pct": null
+  },
+  "complete": true
+}

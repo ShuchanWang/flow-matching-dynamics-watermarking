@@ -1,0 +1,38 @@
+\begin{table}[t]\centering\small
+\caption{Recovery, clean-model FPR, and quality preservation across
+image and audio generators at $k=32$.}
+\label{tab:main}\label{tab:hypercube-main}\label{tab:audio-main}
+\label{tab:main-quality}\label{tab:quality}\label{tab:encoding-quality}
+\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{\begin{tabular}{lllccc}\toprule
+Generator & Data & Code & Recovery (\%) & FPR (\%) & Quality ratio \\
+\midrule
+Image MLP & MNIST & O5 & $100.0{\pm}0.0$ & 3.100 & $1.037{\pm}0.006$ \\
+Image MLP & MNIST & H5 & $100.0{\pm}0.0$ & 3.160 & $1.040{\pm}0.010$ \\
+Image MLP & MNIST & H32 & $100.0{\pm}0.0$ & 0 (observed) & $1.041{\pm}0.022$ \\
+\addlinespace[2pt]
+RF-UNet & MNIST & O5 & $100.0{\pm}0.0$ & 3.115 & $0.974{\pm}0.031$ \\
+RF-UNet & MNIST & H5 & $100.0{\pm}0.0$ & 3.114 & $0.983{\pm}0.030$ \\
+RF-UNet & MNIST & H32 & $100.0{\pm}0.0$ & 0 (observed) & $1.014{\pm}0.012$ \\
+\addlinespace[2pt]
+RF-UNet & CIFAR-10 & O5 & $100.0{\pm}0.0$ & 3.132 & $1.010{\pm}0.018$ \\
+RF-UNet & CIFAR-10 & H5 & $100.0{\pm}0.0$ & 3.139 & $1.026{\pm}0.034$ \\
+RF-UNet & CIFAR-10 & H32 & $100.0{\pm}0.0$ & 0 (observed) & $1.032{\pm}0.021$ \\
+\addlinespace[2pt]
+RF-UNet & CelebA-64 & O5 & $100.0{\pm}0.0$ & 3.131 & $1.073{\pm}0.007$ \\
+RF-UNet & CelebA-64 & H5 & $100.0{\pm}0.0$ & 3.118 & $1.093{\pm}0.015$ \\
+RF-UNet & CelebA-64 & H32 & $100.0{\pm}0.0$ & 0 (observed) & $1.106{\pm}0.031$ \\
+\addlinespace[2pt]
+SD3.5 DiT & Image latents & O5 & $100.0{\pm}0.0$ & 3.086 & $1.035{\pm}0.045$ \\
+SD3.5 DiT & Image latents & H5 & $100.0{\pm}0.0$ & 3.142 & $1.024{\pm}0.017$ \\
+SD3.5 DiT & Image latents & H32 & $100.0{\pm}0.0$ & 0 (observed) & $0.988{\pm}0.022$ \\
+\addlinespace[2pt]
+Audio MLP & FMA & O5 & $100.0{\pm}0.0$ & 3.106 & $1.005{\pm}0.002$ \\
+Audio MLP & FMA & H32 & $100.0{\pm}0.0$ & 0 (observed) & $1.003{\pm}0.002$ \\
+\addlinespace[2pt]
+Audio Transformer & FMA & O5 & $100.0{\pm}0.0$ & 3.140 & $0.994{\pm}0.004$ \\
+Audio Transformer & FMA & H32 & $100.0{\pm}0.0$ & 0 (observed) & $0.999{\pm}0.004$ \\
+\addlinespace[2pt]
+Stable Audio & FMA & O5 & $100.0{\pm}0.0$ & 3.142 & $1.006{\pm}0.028$ \\
+Stable Audio & FMA & H32 & $100.0{\pm}0.0$ & 0 (observed) & $0.969{\pm}0.011$ \\
+\bottomrule\end{tabular}}\end{table}
