@@ -70,13 +70,13 @@ Training is GPU-oriented and may be slow on CPU.
 Run the MNIST MLP experiment:
 
 ```bash
-python flow_watermark_mnist_mlp.py
+python run.py models/flow_watermark_mnist_mlp.py
 ```
 
 Run the UNet + LoRA experiment:
 
 ```bash
-python flow_watermark_unet_lora.py
+python run.py models/flow_watermark_unet_lora.py
 ```
 
 In `flow_watermark_unet_lora.py`, set:
@@ -91,16 +91,16 @@ before running. Checkpoints are written under `checkpoints/` or
 Run a Hugging Face checkpoint-based flow-matching evaluation:
 
 ```bash
-python watermark_hf_flow_unet.py --dataset cifar10 --wm_message 10101
+python run.py models/watermark_hf_flow_unet.py --dataset cifar10 --wm_message 10101
 ```
 
 Useful table-oriented variants:
 
 ```bash
-python watermark_hf_flow_unet.py --dataset mnist --wm_message 10101
-python watermark_hf_flow_unet.py --dataset cifar10 --wm_message 10101 --sweep queries
-python watermark_hf_flow_unet.py --dataset cifar10 --wm_message 10101 --wm_eps 0.5
-python watermark_hf_flow_unet.py --dataset celeba64 --data_source base_samples --base_sample_pool cache/celeba64_base_samples.pt
+python run.py models/watermark_hf_flow_unet.py --dataset mnist --wm_message 10101
+python run.py models/watermark_hf_flow_unet.py --dataset cifar10 --wm_message 10101 --sweep queries
+python run.py models/watermark_hf_flow_unet.py --dataset cifar10 --wm_message 10101 --wm_eps 0.5
+python run.py models/watermark_hf_flow_unet.py --dataset celeba64 --data_source base_samples --base_sample_pool cache/celeba64_base_samples.pt
 ```
 
 The script writes `results.json`, `results.csv`, LoRA adapters, and the
@@ -109,13 +109,13 @@ watermark key under `hf_flow_unet_wm/`.
 Generate the broader table experiment grid without running it:
 
 ```bash
-python run_table_experiments.py --out_root table_runs --manifest table_runs/manifest.json
+python run.py experiments/architectures/run_table_experiments.py --out_root table_runs --manifest table_runs/manifest.json
 ```
 
 Generate only SD3.5 ablations:
 
 ```bash
-python run_table_experiments.py --only sd35-query,sd35-epsilon,sd35-rank,sd35-steps --slurm table_runs/run_sd35_grid.sh
+python run.py experiments/architectures/run_table_experiments.py --only sd35-query,sd35-epsilon,sd35-rank,sd35-steps --slurm table_runs/run_sd35_grid.sh
 ```
 
 On a GPU node, add `--run` to execute directly. The HF flow-UNet rows are
@@ -125,7 +125,7 @@ watermark accuracy and separation are strong enough.
 After runs finish, aggregate across watermark messages:
 
 ```bash
-python collect_results.py --manifest table_runs/manifest.json --out_dir table_runs/summary
+python run.py experiments/reporting/collect_results.py --manifest table_runs/manifest.json --out_dir table_runs/summary
 ```
 
 Use `table_runs/summary/aggregate.csv` for table entries; it reports
@@ -148,7 +148,7 @@ creates `table_runs/` itself, and `--skip_existing` resumes after an
 interruption without repeating completed messages:
 
 ```bash
-nohup python -u run_table_experiments.py \
+nohup python -u run.py experiments/architectures/run_table_experiments.py \
   --only flow-unet-payload-capacity --run --skip_existing \
   --manifest table_runs/manifest_payload_capacity.json \
   > payload_capacity.log 2>&1 &
@@ -157,7 +157,7 @@ nohup python -u run_table_experiments.py \
 After it finishes, aggregate the five messages at each payload size:
 
 ```bash
-python collect_results.py --manifest table_runs/manifest_payload_capacity.json \
+python run.py experiments/reporting/collect_results.py --manifest table_runs/manifest_payload_capacity.json \
   --out_dir table_runs/summary_payload_capacity
 ```
 
@@ -171,7 +171,7 @@ five-bit hypercube grid provides the matched-payload encoding ablation.
 Generate the image experiment manifest (without starting training):
 
 ```bash
-python run_main_architectures.py --families mlp unet sd35 \
+python run.py experiments/architectures/run_main_architectures.py --families mlp unet sd35 \
   --schemes orthogonal5 hypercube32
 ```
 
@@ -204,7 +204,7 @@ a positive pooled score does not imply every hypercube bit has the correct
 sign. Diagnose a saved SD3.5 adapter without retraining:
 
 ```bash
-python diagnose_sd35_hypercube.py \
+python run.py experiments/architectures/diagnose_sd35_hypercube.py \
   --run-dir table_runs/main_architectures/sd35/hypercube32/MESSAGE \
   --output table_runs/sd35_diagnostics/MESSAGE.json
 ```
@@ -262,7 +262,7 @@ These runs test execution only, not recovery efficacy. It then prepares
 
 ```bash
 OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 TOKENIZERS_PARALLELISM=false \
-  nohup .venv-audio/bin/python -u run_fma_audio_study.py \
+  nohup .venv-audio/bin/python -u run.py experiments/audio/run_fma_audio_study.py \
   > table_runs/run_fma_audio_study.log 2>&1 &
 ```
 
@@ -278,7 +278,7 @@ its own downloaded recordings. Neither is included in this FMA launch.
 Prepare local recordings using their official train/test splits:
 
 FMA-small audio and metadata can be downloaded from the official host with
-`python download_audio_datasets.py`. Downloads resume from partial files,
+`python run.py experiments/audio/download_audio_datasets.py`. Downloads resume from partial files,
 are checked against the publisher's SHA-1 hashes, and are extracted into
 `data/audio/`. Reserve at least 20 GiB for the archives and extraction.
 Use `data/audio/fma_small` as the FMA root and
@@ -286,12 +286,12 @@ Use `data/audio/fma_small` as the FMA root and
 not automatically launch codec preparation or GPU training.
 
 ```bash
-python prepare_audio_latents.py --dataset maestro \
+python run.py experiments/audio/prepare_audio_latents.py --dataset maestro \
   --root /path/to/maestro-v3.0.0 \
   --metadata /path/to/maestro-v3.0.0/maestro-v3.0.0.csv \
   --output table_runs/cache/maestro_music2latent.pt
 
-python prepare_audio_latents.py --dataset fma \
+python run.py experiments/audio/prepare_audio_latents.py --dataset fma \
   --root /path/to/fma_small --metadata /path/to/fma_metadata/tracks.csv \
   --output table_runs/cache/fma_music2latent.pt
 ```
@@ -307,7 +307,7 @@ training receives 1,000 updates.
 Run both main configurations on the two audio flow architectures:
 
 ```bash
-python run_main_architectures.py --families audio \
+python run.py experiments/architectures/run_main_architectures.py --families audio \
   --audio-pools maestro=table_runs/cache/maestro_music2latent.pt \
     fma=table_runs/cache/fma_music2latent.pt \
   --schemes orthogonal5 hypercube32 \
@@ -337,7 +337,7 @@ Run the real-audio execution check before a full Stable Audio study:
 
 ```bash
 OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 TOKENIZERS_PARALLELISM=false \
-  ENABLE_TORCH_COMPILE=0 .env-stable-audio/bin/python -u run_stable_audio_smoke.py
+  ENABLE_TORCH_COMPILE=0 .env-stable-audio/bin/python -u run.py experiments/audio/run_stable_audio_smoke.py
 ```
 
 Logs, generated WAVs, and the smoke-only summary are under
@@ -355,15 +355,15 @@ marks results incomplete.
 Aggregate each manifest after its runs finish:
 
 ```bash
-python collect_results.py --manifest table_runs/manifest_main_architectures.json \
+python run.py experiments/reporting/collect_results.py --manifest table_runs/manifest_main_architectures.json \
   --out_dir table_runs/summary_main_architectures
-python collect_results.py --manifest table_runs/manifest_main_audio.json \
+python run.py experiments/reporting/collect_results.py --manifest table_runs/manifest_main_audio.json \
   --out_dir table_runs/summary_main_audio
 ```
 
 The collector keeps architectures, datasets, codebooks, and payloads
 separate. These runners do not insert unmeasured values into `paper/main.tex`.
-Run implementation checks with `python -m unittest test_main_architectures`.
+Run implementation checks with `python run.py test test_main_architectures`.
 
 ## Original-Key MLP Repair Probes
 
@@ -375,7 +375,7 @@ both pure-noise and interpolated queries. These are additional optimizer
 updates, not a replacement for the original training budget.
 
 ```bash
-python repair_mlp_watermarks.py \
+python run.py experiments/architectures/repair_mlp_watermarks.py \
   --run-dir table_runs/main_architectures/mlp/hypercube32 \
   --output-dir table_runs/repairs/mlp/hypercube32 --steps 200
 ```
@@ -511,7 +511,7 @@ individual effects of compensation, margin loss, and extra updates.
 
 ## Saved Metric Audit
 
-`python audit_saved_metrics.py` exports existing run metrics to
+`python run.py experiments/reporting/audit_saved_metrics.py` exports existing run metrics to
 `table_runs/metrics_audit/metrics.csv` and `metrics.json` without model loading
 or changes to source results. It derives exact-recovery failure rates and
 BER where saved bit accuracy is available, or where 100% exact recovery
@@ -543,11 +543,11 @@ velocity queries. The extended check uses 10 million claims per encoding:
 O5 313,093 matches (3.13093%), H5 312,341 (3.12341%), H32 zero matches
 (one-sided 95% upper bound 0.0000299573%). Zero 32-bit matches cannot
 establish a zero population rate. Reproduce with
-`python sample_random_claim_fpr.py --trials 10000000 --seed 830042 --output table_runs/random_claim_fpr/results_10m.json`.
+`python run.py experiments/verification/sample_random_claim_fpr.py --trials 10000000 --seed 830042 --output table_runs/random_claim_fpr/results_10m.json`.
 The paper's FPR table instead uses genuine fresh-query results from
 `evaluate_fresh_mlp_fpr.py --trials 10000`: independent query seeds,
 random keys and claims, plus the original fixed-target controls, sharing
-clean forward passes across encodings. `python refresh_paper_performance.py`
+clean forward passes across encodings. `python run.py experiments/reporting/refresh_paper_performance.py`
 regenerates the main performance table from completed measurements. The fresh-key study
 remains specific to MLP; the other cohorts use their saved random keys.
 `generate_sd35_sample_figure.py --varied-subjects --steps 40 --output table_runs/sd35_sample_figure_varied --figure-name sd35_clean_watermarked_varied`
@@ -559,54 +559,9 @@ waits for the existing audio job to release the GPU, evaluates SD3.5 O5/H5
 with the standard sampler using `--quality-only`, and fills the remaining
 quality entries. These quality evaluations do not train or calibrate models.
 
-## Clean FTSS Outcome Study
-
-`run_ftss_outcome_study.py` extends the matched FTSS MLP experiment using
-its two saved clean 12,000-image base checkpoints. It fine-tunes on nested,
-class-balanced sets of 50, 200, and 1,000 new images, with three subset
-seeds per base, and evaluates EMA weights at 0, 1,000, and 3,000 steps.
-No watermark is trained. The sibling `../ftss-memorization` repository is
-read without modification.
-
-```bash
-OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
-python -u run_ftss_outcome_study.py
-```
-
-The original FTSS probe definition is evaluated with the validated batched
-backend. Paired generation uses 1,000 samples per checkpoint. Outcomes include
-equal-pool training-example preference, training/held-out flow-loss gap,
-loss-based membership AUC, feature precision and coverage, and style diversity.
-Results, per-sample audits, descriptive associations, and figures are saved in
-`table_runs/ftss_outcome_study/`. Re-running the identical command resumes
-completed measurements and saved optimizer states; changed protocols require a
-new output directory. Shared base models and repeated checkpoints are recorded
-as dependent observations, not independent model replications. This study does
-not modify the watermark paper.
-
-### Pretrained CIFAR-10 Extension
-
-`python -u run_ftss_cifar_study.py` evaluates the public clean CIFAR-10
-class-conditional RF-UNet during full-parameter fine-tuning. Defaults are
-50/200/1,000-image nested test-split subsets, three subset seeds, and
-0/300/1,000/3,000-step EMA evaluations. FTSS uses 20 balanced trajectories
-and keeps the requested class fixed across each trajectory and its
-perturbations. Generation uses 500 balanced class conditions and 100 Euler
-steps. Quality is measured with Inception FID and PRDC, with disjoint
-real-versus-real controls at matched sample counts. Training-example
-preference is class-matched in feature and pixel spaces; flow-loss
-membership and within-class diversity provide separate outcomes.
-
-Results, optimizer snapshots, per-sample audits, and sample grids are in
-`table_runs/ftss_cifar_study/`. The identical command resumes saved work.
-The final report and association figures are generated automatically.
-This uses one pretrained base, not independently trained model seeds, and
-does not change either paper or the original checkpoint. Subset seeds
-repeat fine-tuning, not base pretraining.
-
 ## Watermark Security Follow-Up
 
-`python -u run_watermark_security.py` evaluates the saved five O5 and five
+`python -u run.py experiments/security/run_watermark_security.py` evaluates the saved five O5 and five
 H32 CIFAR-10 watermarks without re-embedding them. The three attack families
 are key-free carrier subtraction, sample-only versus velocity-supervised
 student transfer, and full-backbone clean fine-tuning. Carrier estimation
@@ -630,31 +585,6 @@ summaries and the quality/recovery figure are in
 `table_runs/watermark_security/`. Re-running the identical command resumes
 saved work; changed settings require a new output directory. The runner
 does not modify the paper automatically.
-
-### Held-Out FTSS Diagnostic Validation
-
-`python -u run_ftss_diagnostic_validation.py` calibrates an FTSS ratio
-threshold on the earlier UNet endpoint runs, then freezes it before
-measuring new tuning seeds. Both clean MNIST MLP and UNet models are
-tested. Each condition uses 400 distinct images: uniform sampling,
-80% sampling mass on ten selected examples without changing the data,
-and diverse digit-1 specialization. All 400 members are audited against
-400 untouched same-domain examples; 200 more examples supply quality
-references. A fixed pixel-RMSE near-copy rule is applied symmetrically
-to members and nonmembers. The primary outcome is at least one percentage
-point of training-minus-reference near-copy excess, not the condition's
-name. All checkpoints generate 1,000 samples.
-
-Primary sensitivity and false-alarm counts use the final 3,000-step
-checkpoints; intermediate evaluations are secondary. Calibration FTSS is
-remeasured with the same original-paper estimator used in validation.
-Previously inspected calibration data are explicitly distinguished from
-the new seeds, and the MLP results test transfer of the UNet-calibrated
-rule. Checkpoints share one pretrained base per architecture, so seed
-repeats are not independent base-model replications. Reports, the frozen
-rule, source hashes, near-neighbor audits, numerical-clamp counters and
-figures are saved in `table_runs/ftss_diagnostic_validation/`. The identical
-command resumes work. This runner does not modify either paper.
 
 ## Reproducibility
 
@@ -694,8 +624,8 @@ population false-positive guarantee.
 
 ```bash
 OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 TOKENIZERS_PARALLELISM=false \
-ENABLE_TORCH_COMPILE=0 .env-stable-audio/bin/python -u run_audio_ownership.py
-.env-stable-audio/bin/python finalize_audio_ownership.py
+ENABLE_TORCH_COMPILE=0 .env-stable-audio/bin/python -u run.py experiments/verification/run_audio_ownership.py
+.env-stable-audio/bin/python run.py experiments/verification/finalize_audio_ownership.py
 ```
 
 The evaluator resumes completed calibration trials and per-message tests in
@@ -704,31 +634,6 @@ the metrics, generates `paper/audio_ownership_results.tex`, refreshes the metric
 audit, and rebuilds the paper. `finalize_audio_ownership.py --wait` waits for an
 already-running evaluator before performing those steps. It refuses to publish
 partial or failed evaluations.
-# Clean SD3.5 Fine-Tuning Sensitivity
-
-`run_ftss_sd35_finetuning.py` tests whether ordinary, unwatermarked LoRA
-fine-tuning changes SD3.5's remaining-flow sensitivity. Defaults use 10 and
-200 real CIFAR-10 cat images, three seeds, and checkpoints at 0, 100, 300,
-and 1,000 optimizer steps. The cached clean backbone is used without any
-watermark adapter. Training uses AdamW at `5e-5`, rank-16 attention and
-feed-forward LoRA, batch 8, and the standard noise-minus-data target.
-
-This is a 256px, cat-conditioned, CFG=1 pilot, not a native-resolution or
-full-parameter experiment. Euler integration runs from noise sigma 1 to
-data sigma 0, using FP32 latent states and BF16 network evaluation. Paired
-probes compare RMS finite-difference gains at relative perturbations 0.02
-and 0.1. Reports include complete temporal curves and train/reference
-flow losses; latent nearest-neighbor distances are not labeled as copies.
-
-```bash
-python -u run_ftss_sd35_finetuning.py
-python -m unittest test_ftss_sd35_finetuning
-```
-
-Results, checkpoints, the report, and the final curve figure are written to
-`table_runs/ftss_sd35_finetuning/`. Existing output directories are preserved;
-use `--output` for an independent run.
-
 ## Embedding Strategy and Whole-Model Robustness
 
 `run_embedding_strategy_robustness.py` compares LoRA and full-parameter
@@ -755,8 +660,8 @@ be compared before interpreting attack differences; identical training
 budgets do not guarantee identical initial recovery or quality.
 
 ```bash
-python -u run_embedding_strategy_robustness.py
-python -m unittest test_embedding_strategy_robustness
+python -u run.py experiments/robustness/run_embedding_strategy_robustness.py
+python run.py test test_embedding_strategy_robustness
 ```
 
 The default matrix has 200 evaluations, saved with checkpoints, source
@@ -767,7 +672,7 @@ require a separate `--output`. Existing paper tables are not overwritten.
 
 ## Secret-Carrier Pilot
 
-`python run_secret_carrier_pilot.py` compares sine, secret multi-tone, and
+`python run.py experiments/security/run_secret_carrier_pilot.py` compares sine, secret multi-tone, and
 smooth input-dependent carriers on one CIFAR UNet H32 message. Each has an exact
 injected-field control and a separate 300-step LoRA embedding. A fresh shared
 projection and private carrier seed are saved locally for reproducibility.
@@ -785,7 +690,7 @@ restart deterministically. This pilot does not modify the manuscript.
 
 ## Rare-Region Gate Pilot
 
-`python run_tail_gate_pilot.py` screens a smooth sigmoid gate on a private
+`python run.py experiments/security/run_tail_gate_pilot.py` screens a smooth sigmoid gate on a private
 standardized state projection. Thresholds 2.5/4 and slopes 2/4 give four cases.
 The coordinate uses the time-dependent mean and variance of the interpolation
 distribution, measured from public CIFAR training data. Owner queries shift an
@@ -817,7 +722,7 @@ Neither pilot automatically changes the manuscript.
 The frozen design is in `baseline_protocol.md`. Start development calibration:
 
 ```bash
-python run_baseline_first.py --stage tune
+python run.py experiments/baselines/run_baseline_first.py --stage tune
 ```
 
 This runs three prespecified strengths for each of four methods at 32 and five
@@ -830,7 +735,7 @@ is retained. Development strengths are selected without attack results.
 After calibration completes, five independent-key confirmation runs per setting:
 
 ```bash
-python run_baseline_first.py --stage confirm
+python run.py experiments/baselines/run_baseline_first.py --stage confirm
 ```
 
 The confirmation command verifies that sources, protocol, sampling, optimizer
@@ -842,6 +747,13 @@ floor. `baseline_gate.md` remains pending until the later comparative attacks
 and transfer studies exist. This runner implements calibration and confirmation,
 not the subsequent attack matrix or a premature claim of advantage.
 
-`python run_baseline_first_sequence.py` runs both stages sequentially with the
+`python run.py experiments/baselines/run_baseline_first_sequence.py` runs both stages sequentially with the
 frozen defaults. It records progress in `sequence.json` and stops on an error.
 It does not start the attack matrix before the baseline acceptance audit.
+
+## FTSS Follow-Up Studies
+
+FTSS runners, tests and detailed protocols moved to
+`../ftss-memorization/studies/flow_finetuning/` and its
+`docs/FLOW_FINETUNING.md`. Use `python run_study.py --list` in that repository.
+See [REPOSITORY.md](REPOSITORY.md#ftss-studies) for artifact and migration paths.

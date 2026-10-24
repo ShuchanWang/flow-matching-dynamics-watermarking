@@ -52,7 +52,7 @@ assumed by the pilot.
 
 ## Scope
 
-Run `python run_endpoint_loop_pilot.py` for the real CIFAR UNet H32 test, 160
+Run `python run.py experiments/endpoint/run_endpoint_loop_pilot.py` for the real CIFAR UNet H32 test, 160
 independent seeds and 25/50/100 steps in FP32 without TF32. Configurations, source
 hashes, full endpoint tensors, signatures and image grids go to
 `table_runs/endpoint_loop_pilot/`. This is an analytic wrapper experiment, not a
@@ -130,7 +130,7 @@ closely while still recovering the message.
 The tested full-parameter recipe is:
 
 ```bash
-python run_endpoint_loop_training.py \
+python run.py experiments/endpoint/run_endpoint_loop_training.py \
   --output table_runs/endpoint_loop_training_balanced_full \
   --parameterization full --arms additive loop \
   --checkpoints 100 300 1000 --projected-weight 0.1 --lr 0.00001
@@ -186,7 +186,7 @@ create 20 independent messages. FID uses 1,000 generated images and a matched
 balanced real reference for all students and teachers.
 
 ```bash
-OPENBLAS_NUM_THREADS=4 OMP_NUM_THREADS=4 python run_endpoint_loop_distillation.py
+OPENBLAS_NUM_THREADS=4 OMP_NUM_THREADS=4 python run.py experiments/endpoint/run_endpoint_loop_distillation.py
 ```
 
 Full checkpoints, teacher datasets and progress are saved under
@@ -211,7 +211,7 @@ in all three seeds, with image quality close to its clean-student control.
 Its positive gain over the control and signed score changes motivate a separate
 diagnostic of weak structured differences.
 
-`tools/analyze_endpoint_loop_distillation.py` computes this post-hoc diagnostic
+`experiments/endpoint/analyze_endpoint_loop_distillation.py` computes this post-hoc diagnostic
 from the saved scores. Within each 4,096-query trial, it subtracts the matched
 clean student's score vector before taking signs. Its mean bit accuracy is
 90.63 +/- 0.00% for balanced full training and 93.44 +/- 1.28% for LoRA. Both
@@ -229,7 +229,7 @@ result. The ideal conjugacy theorem remains valid; the learned fields retain
 nonzero, structured approximation errors.
 
 ```bash
-python tools/analyze_endpoint_loop_distillation.py
+python run.py experiments/endpoint/analyze_endpoint_loop_distillation.py
 ```
 
 Final per-student outcomes are in the study's `report.md` and `results.json`;

@@ -14,6 +14,8 @@ Code and manuscript for dynamics-level watermarking through velocity queries.
 
 Run commands from the repository root. Downloaded data, model checkpoints,
 environments and full experiment outputs are local artifacts, not Git content.
+Use `python run.py --list` to browse tasks and `python run.py <script> [args]`
+to launch them. Tests live beside each task's runners.
 
 ## Setup
 
@@ -26,22 +28,22 @@ pip install -r requirements.txt
 The public RF-UNet checkpoint uses the UNet implementation from
 `keishihara/flow-matching`, not the unrelated PyPI package of the same name.
 See the [detailed setup](docs/EXPERIMENTS.md#setup) and the optional
-`requirements-audio.txt`, `requirements-stable-audio.txt` and
-`requirements-ftss.txt` files for their respective studies.
+`requirements-audio.txt` and `requirements-stable-audio.txt` files for audio.
+FTSS studies and requirements now live in the sibling
+[`ftss-memorization`](../ftss-memorization) repository.
 
 ## Main Entry Points
 
 | Purpose | Entry Point |
 |---|---|
-| MNIST MLP | `flow_watermark_mnist_mlp.py` |
-| Local UNet | `flow_watermark_unet_lora.py` |
-| Pretrained RF-UNet | `watermark_hf_flow_unet.py` |
-| SD3.5 | `watermark_sd35.py` |
-| Audio flow models | `watermark_audio_flow.py` |
-| Main architecture comparison | `run_main_architectures.py` |
-| Whole-model embedding comparison | `run_embedding_strategy_robustness.py` |
-| Removal and transfer | `run_watermark_security.py` |
-| Baseline-first sequence | `run_baseline_first_sequence.py` |
+| Model implementations | `models/` |
+| Main architecture comparison | `experiments/architectures/` |
+| Audio preparation and training | `experiments/audio/` |
+| Whole-model robustness | `experiments/robustness/` |
+| Removal and transfer | `experiments/security/` |
+| Baseline comparisons | `experiments/baselines/` |
+| Exact-endpoint experiments | `experiments/endpoint/` |
+| Payload, quality and verification | Their respective folders under `experiments/` |
 
 Historical diagnostics, pilot runners and their tests remain available.
 Negative results are retained as experimental evidence, not removed.
@@ -49,18 +51,20 @@ Negative results are retained as experimental evidence, not removed.
 ## Current Comparison
 
 ```bash
-python run_baseline_screen.py
+python run.py experiments/baselines/run_baseline_screen.py
 ```
 
 Five-bit tuning and the confirmation sequence were stopped at the user's request.
 This screen reuses the saved, perfectly decoded 32-bit candidate with the lowest
 quality cost per method. It tests whole-model modifications and same/smaller-
 architecture transfer with paired controls and 5,000-image FID/KID. It is a
-one-key screening comparison, not five-key confirmation. Use the identical
-command to resume. Progress is in `table_runs/baseline_screen32.log` and
+one-key screening comparison, not five-key confirmation. Results are in
+`table_runs/baseline_screen32.log` and
 `table_runs/baseline_screen32/results.json`. The original frozen protocol and
 all failed development results remain available; do not restart the old sequence
 unless five-bit work and confirmation are intentionally requested again.
+For historical source fingerprints and resuming frozen studies, see the
+[migration notes](docs/REPOSITORY.md#reproducibility).
 
 ## Result Snapshots
 
@@ -76,11 +80,11 @@ a replacement for an external archive of full research artifacts.
 ## Tests
 
 ```bash
-python -m unittest discover -p 'test_*.py'
+python run.py test
 ```
 
 Some tests and integrations need optional dependencies. Focused tests can be
-run by module, for example `python -m unittest test_baseline_first`.
+run by module, for example `python run.py test test_baseline_first`.
 
 ## Paper
 

@@ -1,159 +1,41 @@
-# Paper repository allowlist. Local scratch files, downloaded data,
-# checkpoints, and generated outputs stay on disk but are not tracked.
+# Reviewed sources and compact evidence only. Full research artifacts stay local.
 /*
 !/.gitignore
 !/README.md
-!/run_endpoint_loop_training.py
-!/test_endpoint_loop_training.py
-!/audit_endpoint_loop_training.py
-!/run_endpoint_loop_distillation.py
-!/test_endpoint_loop_distillation.py
-!/requirements.txt
 !/LICENSE
-!/flow_watermark_mnist_mlp.py
-!/flow_watermark_unet_lora.py
-!/watermark_hf_flow_unet.py
-!/watermark_sd35.py
-!/run_table_experiments.py
-!/collect_results.py
-!/audit_saved_metrics.py
-!/evaluate_embedding_budget.py
-!/run_adaptive_study.py
-!/watermark_codebooks.py
-!/prepare_audio_latents.py
-!/download_audio_datasets.py
-!/diagnose_sd35_hypercube.py
-!/repair_mlp_watermarks.py
-!/run_sd35_repair_suite.py
-!/watermark_audio_flow.py
-!/run_main_architectures.py
-!/run_fma_audio_study.py
-!/requirements-audio.txt
-!/requirements-stable-audio.txt
-!/run_stable_audio_smoke.py
-!/run_stable_audio_pilot.py
-!/run_stable_audio_validation.py
-!/run_stable_audio_more_steps.py
-!/run_stable_audio_margin_pilot.py
-!/run_stable_audio_margin_suite.py
-!/test_main_architectures.py
+!/run.py
+!/repo_layout.py
+!/test_repo_layout.py
+!/requirements*.txt
+!/baseline_protocol.md
+!/models/
+!/experiments/
+!/tools/
+!/docs/
+!/results/
 !/paper/
-!/paper/main.tex
-!/paper/ref.bib
-!/paper/outputs/
-!/paper/outputs/*.png
 
-# Python
 __pycache__/
 *.py[cod]
 *.egg-info/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-
-# Environments
-.venv/
-venv/
-env/
-
-# IDE and notebooks
-.idea/
-.vscode/
-.ipynb_checkpoints/
-
-# LaTeX build artifacts
-/paper/main.pdf
-*.aux
-*.bbl
-*.bcf
-*.blg
-*.fdb_latexmk
-*.fls
 *.log
-*.out
-*.run.xml
-*.synctex.gz
-*.toc
 
-# System files
-!/run_audio_ownership.py
-!/test_audio_ownership.py
-!/finalize_audio_ownership.py
-!/evaluate_mlp_image_fid.py
-!/refresh_paper_performance.py
-!/run_missing_image_quality.py
-!/test_paper_performance.py
-!/sample_random_claim_fpr.py
-!/generate_sd35_sample_figure.py
-!/evaluate_fresh_mlp_fpr.py
-!/test_fresh_mlp_fpr.py
-!/complete_paper_fpr.py
-!/run_ftss_finetuning.py
-!/summarize_ftss_finetuning.py
-!/test_ftss_finetuning.py
-!/run_unmarked_memorization.py
-!/analyze_unmarked_memorization.py
-!/analyze_memorization_collapse.py
-!/test_memorization_collapse.py
-!/evaluate_generative_generalization.py
-!/test_generative_generalization.py
-!/requirements-ftss.txt
-!/run_matched_ftss_mlp.py
-!/test_matched_ftss_mlp.py
-!/ftss_batched.py
-!/test_ftss_batched.py
-!/validate_ftss_batched.py
-!/run_payload_extension.py
-!/test_payload_extension.py
-!/finalize_payload_paper.py
-!/test_unmarked_memorization.py
-.DS_Store
-!/run_ftss_outcome_study.py
-!/test_ftss_outcome_study.py
-!/run_ftss_cifar_study.py
-!/test_ftss_cifar_study.py
-!/run_watermark_security.py
-!/test_watermark_security.py
-!/audit_watermark_students.py
-!/run_ftss_diagnostic_validation.py
-!/test_ftss_diagnostic_validation.py
-!/run_ftss_sd35_finetuning.py
-!/test_ftss_sd35_finetuning.py
-!/run_carrier_mismatch.py
-!/test_carrier_mismatch.py
-!/finalize_carrier_mismatch.py
-!/run_embedding_strategy_robustness.py
-!/test_embedding_strategy_robustness.py
-!/run_secret_carrier_pilot.py
-!/test_secret_carrier_pilot.py
-!/run_tail_gate_pilot.py
-!/test_tail_gate_pilot.py
-!/run_baseline_first.py
-!/test_baseline_first.py
-!/baseline_protocol.md
-!/run_baseline_first_sequence.py
-
-# Documentation, tooling, and reviewed lightweight evidence only.
-!/docs/
-!/tools/
-!/results/
+# Compact exported evidence only, never weights or owner keys.
 /results/**/*
 !/results/**/
 !/results/**/*.json
 !/results/**/*.csv
 !/results/**/*.md
 
-# Keep source-file eligibility consistent for existing tracked helpers.
-!/inspect_flow_unet_run.py
-!/measure_flow_unet_signal.py
-!/run_flow_unet_robustness.py
-
-# Sync the current manuscript's figures, not unused variants or duplicate previews.
+# Manuscript sources and referenced figures.
+/paper/*
+!/paper/main.tex
+!/paper/ref.bib
+!/paper/performance_results.tex
+!/paper/figures/
 /paper/figures/*
 !/paper/figures/sd35_clean_watermarked_trained_v2.pdf
 !/paper/figures/payload_query_scaling.pdf
-/paper/outputs/
-!/run_baseline_screen.py
-!/test_baseline_screen.py
-!/run_endpoint_loop_pilot.py
-!/test_endpoint_loop_pilot.py
