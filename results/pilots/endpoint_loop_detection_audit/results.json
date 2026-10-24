@@ -1,0 +1,421 @@
+{
+  "state": "complete",
+  "rows": [
+    {
+      "run": "table_runs/endpoint_loop_training",
+      "arm": "additive",
+      "step": 1000,
+      "model_sha256": "c3f7f948cc6677431c2a3414b534b969ce671ed53f3a37ec152269530ad7ae1c",
+      "training_config_sha256": "287ab9f5603ef97fa9c99ec22b091a86df877802625337d2fd13adb74ece4294",
+      "detection": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "within_model_interval": [
+          0.8315665290169146,
+          1.0
+        ],
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "verification_cost": {
+          "interface": "velocity queries",
+          "inputs": 81920,
+          "velocity_calls": 81920,
+          "weight_reads": 0
+        },
+        "verification_elapsed_seconds": 44.57726510800421
+      }
+    },
+    {
+      "run": "table_runs/endpoint_loop_training",
+      "arm": "loop",
+      "step": 1000,
+      "model_sha256": "61be98c5b4c4dc2c99e1e954b5b32114fce0023cbf7535da7c3c193d2bfac628",
+      "training_config_sha256": "287ab9f5603ef97fa9c99ec22b091a86df877802625337d2fd13adb74ece4294",
+      "detection": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "within_model_interval": [
+          0.8315665290169146,
+          1.0
+        ],
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "verification_cost": {
+          "interface": "velocity queries",
+          "inputs": 81920,
+          "velocity_calls": 81920,
+          "weight_reads": 0
+        },
+        "verification_elapsed_seconds": 44.40931010711938
+      }
+    },
+    {
+      "run": "table_runs/endpoint_loop_training_balanced_full",
+      "arm": "additive",
+      "step": 1000,
+      "model_sha256": "e80dc82898911c23c7c9fab63e5a85b821a82d44293de9a18a9bb29f6b7caa44",
+      "training_config_sha256": "e6997556f84a50c080a1db98c0342570bfa41ed3b4a2fc7aa3b5220ae9f47d01",
+      "detection": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "within_model_interval": [
+          0.8315665290169146,
+          1.0
+        ],
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "verification_cost": {
+          "interface": "velocity queries",
+          "inputs": 81920,
+          "velocity_calls": 81920,
+          "weight_reads": 0
+        },
+        "verification_elapsed_seconds": 37.14337384304963
+      }
+    },
+    {
+      "run": "table_runs/endpoint_loop_training_balanced_full",
+      "arm": "loop",
+      "step": 1000,
+      "model_sha256": "a345279e8c3d1b32593f586daef29f3e968a8bb475fcf444d402e7ea58dfee16",
+      "training_config_sha256": "e6997556f84a50c080a1db98c0342570bfa41ed3b4a2fc7aa3b5220ae9f47d01",
+      "detection": {
+        "recovery_percent": 100.0,
+        "bit_accuracy_percent": 100.0,
+        "within_model_interval": [
+          0.8315665290169146,
+          1.0
+        ],
+        "trials": [
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          },
+          {
+            "exact": true,
+            "bit_accuracy": 1.0
+          }
+        ],
+        "verification_cost": {
+          "interface": "velocity queries",
+          "inputs": 81920,
+          "velocity_calls": 81920,
+          "weight_reads": 0
+        },
+        "verification_elapsed_seconds": 37.14469962497242
+      }
+    }
+  ]
+}

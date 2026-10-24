@@ -7,6 +7,8 @@ Code and manuscript for dynamics-level watermarking through velocity queries.
 - [Repository layout and remote-sync policy](docs/REPOSITORY.md)
 - [Detailed experiment commands](docs/EXPERIMENTS.md)
 - [Frozen baseline-first protocol](baseline_protocol.md)
+- [Current saved 32-bit screen](docs/BASELINE_SCREEN.md)
+- [Endpoint-preserving construction and standalone training test](docs/ENDPOINT_LOOP.md)
 - [Compact result snapshots](results/README.md)
 - [Paper source](paper/main.tex)
 
@@ -47,15 +49,18 @@ Negative results are retained as experimental evidence, not removed.
 ## Current Comparison
 
 ```bash
-python run_baseline_first_sequence.py
+python run_baseline_screen.py
 ```
 
-This runs prespecified development tuning followed by five independent-key
-confirmation, with matched clean-finetuned controls and 5,000-image FID/KID.
-It does not automatically run the later attack matrix or update the paper.
-Use the identical command to resume; see the frozen protocol before changing
-settings. Progress is in `table_runs/baseline_first.log` and
-`table_runs/baseline_first/sequence.json`.
+Five-bit tuning and the confirmation sequence were stopped at the user's request.
+This screen reuses the saved, perfectly decoded 32-bit candidate with the lowest
+quality cost per method. It tests whole-model modifications and same/smaller-
+architecture transfer with paired controls and 5,000-image FID/KID. It is a
+one-key screening comparison, not five-key confirmation. Use the identical
+command to resume. Progress is in `table_runs/baseline_screen32.log` and
+`table_runs/baseline_screen32/results.json`. The original frozen protocol and
+all failed development results remain available; do not restart the old sequence
+unless five-bit work and confirmation are intentionally requested again.
 
 ## Result Snapshots
 

@@ -1,0 +1,87 @@
+{
+  "arguments": {
+    "source": "table_runs/baseline_first",
+    "output": "table_runs/baseline_screen32",
+    "methods": [
+      "dynamics",
+      "weight",
+      "trigger",
+      "naive"
+    ],
+    "conditions": [
+      "baseline",
+      "prune25",
+      "prune50",
+      "quant8",
+      "quant4",
+      "quant2",
+      "ft_low",
+      "ft_high",
+      "same_velocity",
+      "same_sample",
+      "small_velocity",
+      "small_sample"
+    ],
+    "steps": 1000,
+    "batch": 64,
+    "teacher_samples": 2000,
+    "samples": 5000,
+    "sample_steps": 100,
+    "sample_batch": 128,
+    "feature_batch": 32,
+    "queries": 4096,
+    "trials": 20,
+    "eval_batch": 512,
+    "kid_subset": 1000,
+    "kid_subsets": 20,
+    "eval_seed": 930042
+  },
+  "selection": [
+    {
+      "method": "dynamics",
+      "seed": 810032,
+      "trial": 1,
+      "strength": 1.5
+    },
+    {
+      "method": "weight",
+      "seed": 810032,
+      "trial": 0,
+      "strength": 0.1
+    },
+    {
+      "method": "trigger",
+      "seed": 810032,
+      "trial": 0,
+      "strength": 0.1
+    },
+    {
+      "method": "naive",
+      "seed": 810032,
+      "trial": 2,
+      "strength": 3.0
+    }
+  ],
+  "source_hashes": {
+    "run_baseline_screen.py": "30d32e7b7a688e63e7cd63102f2aae8914d6509fc58634ab5795611f2faea275",
+    "run_baseline_first.py": "6591ef8b02f9bfcb3693cbcf235124b61aedea264632b65e59e94fb5014a5931",
+    "run_watermark_security.py": "203f6373d7a33b76f0ffceee71fd420cbe32afa09ff2ef1de34d1e7d7b8c6c41",
+    "watermark_hf_flow_unet.py": "ccc5dbd3faa4b9f2c4377bb00d48ef941a0ed9cc89137ab0f4549b6e5b70b762",
+    "run_embedding_strategy_robustness.py": "1db833dc9d14bff4c3d2122ad531f3395ddb7b6c57dc64f5718069d0d4bb7564",
+    "run_flow_unet_robustness.py": "30362f4d4f76976ac968a542b6b8b525b47fdcf5d7edd78526caa54832ab7476",
+    "run_secret_carrier_pilot.py": "b1c2cd8ea0e44f491ff008affebc8298192c2defa75993bd42c53a287449af91",
+    "docs/BASELINE_SCREEN.md": "1ce9005a92166eef932a2ba547594b69fc0b1868c529a75f5f490d0bd8536acb"
+  },
+  "artifact_hashes": {
+    "table_runs/baseline_first/tune/32/0/dynamics/trial_1/marked/model.pt": "d06964075f84d1dacbab0e95dab19e3e06518193eb0542e3975e828ecbd786cd",
+    "table_runs/baseline_first/tune/32/0/dynamics/trial_1/control/model.pt": "0ab5f9ae18e2ed55687d3c24e6563d57e86189716a2191631e24e8514b471a79",
+    "table_runs/baseline_first/tune/32/0/key.pt": "57b046b5b55d9f14b0d6e93c823360a76612f8f34b23aae4271144cdd77b2d9b",
+    "table_runs/baseline_first/tune/32/0/weight/trial_0/marked/model.pt": "39c8bb00cdc594337197454141d521e5c69d38b677cbebb62462ec8f60f6b993",
+    "table_runs/baseline_first/tune/32/0/weight/trial_0/control/model.pt": "37dca11074496684bbe9400383952a5255c4a09432555094ae3b743b32b702f7",
+    "table_runs/baseline_first/tune/32/0/trigger/trial_0/marked/model.pt": "b3b3d4e2ef7f37d9ac9ea125794005dc76e6e927227746cc702a0cf1ba21d486",
+    "table_runs/baseline_first/tune/32/0/trigger/trial_0/control/model.pt": "f8eb17fdfcaf38f7a5f56d5747ef60b315d4a48d6ec67f11a0e5b848d1e8b6ed",
+    "table_runs/baseline_first/tune/32/0/naive/trial_2/marked/model.pt": "33917eaecd73b079313dd806ff015f4f9285897963848d2a45442c56cc8217ae",
+    "table_runs/baseline_first/tune/32/0/naive/trial_2/control/model.pt": "6c1336290b3ea3f10ba3214e330915d35fb0ef460ed3b3e4e3e9d5841715df47"
+  },
+  "original_config_sha256": "53aa14f2f5c63aa7f765eb2ead5fa7c85d7e6ffdcf31f443de464ec50c49cf0b"
+}

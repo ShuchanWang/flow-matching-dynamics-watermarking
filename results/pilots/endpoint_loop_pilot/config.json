@@ -1,0 +1,28 @@
+{
+  "arguments": {
+    "output": "table_runs/endpoint_loop_pilot",
+    "key": "table_runs/baseline_first/tune/32/0/key.pt",
+    "samples": 160,
+    "batch": 80,
+    "steps": [
+      25,
+      50,
+      100
+    ],
+    "epsilon": 1.5,
+    "trials": 4,
+    "seed": 20261024
+  },
+  "checkpoint_sha256": "8c4e9c2b5dacbeb6ee1dbd76733b03690a458f52d16f1dced2e609370d7002b1",
+  "key_sha256": "57b046b5b55d9f14b0d6e93c823360a76612f8f34b23aae4271144cdd77b2d9b",
+  "source_hashes": {
+    "run_endpoint_loop_pilot.py": "2c06ef6e5e70932e167d3470f53b7d891602e0bad7a5f831ae0165a1e378c5a6",
+    "run_watermark_security.py": "203f6373d7a33b76f0ffceee71fd420cbe32afa09ff2ef1de34d1e7d7b8c6c41",
+    "watermark_hf_flow_unet.py": "ccc5dbd3faa4b9f2c4377bb00d48ef941a0ed9cc89137ab0f4549b6e5b70b762",
+    "run_baseline_first.py": "6591ef8b02f9bfcb3693cbcf235124b61aedea264632b65e59e94fb5014a5931"
+  },
+  "construction": "Exact continuous translation loop and conjugacy-compatible clipped Euler",
+  "learned": false,
+  "reference_free_decoder": true,
+  "arithmetic": "FP32, TF32 disabled, deterministic cuDNN"
+}

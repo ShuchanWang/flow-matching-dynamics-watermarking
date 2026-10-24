@@ -18,6 +18,12 @@ STUDIES = {
     "embedding_strategy_robustness": "robustness",
     "secret_carrier_pilot": "pilots", "tail_gate_pilot": "pilots",
     "baseline_first/tune": "baselines", "baseline_first/confirm": "baselines",
+    "baseline_screen32": "baselines",
+    "endpoint_loop_pilot": "pilots",
+    "endpoint_loop_training": "pilots",
+    "endpoint_loop_training_balanced_full": "pilots",
+    "endpoint_loop_detection_audit": "pilots",
+    "endpoint_loop_distillation": "pilots",
 }
 FILES = {"config.json", "results.json", "summary.json", "aggregate.json", "per_run.json",
          "status.json", "manifest.json", "analysis.json", "report.md", "summary.csv", "aggregate.csv"}

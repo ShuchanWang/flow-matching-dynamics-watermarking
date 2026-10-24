@@ -1,0 +1,59 @@
+{
+  "arguments": {
+    "output": "table_runs/endpoint_loop_distillation",
+    "full_source": "table_runs/endpoint_loop_training_balanced_full",
+    "lora_source": "table_runs/endpoint_loop_training",
+    "teacher_step": 1000,
+    "seeds": [
+      61731,
+      62731,
+      63731
+    ],
+    "steps": 1000,
+    "batch": 64,
+    "lr": 0.0001,
+    "teacher_samples": 2000,
+    "quality_samples": 1000,
+    "sample_steps": 100,
+    "sample_batch": 128,
+    "feature_batch": 32,
+    "sample_seed": 81573,
+    "eval_seed": 94731,
+    "eval_batch": 256,
+    "queries": 4096,
+    "trials": 20
+  },
+  "teachers": [
+    {
+      "role": "clean",
+      "model": "<external>/ckpt.pth",
+      "model_sha256": "8c4e9c2b5dacbeb6ee1dbd76733b03690a458f52d16f1dced2e609370d7002b1"
+    },
+    {
+      "role": "loop_full",
+      "model": "table_runs/endpoint_loop_training_balanced_full/loop/model_step1000.pt",
+      "model_sha256": "a345279e8c3d1b32593f586daef29f3e968a8bb475fcf444d402e7ea58dfee16",
+      "parameterization": "full",
+      "config_sha256": "e6997556f84a50c080a1db98c0342570bfa41ed3b4a2fc7aa3b5220ae9f47d01"
+    },
+    {
+      "role": "loop_lora",
+      "model": "table_runs/endpoint_loop_training/loop/model_step1000.pt",
+      "model_sha256": "61be98c5b4c4dc2c99e1e954b5b32114fce0023cbf7535da7c3c193d2bfac628",
+      "parameterization": "lora",
+      "config_sha256": "287ab9f5603ef97fa9c99ec22b091a86df877802625337d2fd13adb74ece4294"
+    }
+  ],
+  "key_sha256": "57b046b5b55d9f14b0d6e93c823360a76612f8f34b23aae4271144cdd77b2d9b",
+  "sources": {
+    "run_endpoint_loop_distillation.py": "12e2483994456a3d1f1a1eb742892d05c759449b4a22b779ada66b60d72bf9a5",
+    "run_watermark_security.py": "203f6373d7a33b76f0ffceee71fd420cbe32afa09ff2ef1de34d1e7d7b8c6c41",
+    "watermark_hf_flow_unet.py": "ccc5dbd3faa4b9f2c4377bb00d48ef941a0ed9cc89137ab0f4549b6e5b70b762",
+    "run_baseline_first.py": "6591ef8b02f9bfcb3693cbcf235124b61aedea264632b65e59e94fb5014a5931",
+    "run_endpoint_loop_pilot.py": "2c06ef6e5e70932e167d3470f53b7d891602e0bad7a5f831ae0165a1e378c5a6",
+    "run_secret_carrier_pilot.py": "b1c2cd8ea0e44f491ff008affebc8298192c2defa75993bd42c53a287449af91"
+  },
+  "training": "Existing sample_only FM protocol; public clean initialization; no actual teacher object passed to training",
+  "precision": "FP32; TF32 off; deterministic cuDNN; ordinary 100-step Euler by default",
+  "replication": "One saved H32 message/key, paired student training seeds; no pooling query trials as independent messages"
+}

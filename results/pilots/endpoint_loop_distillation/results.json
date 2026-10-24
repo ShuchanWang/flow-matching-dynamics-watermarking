@@ -1,0 +1,1060 @@
+{
+  "rows": [
+    {
+      "role": "clean",
+      "seed": 61731,
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 45.0,
+        "within_model_interval": [
+          0.0,
+          0.1684334709830853
+        ],
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          }
+        ],
+        "verification_cost": {
+          "interface": "velocity queries",
+          "inputs": 81920,
+          "velocity_calls": 81920,
+          "weight_reads": 0
+        },
+        "verification_elapsed_seconds": 51.519593729870394,
+        "fid": 101.80073149492159
+      },
+      "model_sha256": "5c71bc6f74e8b24d7527fefe1d3670e8524775f74ed319a859c9a233bfc241e2"
+    },
+    {
+      "role": "loop_full",
+      "seed": 61731,
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 49.0625,
+        "within_model_interval": [
+          0.0,
+          0.1684334709830853
+        ],
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          }
+        ],
+        "verification_cost": {
+          "interface": "velocity queries",
+          "inputs": 81920,
+          "velocity_calls": 81920,
+          "weight_reads": 0
+        },
+        "verification_elapsed_seconds": 50.84407801600173,
+        "fid": 103.03598991161152
+      },
+      "model_sha256": "d79b2a442ec33269000af5f66b502588220c4733d14ce0df54eaa4542385866d",
+      "paired": {
+        "bit_accuracy_gain_pp": 4.0625,
+        "consensus_correct_bits": 16,
+        "total_message_bits": 32,
+        "control_consensus_correct_bits": 14,
+        "bits_improved": 2,
+        "bits_harmed": 0,
+        "mean_signed_score_change": 0.0015571124802720737
+      },
+      "fid_ratio_control": 1.0121340819319313
+    },
+    {
+      "role": "loop_lora",
+      "seed": 61731,
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 81.5625,
+        "within_model_interval": [
+          0.0,
+          0.1684334709830853
+        ],
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.78125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.71875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.78125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.71875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.75
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.6875
+          }
+        ],
+        "verification_cost": {
+          "interface": "velocity queries",
+          "inputs": 81920,
+          "velocity_calls": 81920,
+          "weight_reads": 0
+        },
+        "verification_elapsed_seconds": 54.512697919039056,
+        "fid": 111.89194758173494
+      },
+      "model_sha256": "65625a71bc790cce0c8ca4b4ed0d19bd18735ce7e8c6229d974937c7a53e8520",
+      "paired": {
+        "bit_accuracy_gain_pp": 36.5625,
+        "consensus_correct_bits": 26,
+        "total_message_bits": 32,
+        "control_consensus_correct_bits": 14,
+        "bits_improved": 12,
+        "bits_harmed": 0,
+        "mean_signed_score_change": 0.01898590242414886
+      },
+      "fid_ratio_control": 1.0991271471101045
+    },
+    {
+      "role": "clean",
+      "seed": 62731,
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 44.53125,
+        "within_model_interval": [
+          0.0,
+          0.1684334709830853
+        ],
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          }
+        ],
+        "verification_cost": {
+          "interface": "velocity queries",
+          "inputs": 81920,
+          "velocity_calls": 81920,
+          "weight_reads": 0
+        },
+        "verification_elapsed_seconds": 54.559704506071284,
+        "fid": 102.38231228722196
+      },
+      "model_sha256": "bae85dd228c2379c279d4aa88dbc5d4eede2fcd9bdc701da74c08ceda4e2e2f4"
+    },
+    {
+      "role": "loop_full",
+      "seed": 62731,
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 49.53125,
+        "within_model_interval": [
+          0.0,
+          0.1684334709830853
+        ],
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          }
+        ],
+        "verification_cost": {
+          "interface": "velocity queries",
+          "inputs": 81920,
+          "velocity_calls": 81920,
+          "weight_reads": 0
+        },
+        "verification_elapsed_seconds": 54.52811482991092,
+        "fid": 103.57151412688893
+      },
+      "model_sha256": "5bddd768894cfea15be86bd8282289722c522f5e810d1f9f1ad99da98907f60b",
+      "paired": {
+        "bit_accuracy_gain_pp": 5.0,
+        "consensus_correct_bits": 14,
+        "total_message_bits": 32,
+        "control_consensus_correct_bits": 14,
+        "bits_improved": 0,
+        "bits_harmed": 0,
+        "mean_signed_score_change": 0.00154511472752904
+      },
+      "fid_ratio_control": 1.0116153055454618
+    },
+    {
+      "role": "loop_lora",
+      "seed": 62731,
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 81.5625,
+        "within_model_interval": [
+          0.0,
+          0.1684334709830853
+        ],
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.8125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.75
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.78125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.75
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.75
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.71875
+          }
+        ],
+        "verification_cost": {
+          "interface": "velocity queries",
+          "inputs": 81920,
+          "velocity_calls": 81920,
+          "weight_reads": 0
+        },
+        "verification_elapsed_seconds": 53.38404991198331,
+        "fid": 111.68791848437428
+      },
+      "model_sha256": "96534e91e621809fc9a0f3722f3e0c257fd3578d1f48100f994bbf67f1e31e32",
+      "paired": {
+        "bit_accuracy_gain_pp": 37.03125,
+        "consensus_correct_bits": 29,
+        "total_message_bits": 32,
+        "control_consensus_correct_bits": 14,
+        "bits_improved": 15,
+        "bits_harmed": 0,
+        "mean_signed_score_change": 0.018675396034445596
+      },
+      "fid_ratio_control": 1.0908907602227862
+    },
+    {
+      "role": "clean",
+      "seed": 63731,
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 44.375,
+        "within_model_interval": [
+          0.0,
+          0.1684334709830853
+        ],
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.3125
+          }
+        ],
+        "verification_cost": {
+          "interface": "velocity queries",
+          "inputs": 81920,
+          "velocity_calls": 81920,
+          "weight_reads": 0
+        },
+        "verification_elapsed_seconds": 53.4604560919106,
+        "fid": 100.85718758730604
+      },
+      "model_sha256": "4be2fe4543a34ba9aec560011da8813051598a64b4ed8e5e9d1df20ba59285c0"
+    },
+    {
+      "role": "loop_full",
+      "seed": 63731,
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 49.6875,
+        "within_model_interval": [
+          0.0,
+          0.1684334709830853
+        ],
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.46875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.40625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.53125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.4375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.59375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.5
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.34375
+          }
+        ],
+        "verification_cost": {
+          "interface": "velocity queries",
+          "inputs": 81920,
+          "velocity_calls": 81920,
+          "weight_reads": 0
+        },
+        "verification_elapsed_seconds": 50.6263718449045,
+        "fid": 102.09716638131363
+      },
+      "model_sha256": "bf70be9b1f6d8a7c9f86d979a5a192cbfdcda7e5e1f246c4b8a0b6f5fd77b1dc",
+      "paired": {
+        "bit_accuracy_gain_pp": 5.3125,
+        "consensus_correct_bits": 15,
+        "total_message_bits": 32,
+        "control_consensus_correct_bits": 14,
+        "bits_improved": 1,
+        "bits_harmed": 0,
+        "mean_signed_score_change": 0.0014924376746612354
+      },
+      "fid_ratio_control": 1.0122944018534545
+    },
+    {
+      "role": "loop_lora",
+      "seed": 63731,
+      "metrics": {
+        "recovery_percent": 0.0,
+        "bit_accuracy_percent": 82.03125,
+        "within_model_interval": [
+          0.0,
+          0.1684334709830853
+        ],
+        "trials": [
+          {
+            "exact": false,
+            "bit_accuracy": 0.8125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.78125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.78125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.84375
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.78125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.8125
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.75
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.90625
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.71875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.875
+          },
+          {
+            "exact": false,
+            "bit_accuracy": 0.71875
+          }
+        ],
+        "verification_cost": {
+          "interface": "velocity queries",
+          "inputs": 81920,
+          "velocity_calls": 81920,
+          "weight_reads": 0
+        },
+        "verification_elapsed_seconds": 48.57760453294031,
+        "fid": 110.27900585774626
+      },
+      "model_sha256": "30c7995cd6b077300baa9b0eb906fd12011be45a696f9215e56fe457c6e6744f",
+      "paired": {
+        "bit_accuracy_gain_pp": 37.65625,
+        "consensus_correct_bits": 27,
+        "total_message_bits": 32,
+        "control_consensus_correct_bits": 14,
+        "bits_improved": 13,
+        "bits_harmed": 0,
+        "mean_signed_score_change": 0.018554344320996452
+      },
+      "fid_ratio_control": 1.0934174201742866
+    }
+  ],
+  "teachers": [
+    {
+      "role": "clean",
+      "samples_sha256": "5049c95cab27f540b6cb801043bd3facc20a77ad9f010826c34583151d13cc3c",
+      "fid": 93.7480364665422
+    },
+    {
+      "role": "loop_full",
+      "samples_sha256": "c2ce65ac509a52a54e97046f250e687144d249b87a45976d9786b1b7455ea548",
+      "fid": 95.10129835482638,
+      "paired_image": {
+        "bitwise_equal": false,
+        "maximum_absolute_error": 0.4065651297569275,
+        "unclipped_rmse": 0.023141980516539262,
+        "mean_endpoint_l2": 1.2412460242462402,
+        "image_mse": 0.0005355512622278828,
+        "image_psnr": 38.732589441018646
+      }
+    },
+    {
+      "role": "loop_lora",
+      "samples_sha256": "7683fa7bc59569a52d840289c1ae6ec04e94470f6b4e830c80dab1d01d01aaf9",
+      "fid": 102.44000235669694,
+      "paired_image": {
+        "bitwise_equal": false,
+        "maximum_absolute_error": 1.225953221321106,
+        "unclipped_rmse": 0.11923860621079481,
+        "mean_endpoint_l2": 6.516670741412774,
+        "image_mse": 0.014217845211092995,
+        "image_psnr": 24.492262095503943
+      }
+    }
+  ],
+  "state": "complete",
+  "expected_students": 9,
+  "groups": [
+    {
+      "role": "clean",
+      "student_seeds": 3,
+      "bit_accuracy_percent_mean": 44.635416666666664,
+      "bit_accuracy_percent_std": 0.3252603124165832,
+      "recovery_percent_mean": 0.0,
+      "recovery_percent_std": 0.0,
+      "fid_mean": 101.68007712314987,
+      "fid_std": 0.7696878884613745
+    },
+    {
+      "role": "loop_full",
+      "student_seeds": 3,
+      "bit_accuracy_percent_mean": 49.427083333333336,
+      "bit_accuracy_percent_std": 0.3252603124165832,
+      "recovery_percent_mean": 0.0,
+      "recovery_percent_std": 0.0,
+      "fid_mean": 102.90155680660469,
+      "fid_std": 0.7463106012325404,
+      "paired_bit_gain_pp_mean": 4.791666666666667
+    },
+    {
+      "role": "loop_lora",
+      "student_seeds": 3,
+      "bit_accuracy_percent_mean": 81.71875,
+      "bit_accuracy_percent_std": 0.2706329386826371,
+      "recovery_percent_mean": 0.0,
+      "recovery_percent_std": 0.0,
+      "fid_mean": 111.28629064128516,
+      "fid_std": 0.878278967358442,
+      "paired_bit_gain_pp_mean": 37.083333333333336
+    }
+  ]
+}

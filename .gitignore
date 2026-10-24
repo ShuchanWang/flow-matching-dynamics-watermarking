@@ -3,6 +3,11 @@
 /*
 !/.gitignore
 !/README.md
+!/run_endpoint_loop_training.py
+!/test_endpoint_loop_training.py
+!/audit_endpoint_loop_training.py
+!/run_endpoint_loop_distillation.py
+!/test_endpoint_loop_distillation.py
 !/requirements.txt
 !/LICENSE
 !/flow_watermark_mnist_mlp.py
@@ -148,3 +153,7 @@ env/
 !/paper/figures/sd35_clean_watermarked_trained_v2.pdf
 !/paper/figures/payload_query_scaling.pdf
 /paper/outputs/
+!/run_baseline_screen.py
+!/test_baseline_screen.py
+!/run_endpoint_loop_pilot.py
+!/test_endpoint_loop_pilot.py

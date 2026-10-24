@@ -1,0 +1,38 @@
+{
+  "arguments": {
+    "output": "table_runs/endpoint_loop_training",
+    "key": "table_runs/baseline_first/tune/32/0/key.pt",
+    "arms": [
+      "control",
+      "additive",
+      "loop"
+    ],
+    "parameterization": "lora",
+    "checkpoints": [
+      100,
+      300,
+      1000
+    ],
+    "epsilon": 1.5,
+    "projected_weight": 10.0,
+    "lr": 0.0001,
+    "batch": 128,
+    "samples": 160,
+    "sampler_steps": 100,
+    "trials": 4,
+    "seed": 73641
+  },
+  "checkpoint_sha256": "8c4e9c2b5dacbeb6ee1dbd76733b03690a458f52d16f1dced2e609370d7002b1",
+  "key_sha256": "57b046b5b55d9f14b0d6e93c823360a76612f8f34b23aae4271144cdd77b2d9b",
+  "source_hashes": {
+    "run_endpoint_loop_training.py": "0ca2b4726758d8fb7a853b6fb0f775e08c2dff41c249483aa1bfc79535b06fd1",
+    "run_endpoint_loop_pilot.py": "2c06ef6e5e70932e167d3470f53b7d891602e0bad7a5f831ae0165a1e378c5a6",
+    "run_watermark_security.py": "203f6373d7a33b76f0ffceee71fd420cbe32afa09ff2ef1de34d1e7d7b8c6c41",
+    "watermark_hf_flow_unet.py": "ccc5dbd3faa4b9f2c4377bb00d48ef941a0ed9cc89137ab0f4549b6e5b70b762"
+  },
+  "objective": "MSE to whole frozen-teacher target + weighted projected TARGET ERROR; no correlation reward",
+  "train_states": "Half data interpolants, half cached clean rollouts; disjoint evaluation bank/seeds",
+  "optimizer": "AdamW, constant lr, zero weight decay; no amplitude reward",
+  "inference": "Standalone learned model, ordinary Euler, fixed [-5,5] clipping",
+  "trainable": "lora"
+}

@@ -1,0 +1,22 @@
+{
+  "arguments": {
+    "runs": [
+      "table_runs/endpoint_loop_training",
+      "table_runs/endpoint_loop_training_balanced_full"
+    ],
+    "output": "table_runs/endpoint_loop_detection_audit",
+    "step": 1000,
+    "trials": 20,
+    "queries": 4096,
+    "batch": 128,
+    "seed": 94731
+  },
+  "checkpoint_sha256": "8c4e9c2b5dacbeb6ee1dbd76733b03690a458f52d16f1dced2e609370d7002b1",
+  "source_hashes": {
+    "audit_endpoint_loop_training.py": "0fc15e05679dda249649cfdbfc18ba92757a8ef2373d3b1a8e7fa2d921df694c",
+    "run_baseline_first.py": "6591ef8b02f9bfcb3693cbcf235124b61aedea264632b65e59e94fb5014a5931",
+    "run_watermark_security.py": "203f6373d7a33b76f0ffceee71fd420cbe32afa09ff2ef1de34d1e7d7b8c6c41",
+    "watermark_hf_flow_unet.py": "ccc5dbd3faa4b9f2c4377bb00d48ef941a0ed9cc89137ab0f4549b6e5b70b762"
+  },
+  "decoder": "Existing sine-demodulation decoder, independent CIFAR test interpolants, no clean subtraction"
+}

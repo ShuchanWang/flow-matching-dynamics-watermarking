@@ -447,6 +447,150 @@
       "snapshot_sha256": "f8d5952f87a84c252af7bbe9b873ec45c1694365a52ddf6e462194e38d9bcd85",
       "bytes": 66037,
       "state": "complete"
+    },
+    {
+      "source": "table_runs/baseline_screen32/config.json",
+      "snapshot": "baselines/baseline_screen32/config.json",
+      "source_sha256": "5427c6914fea54f8a932c42faec89f5f0c3f86cc97c473cc697a140203b17730",
+      "snapshot_sha256": "64a8ed63fbecc49b56e853deef5952ad075dce2ec11b3aff5190e3162157c7b6",
+      "bytes": 3397,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/baseline_screen32/report.md",
+      "snapshot": "baselines/baseline_screen32/report.md",
+      "source_sha256": "52a1dff38aa3b6c9db2ff0a571db5199eb4cdee7eb28ac072aca10338f444671",
+      "snapshot_sha256": "52a1dff38aa3b6c9db2ff0a571db5199eb4cdee7eb28ac072aca10338f444671",
+      "bytes": 3555,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/baseline_screen32/results.json",
+      "snapshot": "baselines/baseline_screen32/results.json",
+      "source_sha256": "db15561a4c43156d26cc2ff8d5108e95188915d86fe7ec03627a2950ebf4cb5d",
+      "snapshot_sha256": "c654ff701d7b23934e7ad85c2646a6d8b0d6949c805d0ead88231866e84883ba",
+      "bytes": 138644,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_pilot/config.json",
+      "snapshot": "pilots/endpoint_loop_pilot/config.json",
+      "source_sha256": "de682c48ea1383af1e66f906c687c688c026e08b8839babee47c5613ca8ca5c5",
+      "snapshot_sha256": "e98667e37b677262fe931dfe97b2880d4ea4a898d45f1e2b6e8c4b92b0042054",
+      "bytes": 1086,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_pilot/report.md",
+      "snapshot": "pilots/endpoint_loop_pilot/report.md",
+      "source_sha256": "8da8db13aa5cd28f770ff3745cd48409a11f51fbe5470c87ff5a1063c50a31aa",
+      "snapshot_sha256": "8da8db13aa5cd28f770ff3745cd48409a11f51fbe5470c87ff5a1063c50a31aa",
+      "bytes": 1725,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_pilot/results.json",
+      "snapshot": "pilots/endpoint_loop_pilot/results.json",
+      "source_sha256": "98215b5ce1f9e2bf46b00ab89238fbd46d1f1ad3c89d2c1719a24a927907f5bb",
+      "snapshot_sha256": "d0aaca6df1bc426b19167aa9b42c6e0710ed85834236a2ad76b7cad9b1aef90d",
+      "bytes": 63525,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_training/config.json",
+      "snapshot": "pilots/endpoint_loop_training/config.json",
+      "source_sha256": "287ab9f5603ef97fa9c99ec22b091a86df877802625337d2fd13adb74ece4294",
+      "snapshot_sha256": "287ab9f5603ef97fa9c99ec22b091a86df877802625337d2fd13adb74ece4294",
+      "bytes": 1467,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_training/report.md",
+      "snapshot": "pilots/endpoint_loop_training/report.md",
+      "source_sha256": "90007ca591dd94ca3efff24f51910c810f1987313691a35dc04c10916e6548df",
+      "snapshot_sha256": "90007ca591dd94ca3efff24f51910c810f1987313691a35dc04c10916e6548df",
+      "bytes": 1245,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_training/results.json",
+      "snapshot": "pilots/endpoint_loop_training/results.json",
+      "source_sha256": "1f8c0cc54c40456f08cc8cb6895cc201f2a4f5d6bd11258bd4c42e37ecead7ae",
+      "snapshot_sha256": "911e3446f3a721863be21a9d7455d93bddaa9ff94fbd14bf75345d470fc3a94c",
+      "bytes": 47356,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_training_balanced_full/config.json",
+      "snapshot": "pilots/endpoint_loop_training_balanced_full/config.json",
+      "source_sha256": "e6997556f84a50c080a1db98c0342570bfa41ed3b4a2fc7aa3b5220ae9f47d01",
+      "snapshot_sha256": "e6997556f84a50c080a1db98c0342570bfa41ed3b4a2fc7aa3b5220ae9f47d01",
+      "bytes": 1462,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_training_balanced_full/report.md",
+      "snapshot": "pilots/endpoint_loop_training_balanced_full/report.md",
+      "source_sha256": "e14d96b369c1d8a7bcd6922e58a665371508466ecc6675b1bd77d0d685cc7c93",
+      "snapshot_sha256": "e14d96b369c1d8a7bcd6922e58a665371508466ecc6675b1bd77d0d685cc7c93",
+      "bytes": 1068,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_training_balanced_full/results.json",
+      "snapshot": "pilots/endpoint_loop_training_balanced_full/results.json",
+      "source_sha256": "2da1623ddeba0a5882bd80961fba40003d91ebee6f516acbb68510050281b86a",
+      "snapshot_sha256": "500c146454b7a53800f3ea57be0668f0f728a4b216ac2ded96b413d7ce7bf61d",
+      "bytes": 32964,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_detection_audit/config.json",
+      "snapshot": "pilots/endpoint_loop_detection_audit/config.json",
+      "source_sha256": "e563d41866611465453a00740301404f7555004668c257059a435dba84380927",
+      "snapshot_sha256": "e563d41866611465453a00740301404f7555004668c257059a435dba84380927",
+      "bytes": 928,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_detection_audit/results.json",
+      "snapshot": "pilots/endpoint_loop_detection_audit/results.json",
+      "source_sha256": "8b485ebb6c744986644b6878d99c91876cdfdbb47ec17577f0c0e3916a73eaba",
+      "snapshot_sha256": "6e2c5ccadb0d310db95a68c1fb2e4f971ae4eaefbf2a866d9f059ed309925112",
+      "bytes": 9798,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_distillation/analysis.json",
+      "snapshot": "pilots/endpoint_loop_distillation/analysis.json",
+      "source_sha256": "69f30e0649ea1a0e71fd107a297332d521967be6865caa1247edf43278fedef0",
+      "snapshot_sha256": "69f30e0649ea1a0e71fd107a297332d521967be6865caa1247edf43278fedef0",
+      "bytes": 6161,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_distillation/config.json",
+      "snapshot": "pilots/endpoint_loop_distillation/config.json",
+      "source_sha256": "00debb768de4ee7a947f06065d4ef38906ed733bf6d3f8d6d36e8aaf13715ed7",
+      "snapshot_sha256": "42d80e0f0a2720d0ab74c43bece5a57895ea94f0d01f83a507820d36831369cb",
+      "bytes": 2501,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_distillation/report.md",
+      "snapshot": "pilots/endpoint_loop_distillation/report.md",
+      "source_sha256": "c6c8c11cd148fcee02585fb10627e94894005fda3831d24424561c12b70bc1b5",
+      "snapshot_sha256": "c6c8c11cd148fcee02585fb10627e94894005fda3831d24424561c12b70bc1b5",
+      "bytes": 1682,
+      "state": "complete"
+    },
+    {
+      "source": "table_runs/endpoint_loop_distillation/results.json",
+      "snapshot": "pilots/endpoint_loop_distillation/results.json",
+      "source_sha256": "8f7b404eee28ec2b6aeb52e6fab69e8785269f339e95f3ce915fc4c9a264652b",
+      "snapshot_sha256": "eabf5e90f3140da4936ea47f41aadf5c3a60ab18c2477fc5e92948b8ea6cc514",
+      "bytes": 25886,
+      "state": "complete"
     }
   ],
   "skipped": [
@@ -456,7 +600,7 @@
     },
     {
       "study": "baseline_first/tune",
-      "state": "running"
+      "state": "stopped_by_user"
     }
   ],
   "note": "Compact evidence, not a full artifact archive. Unspecified state is not a completion certificate."
